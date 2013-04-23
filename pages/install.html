@@ -1,0 +1,128 @@
+<div data-section="install">
+	<div class="section">
+		<h3>Installation & usage</h3>
+
+
+		<div class="item">
+			<div class="name">1. Download source:</div>
+		</div>
+		<div class="details">
+			<p>
+				<a href="/build/tFormer.min.js">Production version (minified)</a>
+				or
+				<a href="/src/tFormer.src.js">Developers version</a>
+			</p>
+
+			<p>Or clone it from GitHub repo:</p>
+			<pre><code class="lang-sh">git clone https://github.com/TjRus/tFormer.js.git</code></pre>
+		</div>
+
+
+		<div class="item">
+			<div class="name">2. Add sources to your page:</div>
+		</div>
+		<div class="details">
+			<pre><code>&lt;script src="tFormer.min.js"&gt;&lt;/script&gt;</code></pre>
+		</div>
+
+
+		<div class="item">
+			<div class="name">3. Define new tFormer and it's rules for your form:</div>
+		</div>
+
+		<div class="details">
+			<form id="my_form_id_1">
+				<table>
+					<tr class="head">
+						<td colspan="2">Example</td>
+					</tr>
+
+					<tr>
+						<td><input type="text" name="zip" placeholder="Zip code"/></td>
+						<td>Rules: alpha-numeric, 5 characters length</td>
+					<tr>
+						<td><input type="text" name="email" placeholder="Email"/></td>
+						<td>Rules: required, email<br/> Validation timeout - 500</td>
+					</tr>
+					<tr>
+						<td><input type="submit" value="Submit"/></td>
+						<td>Controlled by tFormer</td>
+					</tr>
+				</table>
+			</form>
+
+<pre><code>&lt;form id="my_form_id"&gt;
+	&lt;input type="text" name="zip" /&gt;
+	&lt;input type="text" name="email" /&gt;
+	&lt;input type="submit" value="Submit" /&gt;
+&lt;/form&gt;
+&lt;script&gt;
+var my_form_id = new tFormer('my_form_id',{
+	fields: {
+		zip: 'a1 l=5', // define only rules
+		email: { //defining rules and other options
+			rules: '* @',
+			timeout: 500
+		}
+	}
+});
+&lt;/script&gt;</code></pre>
+		</div>
+
+	</div>
+
+
+	<div class="section">
+		<h4>Defining validation rules</h4>
+
+		<div class="item">
+			<div class="name">data-rules</div>
+		</div>
+		<div class="details">
+			<p>Define all rules in data attribute - <span>data-rules:</span></p>
+		<pre><code>&lt;form id="my_form_id"&gt;
+	&lt;input type="text" name="zip" data-rules="a1 l=5" /&gt;
+	&lt;input type="text" name="email" data-rules="* @" /&gt;
+	&lt;input type="submit" value="Submit" /&gt;
+&lt;/form&gt;
+&lt;script&gt;
+var my_form_id = new tFormer('my_form_id');
+// or if we need to define custom options
+var my_form_id = new tFormer('my_form_id', {
+	errorClass: 'my_own_errorClass',
+	// other options
+	fields: {
+		email: {
+			timeout: 500 // timeout form email field validation
+		}
+	}
+});
+&lt;/script&gt;</code></pre>
+		</div>
+
+
+		<div class="item">
+			<div class="name">tFormer options</div>
+		</div>
+		<div class="details">
+			<p>Define all rules in whide defining new tFormer object for the form:</p>
+		<pre><code>&lt;form id="my_form_id"&gt;
+	&lt;input type="text" name="zip" /&gt;
+	&lt;input type="text" name="email" /&gt;
+	&lt;input type="submit" value="Submit" /&gt;
+&lt;/form&gt;
+&lt;script&gt;
+var my_form_id = new tFormer('my_form_id', {
+	fields: {
+		zip: 'a1 l=5', // simple string, if there is no need to define other options fot this field
+		email: { // defining rules in object with other field options
+			rules: '* @',
+			timeout: 500 // timeout form email field validation
+		}
+	}
+});
+&lt;/script&gt;</code></pre>
+		</div>
+
+	</div>
+</div>

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+	<title>tFormer - Empower your HTML forms</title>
+	<meta name="description" content="tFormer is a JavaScript plugin for validation and basic controlling your HTML forms.">
+	<meta name="keywords" content="javascript, plugin, no jquery, validation, html, form">
+	<meta name="author" content="Vasiliy Zubach (aka TjRus)">
+
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<meta property="og:title" content="tFormer - Empower your HTML forms"/>
+	<meta property="og:description" content="tFormer - Empower your HTML forms"/>
+	<meta property="og:image" content="http://tformerjs.com/img/tf_2.jpg"/>
+
+	<meta itemprop="name" content="tFormer - Empower your HTML forms">
+	<meta itemprop="description" content="tFormer - Empower your HTML forms">
+	<meta itemprop="image" content="http://tformerjs.com/img/tf_2.jpg">
+
+	<link rel="stylesheet" type="text/css" href="css/page.css">
+	<link rel="stylesheet" type="text/css" href="css/form.css">
+	<link rel="stylesheet" type="text/css" href="css/prettify.css">
+	<link rel="stylesheet" type="text/css" href="css/examples.css">
+
+</head>
+
+<body>
+
+<div class="header">
+	<div class="name">tFormer</div>
+	<div class="annotation">
+		(&beta; - 0.3)
+	</div>
+
+	<div class="btn btn-star">
+		<iframe class="github-btn" src="http://ghbtns.com/github-btn.html?user=TjRus&repo=tFormer.js&type=watch&count=true" allowtransparency="true" frameborder="0" scrolling="0" width="130" height="20"></iframe>
+	</div>
+
+	<div class="btn btn-fork">
+		<iframe class="github-btn" src="http://ghbtns.com/github-btn.html?user=TjRus&repo=tFormer.js&type=fork&count=true" allowtransparency="true" frameborder="0" scrolling="0" width="130" height="20"></iframe>
+	</div>
+
+	<div class="btn btn-like">
+		<div class="fb-like" data-href="http://tformerjs.com/" data-send="false" data-layout="button_count" data-width="200" data-show-faces="false" data-font="lucida grande"></div>
+	</div>
+
+	<div class="btn btn-tweet">
+		<a href="https://twitter.com/share" class="twitter-share-button" data-url="http://tformerjs.com/" data-text="Empower your HTML forms with tFormer. " data-via="TjRus" data-related="TjRus" data-hashtags="tformer,plugin,form,validation">Tweet</a>
+	</div>
+
+	<div class="btn btn-gplus">
+		<div class="g-plusone" data-size="medium" data-href="http://tformerjs.com"></div>
+	</div>
+
+</div>
+
+<div class="content">
+
+	<div class="sidebar">
+		<a href="#about" id="menu_about">About</a>
+		<a href="#features" id="menu_features">Features</a>
+		<a href="#install" id="menu_install">Installation and usage</a>
+		<a href="#rules" id="menu_rules">Rules & Validator</a>
+		<a href="#options" id="menu_options">Options</a>
+		<a href="#methods" id="menu_methods">Methods</a>
+		<a href="#examples" id="menu_examples">Examples</a>
+		<a href="#discuss" id="menu_discuss">Discuss</a>
+
+		<div class="buttons">
+			<div class="btn">
+				<a href="https://twitter.com/TjRus" class="twitter-follow-button" data-show-count="false">Follow @TjRus</a>
+			</div>
+
+		</div>
+	</div>
+	<div class="main"></div>
+
+</div>
+
+<script src="js/lib/jquery.min.js"></script>
+<script src="js/lib/prettify.js"></script>
+
+<!-- source files here... -->
+<script src="src/tFormer.src.js"></script>
+<script src="js/page.js"></script>
+
+
+<script type="text/javascript">
+	var _gaq = _gaq || [];
+	_gaq.push( ['_setAccount', 'UA-40014621-1'] );
+	_gaq.push( ['_trackPageview'] );
+	(function () {
+		var ga = document.createElement( 'script' );
+		ga.type = 'text/javascript';
+		ga.async = true;
+		ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+		var s = document.getElementsByTagName( 'script' )[0];
+		s.parentNode.insertBefore( ga, s );
+	})();
+</script>
+
+<!-- Place this tag after the last +1 button tag. -->
+<script type="text/javascript">
+	(function () {
+		var po = document.createElement( 'script' );
+		po.type = 'text/javascript';
+		po.async = true;
+		po.src = 'https://apis.google.com/js/plusone.js';
+		var s = document.getElementsByTagName( 'script' )[0];
+		s.parentNode.insertBefore( po, s );
+	})();
+</script>
+
+
+<script>!function ( d, s, id ) {
+	var js, fjs = d.getElementsByTagName( s )[0], p = /^http:/.test( d.location ) ? 'http' : 'https';
+	if ( !d.getElementById( id ) ) {
+		js = d.createElement( s );
+		js.id = id;
+		js.src = p + '://platform.twitter.com/widgets.js';
+		fjs.parentNode.insertBefore( js, fjs );
+	}
+}( document, 'script', 'twitter-wjs' );</script>
+
+<div id="fb-root"></div>
+<script>(function ( d, s, id ) {
+	var js, fjs = d.getElementsByTagName( s )[0];
+	if ( d.getElementById( id ) ) return;
+	js = d.createElement( s );
+	js.id = id;
+	js.src = "//connect.facebook.net/en_US/all.js#xfbml=1&appId=298476936836062";
+	fjs.parentNode.insertBefore( js, fjs );
+}( document, 'script', 'facebook-jssdk' ));</script>
+
+</body>
+</html>

@@ -1,0 +1,1956 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+	<title>tFormer - Empower your HTML forms</title>
+	<meta name="description" content="tFormer is a JavaScript plugin for validation and basic controlling your HTML forms.">
+	<meta name="keywords" content="javascript, plugin, no jquery, validation, html, form">
+	<meta name="author" content="Vasiliy Zubach (aka TjRus)">
+
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<meta property="og:title" content="tFormer - Empower your HTML forms"/>
+	<meta property="og:description" content="tFormer - Empower your HTML forms"/>
+	<meta property="og:image" content="http://tformerjs.com/img/tf_2.jpg"/>
+
+	<meta itemprop="name" content="tFormer - Empower your HTML forms">
+	<meta itemprop="description" content="tFormer - Empower your HTML forms">
+	<meta itemprop="image" content="http://tformerjs.com/img/tf_2.jpg">
+
+	<link rel="stylesheet" type="text/css" href="css/page.css">
+	<link rel="stylesheet" type="text/css" href="css/form.css">
+	<link rel="stylesheet" type="text/css" href="css/prettify.css">
+	<link rel="stylesheet" type="text/css" href="css/examples.css">
+
+</head>
+
+<body>
+
+<div class="header">
+	<div class="name">tFormer</div>
+	<div class="annotation">
+		(&beta; - 0.3)
+	</div>
+
+	<div class="btn btn-star">
+		<iframe class="github-btn" src="http://ghbtns.com/github-btn.html?user=TjRus&repo=tFormer.js&type=watch&count=true" allowtransparency="true" frameborder="0" scrolling="0" width="130" height="20"></iframe>
+	</div>
+
+	<div class="btn btn-fork">
+		<iframe class="github-btn" src="http://ghbtns.com/github-btn.html?user=TjRus&repo=tFormer.js&type=fork&count=true" allowtransparency="true" frameborder="0" scrolling="0" width="130" height="20"></iframe>
+	</div>
+
+	<div class="btn btn-like">
+		<div class="fb-like" data-href="http://tformerjs.com/" data-send="false" data-layout="button_count" data-width="200" data-show-faces="false" data-font="lucida grande"></div>
+	</div>
+
+	<div class="btn btn-tweet">
+		<a href="https://twitter.com/share" class="twitter-share-button" data-url="http://tformerjs.com/" data-text="Empower your HTML forms with tFormer. " data-via="TjRus" data-related="TjRus" data-hashtags="tformer,plugin,form,validation">Tweet</a>
+	</div>
+
+	<div class="btn btn-gplus">
+		<div class="g-plusone" data-size="medium" data-href="http://tformerjs.com"></div>
+	</div>
+
+</div>
+
+<div class="content">
+
+	<div class="sidebar">
+		<a href="#about" id="menu_about">About</a>
+		<a href="#features" id="menu_features">Features</a>
+		<a href="#install" id="menu_install">Installation and usage</a>
+		<a href="#rules" id="menu_rules">Rules & Validator</a>
+		<a href="#options" id="menu_options">Options</a>
+		<a href="#methods" id="menu_methods">Methods</a>
+		<a href="#examples" id="menu_examples">Examples</a>
+		<a href="#discuss" id="menu_discuss">Discuss</a>
+
+		<div class="buttons">
+			<div class="btn">
+				<a href="https://twitter.com/TjRus" class="twitter-follow-button" data-show-count="false">Follow @TjRus</a>
+			</div>
+
+		</div>
+	</div>
+	<div class="main">
+<div data-section="about">
+	<div class="section">
+		<br/>
+
+		<h3 class="title">
+			The <strong>tFormer</strong> plugin allows you to easily and unobtrusively control your HTML forms.<br/>
+		</h3>
+
+		<div class="title">
+			<p>Powerful HTML form <b>validation</b> and <b>control</b>.</p>
+			<p><a href="#download" class="download">Download <span>~19KB</span></a></p>
+			<p>Intuitive validation rules. User friendly control of error/success reports, submit, and other form processes.</p>
+			<hr/>
+			<br/>
+		</div>
+
+		<div class="features">
+			<div class="item">
+				<div class="name">Powerful</div>
+			</div>
+			<div class="details">
+				<p>Long list of <a href="#rules" class="link">validation rules</a>. Useful
+					<a class="link" href="#methods">methods()</a>. Every part of tFormer developed to make form validation and control as good as can be imagined.
+				</p>
+			</div>
+
+			<div class="item">
+				<div class="name">Simple and logic rules</div>
+			</div>
+			<div class="details">
+				<p>Everybody knows what `&lt;`, `&gt;`, `@` or `*` means. You don't need to write huge amount of data attributes, just one rules string like '* @ l>10' to understand how to validate the field.</p>
+				<p>See full <a class="link" href="#rules">validation rules</a> list.</p>
+			</div>
+
+			<div class="item">
+				<div class="name">User friendly</div>
+			</div>
+			<div class="details">
+				<p>User Interface is the main part of all types of apps. tFormer know that and can interact with user exactly how developer wants.</p>
+				<p>See <a class="link" href="#examples">examples</a>.</p>
+			</div>
+
+			<div class="item">
+				<div class="name">Highly customizable</div>
+			</div>
+			<div class="details">
+				<p>All class names, timeouts, and even validation function can be customized by developer. Easily and smoothly.</p>
+				<p>See details in <a class="link" href="#options">options documentation</a>.</p>
+			</div>
+
+			<div class="item">
+				<div class="name">Independent</div>
+			</div>
+			<div class="details">
+				<p>The plugin is totally independent. No jQuery or other external lib needed - download -> include -> use.</p>
+				<p>See details in <a class="link" href="#install">installation and usage</a> section.</p>
+			</div>
+
+			<div class="item">
+				<div class="name">Easily themable</div>
+			</div>
+			<div class="details">
+				<p>With common, process, disabled and error class names you can customize any type of user interaction with form.</p>
+				<p>Take a look on <a class="link" href="#examples">examples</a>.</p>
+			</div>
+		</div>
+
+	</div>
+
+	<div class="section" class="thanks">
+		<h3>Developed with love by <a href="http://twitter.com/TjRus" target="_blank">@TjRus</a></h3>
+		<h2>Special thanks to:</h2>
+		<ul>
+			<li><b>Elena Levkovskaya</b> - my love and my muse &lt;3 (<a href="http://levkovskaya.tumblr.com/" target="_blank">http://levkovskaya.tumblr.com/</a>)</li>
+			<li><b>MacPaw inc.</b> - the greatest company and great friends (<a href="http://macpaw.com/" target="_blank">http://macpaw.com/</a>)</li>
+		</ul>
+
+		<h2>Contributors:</h2>
+		<ul>
+			<li>
+				<b>Dmitriy Filipenko</b> (<a href="http://twitter.com/dmfilipenko" target="_blank">@dmfilipenko</a>) - some funny guy
+			</li>
+			<li>
+				<b>Neporozhniy Taras</b> (<a href="http://twitter.com/brave_dick" target="_blank">@brave_dick</a>) - some brave guy
+			</li>
+		</ul>
+	</div>
+</div>
+<div data-section="discuss">
+	<div class="section">
+		<h3>Discussion:</h3>
+		<!-- <iframe src="/test.html"></iframe> -->
+
+		<div id="disqus_thread"></div>
+		<script type="text/javascript">
+			/* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+			var disqus_shortname = 'tformer'; // required: replace example with your forum shortname
+			var disqus_url = 'http://tformer.com/';
+
+			/* * * DON'T EDIT BELOW THIS LINE * * */
+			(function () {
+				var dsq = document.createElement( 'script' );
+				dsq.type = 'text/javascript';
+				dsq.async = true;
+				dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+				(document.getElementsByTagName( 'head' )[0] || document.getElementsByTagName( 'body' )[0]).appendChild( dsq );
+			})();
+		</script>
+		<noscript>Please enable JavaScript to view the
+			<a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+		<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+	</div>
+</div>
+<div data-section="examples">
+	<div class="section">
+		<h3>Examples</h3>
+
+		<div class="item" data-permalink="login">
+			<div class="name">Login form demonstration</div>
+			<a href="#examples/login" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<form id="login_example" style="width: 400px">
+				<table>
+					<tr>
+						<td>Login ( >4 symbols):</td>
+						<td>
+							<div>
+								<input type="text" name="login" data-rules="* l>4"/>
+								<div class="result_block"></div>
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td>Password:</td>
+						<td>
+							<div>
+								<input type="password" name="password" data-rules="*"/>
+								<div class="result_block"></div>
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td colspan="2" align="right">
+							<input type="submit" value="Login"/>
+						</td>
+					</tr>
+				</table>
+			</form>
+
+			<div class="code_tabs">
+				<div class="name">Code:</div>
+				<div class="tab" data-type="html">HTML</div>
+				<div class="tab" data-type="css">CSS</div>
+				<div class="tab" data-type="javascript">JavaScript</div>
+				<div class="name">(click to see the code)</div>
+			</div>
+
+<pre data-type="css" class="nodisplay"><code class="language-css">input {
+	position : relative;
+	z-index  : 1;
+}
+input.error { border-color : #fc6869; }
+input.ok { border-color : #98cd6d; }
+td div { position : relative; padding : 1px; }
+.result_block {
+	position   : absolute;
+	right      : 0;
+	top        : 1px;
+	width      : 25px;
+	height     : 25px;
+	text-align : center;
+	opacity    : 0;
+	z-index    : 0;
+}
+.result_block.ok { background : #98cd6d; }
+.result_block.error { background : #fc6869; }
+.result_block.ok:before,
+.result_block.error:before {
+	color       : #fff;
+	width       : 100%;
+	height      : 100%;
+	line-height : 26px;
+	text-align  : center;
+	text-shadow : 0 1px 1px rgba(0, 0, 0, .6);
+}
+.result_block.ok:before { content : "\02714"; }
+.result_block.error:before { content : "\2718"; }
+.result_block.ok,
+.result_block.error {
+	opacity : 1;
+	right   : -24px;
+}
+.result_block,
+input.error,
+input.ok {
+	-webkit-transition : all .3s;
+	-moz-transition    : all .3s;
+	transition         : all .3s;
+}
+</code></pre>
+
+<pre data-type="javascript" class="nodisplay"><code>var login_example = new tFormer( 'login_example', {
+	onerror: function () {
+		$( this ).removeClass( 'ok' );
+		$( this ).next( '.result_block' ).removeClass( 'ok' ).addClass( 'error' );
+	},
+	onvalid: function () {
+		$( this ).addClass( 'ok' );
+		$( this ).next( '.result_block' ).removeClass( 'error' ).addClass( 'ok' );
+	},
+	submit: function(event){
+		event.preventDefault();
+		// rewriting default submit code
+		alert('Your form passed all validations and submit core executed.');
+		login_example.processingOff();
+		return false;
+	}
+} );
+</code></pre>
+
+<pre data-type="html" class="nodisplay"><code>&lt;form id="login_example"&gt;
+	&lt;table&gt;
+		&lt;tr&gt;
+			&lt;td&gt;Login:&lt;/td&gt;
+			&lt;td&gt;
+				&lt;div&gt;
+					&lt;input type="text" name="login" data-rules="* l&gt;4" /&gt;
+					&lt;div class="result_block error"&gt;&lt;/div&gt;
+				&lt;/div&gt;
+			&lt;/td&gt;
+		&lt;/tr&gt;
+		&lt;tr&gt;
+			&lt;td&gt;Password:&lt;/td&gt;
+			&lt;td&gt;
+				&lt;div&gt;
+					&lt;input type="password" name="password" data-rules="*" /&gt;
+					&lt;div class="result_block ok"&gt;&lt;/div&gt;
+				&lt;/div&gt;
+			&lt;/td&gt;
+		&lt;/tr&gt;
+		&lt;tr&gt;
+			&lt;td colspan="2" align="right"&gt;
+				&lt;input type="submit" value="Login" /&gt;
+			&lt;/td&gt;
+		&lt;/tr&gt;
+	&lt;/table&gt;
+&lt;/form&gt;
+</code></pre>
+
+		</div>
+
+
+
+		<div class="item" data-permalink="card">
+			<div class="name">Visa card validation demo</div>
+			<a href="#examples/card" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>All Visa card numbers start with a 4. New cards have 16 digits. Old cards have 13.</p>
+
+			<form id="visa_example">
+				<div class="card">
+					<div class="card-title">Payment details:</div>
+					<div class="card-type">Visa</div>
+					<div class="card-number">Card number</div>
+					<input type="text" name="card" data-rules="* cv" placeholder="xxxxxxxxxxxxxxxx"/>
+
+					<div class="card-expiration">Expiration</div>
+					<div class="card-cvc">CVC code</div>
+					<select name="month" data-rules="*">
+						<option value="1">January</option>
+						<option value="2">February</option>
+						<option value="3">March</option>
+						<option value="4">April</option>
+						<option value="5">May</option>
+						<option value="6">June</option>
+						<option value="7">July</option>
+						<option value="8">August</option>
+						<option value="9">September</option>
+						<option value="10">October</option>
+						<option value="11">November</option>
+						<option value="13">December</option>
+					</select>
+					<select name="year" data-rules="*">
+						<option value="2013">2013</option>
+						<option value="2014">2014</option>
+						<option value="2015">2015</option>
+						<option value="2016">2016</option>
+						<option value="2017">2017</option>
+					</select>
+					<input type="text" name="cvc" data-rules="* dec lr=[3,4]" placeholder="123"/>
+				</div>
+				<input type="submit" value="Pay with Visa" class="button">
+			</form>
+
+			<div class="code_tabs">
+				<div class="name">Code:</div>
+				<div class="tab" data-type="html">HTML</div>
+				<div class="tab" data-type="css">CSS</div>
+				<div class="tab" data-type="javascript">JavaScript</div>
+				<div class="name">(click to see the code)</div>
+			</div>
+
+<pre data-type="css" class="nodisplay"><code class="language-css">#visa_example {
+	z-index  : 1;
+	position : relative;
+}
+.card {
+	background            : -webkit-linear-gradient(top, #14b2df, #0e7cca);
+	background            : -moz-linear-gradient(top, #14b2df, #0e7cca);
+	background            : linear-gradient(top, #14b2df, #0e7cca);
+	-webkit-border-radius : 5px;
+	-moz-border-radius    : 5px;
+	border-radius         : 5px;
+	-webkit-box-shadow    : 0 1px 3px rgba(0, 0, 0, .4), inset 0 0 1px 1px rgba(0, 0, 0, .1), inset 0 2px 1px rgba(255, 255, 255, .38), inset 0 1px 0px rgba(0, 0, 0, .2);
+	-moz-box-shadow       : 0 1px 3px rgba(0, 0, 0, .4), inset 0 0 1px 1px rgba(0, 0, 0, .1), inset 0 2px 1px rgba(255, 255, 255, .38), inset 0 1px 0px rgba(0, 0, 0, .2);
+	box-shadow            : 0 1px 3px rgba(0, 0, 0, .4), inset 0 0 1px 1px rgba(0, 0, 0, .1), inset 0 2px 1px rgba(255, 255, 255, .38), inset 0 1px 0px rgba(0, 0, 0, .2);
+	padding               : 20px;
+	width                 : 365px;
+	height                : 220px;
+	position              : relative;
+}
+.card::before,
+.card::after {
+	content               : '';
+	height                : 100%;
+	width                 : 15px;
+	position              : absolute;
+	display               : block;
+	top                   : 0;
+	right                 : 0;
+	z-index               : -1;
+	-webkit-border-radius : 5px;
+	-moz-border-radius    : 5px;
+	border-radius         : 5px;
+	opacity               : 0;
+}
+.card::before { background : red; }
+.card::after { background : green; }
+.card.error::before,
+.card.ok::after {
+	right   : -6px;
+	opacity : .5;
+}
+.card::after,
+.card::before {
+	-webkit-transition : all .2s;
+	-moz-transition    : all .2s;
+	transition         : all .2s;
+}
+.card-title,
+.card-type {
+	color       : #fff;
+	font-size   : 15px;
+	height      : 30px;
+	line-height : 30px;
+	font-weight : 600;
+	text-shadow : 0 1px 1px rgba(0, 0, 0, .5);
+}
+.card-type {
+	text-align : right;
+	margin     : -30px 10px 0 0;
+	font-size  : 30px;
+}
+.card-number,
+.card-expiration,
+.card-cvc {
+	color          : #d7eaf1;
+	text-transform : uppercase;
+	font-size      : 13px;
+	line-height    : 20px;
+	height         : 20px;
+	font-weight    : 600;
+	margin-top     : 10px;
+	margin-bottom  : 3px;
+	text-shadow    : 0 -1px 0 rgba(0, 0, 0, .4), 0 1px 0 rgba(255, 255, 255, .3);
+	clear          : both;
+}
+.card-cvc {
+	text-align : right;
+	margin-top : -23px;
+}
+#visa_example input,
+#visa_example select {
+	border                : 1px #156f9b solid;
+	-webkit-border-radius : 3px;
+	-moz-border-radius    : 3px;
+	border-radius         : 3px;
+	-webkit-box-shadow    : inset 0 1px 2px rgba(0, 0, 0, .2), 0 1px 0 rgba(255, 255, 255, .2);
+	-moz-box-shadow       : inset 0 1px 2px rgba(0, 0, 0, .2), 0 1px 0 rgba(255, 255, 255, .2);
+	box-shadow            : inset 0 1px 2px rgba(0, 0, 0, .2), 0 1px 0 rgba(255, 255, 255, .2);
+	height                : 40px;
+	padding               : 10px;
+	line-height           : 20px;
+	color                 : #7d7d7d;
+	font-family           : Menlo, Lucida Console, Arial, serif;
+}
+#visa_example input.error,
+#visa_example select.error {
+	border             : 1px #b83d43 solid;
+	-webkit-box-shadow : inset 0 0 0 1px #b83d43;
+	-moz-box-shadow    : inset 0 0 0 1px #b83d43;
+	box-shadow         : inset 0 0 0 1px #b83d43;
+}
+#visa_example .card select {
+	margin-right : 15px;
+	float        : left;
+}
+#visa_example select {
+	-webkit-appearance  : none;
+	-moz-appearance     : none;
+	appearance          : none;
+	background-repeat   : no-repeat;
+	background-position : 100px center;
+	background-image    : url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAAMCAYAAAC0qUeeAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAANBJREFUeNpi+P//PwMMp6WlMSLz0TETAxSkp6crAqlnUBorgCvm5OSczcfHJwGkp+NVDDTNm4mJyRmIGYDYHcTHppgR6E4Obm7ue6ysrJIwwd+/fz/9+vWr8syZM3+iKAY6nB1I7wNiOSTx+0DsAsS/0BUzEAtAzgCZfBmIVZHEbwCxATZnsF28ePHssmXLdGCCUVFRl/T19U3RnQEKjV9AiRwNDY3vIAEtLa3vQH4uukIwgMXO06dPl7e2tv4B0otxxSAyRxqIj0NprIoBAgwAst6YrhX1J5sAAAAASUVORK5CYII=);
+}
+#visa_example input[name="card"] { width : 100%; }
+#visa_example select[name="month"] { width : 120px; }
+#visa_example select[name="year"] {
+	width               : 80px;
+	background-position : 60px center;
+}
+#visa_example input[name="cvc"] {
+	width        : 80px;
+	float        : right;
+	margin-right : 0;
+}
+#visa_example input[type="submit"] { margin : 10px; color: #fff; }
+</code></pre>
+
+<pre data-type="javascript" class="nodisplay"><code>var visa_example = new tFormer( 'visa_example', {
+	onerror: function () {
+		$( '#visa_example .card' ).removeClass( 'ok' ).addClass( 'error' );
+	},
+	onvalid: function () {
+		if ( visa_example.valid ) {
+			$( '#visa_example .card' ).removeClass( 'error' ).addClass( 'ok' );
+		}
+	},
+	submit : function ( event ) {
+		event.preventDefault();
+		// rewriting default submit code
+		alert( 'Your card verified successfully.' );
+		visa_example.processingOff();
+		return false;
+	}
+} );
+</code></pre>
+
+<pre data-type="html" class="nodisplay"><code>&lt;form id="visa_example"&gt;
+	&lt;div class="card"&gt;
+		&lt;div class="card-title"&gt;Payment details:&lt;/div&gt;
+		&lt;div class="card-type"&gt;Visa&lt;/div&gt;
+		&lt;div class="card-number"&gt;Card number&lt;/div&gt;
+		&lt;input type="text" name="card" data-rules="* cv" placeholder="xxxxxxxxxxxxxxxx"/&gt;
+
+		&lt;div class="card-expiration"&gt;Expiration&lt;/div&gt;
+		&lt;div class="card-cvc"&gt;CVC code&lt;/div&gt;
+		&lt;select name="month" data-rules="*"&gt;
+			&lt;option value="1"&gt;January&lt;/option&gt;
+			&lt;option value="2"&gt;February&lt;/option&gt;
+			&lt;option value="3"&gt;March&lt;/option&gt;
+			&lt;option value="4"&gt;April&lt;/option&gt;
+			&lt;option value="5"&gt;May&lt;/option&gt;
+			&lt;option value="6"&gt;June&lt;/option&gt;
+			&lt;option value="7"&gt;July&lt;/option&gt;
+			&lt;option value="8"&gt;August&lt;/option&gt;
+			&lt;option value="9"&gt;September&lt;/option&gt;
+			&lt;option value="10"&gt;October&lt;/option&gt;
+			&lt;option value="11"&gt;November&lt;/option&gt;
+			&lt;option value="13"&gt;December&lt;/option&gt;
+		&lt;/select&gt;
+		&lt;select name="year" data-rules="*"&gt;
+			&lt;option value="2013"&gt;2013&lt;/option&gt;
+			&lt;option value="2014"&gt;2014&lt;/option&gt;
+			&lt;option value="2015"&gt;2015&lt;/option&gt;
+			&lt;option value="2016"&gt;2016&lt;/option&gt;
+			&lt;option value="2017"&gt;2017&lt;/option&gt;
+		&lt;/select&gt;
+		&lt;input type="text" name="cvc" data-rules="* dec lr=[3,4]" placeholder="123"/&gt;
+	&lt;/div&gt;
+	&lt;input type="submit" value="Pay with Visa"/&gt;
+&lt;/form&gt;
+</code></pre>
+
+		</div>
+
+
+
+
+		<div class="item" data-permalink="request">
+			<div class="name">Request validation demo</div>
+			<a href="#examples/request" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<form id="request_example" style="width: 400px">
+				Some field: <input type="text" name="field_name" data-rules="* request"/>
+				<input type="submit" value="Login"/>
+			</form>
+
+			<div class="code_tabs">
+				<div class="name">Code:</div>
+				<div class="tab" data-type="html">HTML</div>
+				<div class="tab" data-type="javascript">JavaScript</div>
+				<div class="name">(click to see the code)</div>
+			</div>
+
+<pre data-type="javascript" class="nodisplay"><code>var request_example = tFormer( 'request_example', {
+	fields: {
+		field_name: {
+			url   : 'ajax.html',
+			method: 'post',
+			data  : { // this params will be in post request
+				custom_param: 'custom value',
+				twitter     : '@TjRus'
+			},
+			start : function () {}, // function executed when ajax request starts
+			end   : function ( result ) { // function executed when ajax request ends
+				// `result` is what your request returns
+				// here you should decide is the field valid or no and return true/false.
+				return false;
+			}
+		}
+	},
+	submit: function ( event ) {
+		if ( event.preventDefault ) {
+			event.preventDefault();
+		} else {
+			event.returnValue = false;
+		}
+		// rewriting default submit code
+		alert( 'Your request form verified successfully.' );
+		request_example.processingOff();
+		return false;
+	}
+} );
+</code></pre>
+
+<pre data-type="html" class="nodisplay"><code>&lt;form id="request_example" style="width: 400px"&gt;
+	Some field: &lt;input type="text" name="field_name" data-rules="* request"/&gt;
+	&lt;input type="submit" value="Login"/&gt;
+&lt;/form&gt;
+</code></pre>
+
+		</div>
+
+	</div>
+</div>
+
+<div data-section="features">
+	<div class="section">
+		<h3>Features</h3>
+		<ol class="features">
+			<li>
+				<b>No jQuery needed</b> - plugin is absolutely independent; (<a href="https://twitter.com/intent/tweet?original_referer=http%3A%2F%2Ftformer.com%2F&related=TjRus&text=tFormer%20-%20plugin%20for%20form%20validation%20and%20control%20that%20does%20not%20required%20jQuery%20on%20board&url=http%3A%2F%2Ftformerjs.com%2F&via=TjRus" data-related="TjRus">Tweet this awesome feature</a>)
+			</li>
+			<li>Long list of validate rules;</li>
+			<li>Rules are short and intuitive - easy to learn, remember and use;</li>
+			<li>Independent validation object (can be used for validation separately without main tFormer object);</li>
+			<li>Own validate method (you can customize it for each field);</li>
+			<li>Define validate rules in data-attribute or in tFormer options;</li>
+			<li>Changing rules programmatically with <a class="link" href="#methods/setRules">setRules</a> method</li>
+			<li>Changing options programmatically with <a class="link" href="#methods/set">set</a> method</li>
+			<li>Controlling submit button;</li>
+			<li>Processing control;</li>
+			<li>Field check button;</li>
+			<li>`OnFly` validation (on keyup);</li>
+			<li>Validation timeouts;</li>
+			<li><span class="code">onerror</span> & <span class="code">onvalid</span> field handler;</li>
+			<li><span class="code">before</span> validation handler;</li>
+			<li>Validations with AJAX request;</li>
+			<li>Request validation timeout;</li>
+			<li>Custom submit function;</li>
+			<li>Fields error and processing class customization;</li>
+			<li>... more to come ...</li>
+		</ol>
+	</div>
+</div>
+
+<div data-section="install">
+	<div class="section">
+		<h3>Installation & usage</h3>
+
+
+		<div class="item">
+			<div class="name">1. Download source:</div>
+		</div>
+		<div class="details">
+			<p>
+				<a href="/build/tFormer.min.js">Production version (minified)</a>
+				or
+				<a href="/src/tFormer.src.js">Developers version</a>
+			</p>
+
+			<p>Or clone it from GitHub repo:</p>
+			<pre><code class="lang-sh">git clone https://github.com/TjRus/tFormer.js.git</code></pre>
+		</div>
+
+
+		<div class="item">
+			<div class="name">2. Add sources to your page:</div>
+		</div>
+		<div class="details">
+			<pre><code>&lt;script src="tFormer.min.js"&gt;&lt;/script&gt;</code></pre>
+		</div>
+
+
+		<div class="item">
+			<div class="name">3. Define new tFormer and it's rules for your form:</div>
+		</div>
+
+		<div class="details">
+			<form id="my_form_id_1">
+				<table>
+					<tr class="head">
+						<td colspan="2">Example</td>
+					</tr>
+
+					<tr>
+						<td><input type="text" name="zip" placeholder="Zip code"/></td>
+						<td>Rules: alpha-numeric, 5 characters length</td>
+					<tr>
+						<td><input type="text" name="email" placeholder="Email"/></td>
+						<td>Rules: required, email<br/> Validation timeout - 500</td>
+					</tr>
+					<tr>
+						<td><input type="submit" value="Submit"/></td>
+						<td>Controlled by tFormer</td>
+					</tr>
+				</table>
+			</form>
+
+<pre><code>&lt;form id="my_form_id"&gt;
+	&lt;input type="text" name="zip" /&gt;
+	&lt;input type="text" name="email" /&gt;
+	&lt;input type="submit" value="Submit" /&gt;
+&lt;/form&gt;
+&lt;script&gt;
+var my_form_id = new tFormer('my_form_id',{
+	fields: {
+		zip: 'a1 l=5', // define only rules
+		email: { //defining rules and other options
+			rules: '* @',
+			timeout: 500
+		}
+	}
+});
+&lt;/script&gt;</code></pre>
+		</div>
+
+	</div>
+
+
+	<div class="section">
+		<h4>Defining validation rules</h4>
+
+		<div class="item">
+			<div class="name">data-rules</div>
+		</div>
+		<div class="details">
+			<p>Define all rules in data attribute - <span>data-rules:</span></p>
+		<pre><code>&lt;form id="my_form_id"&gt;
+	&lt;input type="text" name="zip" data-rules="a1 l=5" /&gt;
+	&lt;input type="text" name="email" data-rules="* @" /&gt;
+	&lt;input type="submit" value="Submit" /&gt;
+&lt;/form&gt;
+&lt;script&gt;
+var my_form_id = new tFormer('my_form_id');
+// or if we need to define custom options
+var my_form_id = new tFormer('my_form_id', {
+	errorClass: 'my_own_errorClass',
+	// other options
+	fields: {
+		email: {
+			timeout: 500 // timeout form email field validation
+		}
+	}
+});
+&lt;/script&gt;</code></pre>
+		</div>
+
+
+		<div class="item">
+			<div class="name">tFormer options</div>
+		</div>
+		<div class="details">
+			<p>Define all rules in whide defining new tFormer object for the form:</p>
+		<pre><code>&lt;form id="my_form_id"&gt;
+	&lt;input type="text" name="zip" /&gt;
+	&lt;input type="text" name="email" /&gt;
+	&lt;input type="submit" value="Submit" /&gt;
+&lt;/form&gt;
+&lt;script&gt;
+var my_form_id = new tFormer('my_form_id', {
+	fields: {
+		zip: 'a1 l=5', // simple string, if there is no need to define other options fot this field
+		email: { // defining rules in object with other field options
+			rules: '* @',
+			timeout: 500 // timeout form email field validation
+		}
+	}
+});
+&lt;/script&gt;</code></pre>
+		</div>
+
+	</div>
+</div>
+<div data-section="methods">
+	<div class="section">
+		<h3>Methods</h3>
+
+
+		<div class="item" data-permalink="validateForm">
+			<div class="name">validateForm( <span>event</span> )</div>
+			<a href="#methods/validateForm" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Method for validating form.</p>
+			<p>
+				<span class="code">event</span> - original event of form submit, or {Boolean} <span>true</span> or
+				<span>false</span>.<br/>
+				If <span class="code">event</span> not defined of
+				<span>false</span> form will be validated without displaying errors visually.
+				If defined as original submit event or
+				<span>true</span> - fields with errors in validation will receive error class (<a class="link" href="#options/errorClass">errorClass</a> option).
+			</p>
+			<p><b>return</b> <span>true</span> if current form passes all validations that defined, otherwise -
+				<span>false</span>.</p>
+		</div>
+
+
+		<div class="item" data-permalink="validateField">
+			<div class="name">
+				validateField( <span>*form_field</span>, <span>show_error</span>, <span>no_timeout</span> )
+			</div>
+			<a href="#methods/validateField" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Method for validating defined form field.</p>
+			<p><span class="code">*form_field</span> - original HTML element of form or field name.</p>
+			<p><span class="code">show_error</span> - {Boolean}, defines should the script add
+				<a class="link" href="#options/errorClass">errorClass</a> to field if not valid or not (<span>false</span> - no visual errors displayed).
+			</p>
+			<p>
+				<span class="code">no_timeout</span> - {Boolean}, tells the script should it validate the field with defined
+				<a class="link" href="#options/timeout">timeout</a> option or immediately.</p>
+			<p><b>return</b> <span>true</span> if current field passes validation, otherwise - <span>false</span>.</p>
+		</div>
+
+
+		<div class="item" data-permalink="toObject">
+			<div class="name">toObject()</div>
+			<a href="#methods/toObject" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Method for getting javascript object with form element names and values.</p>
+			<p><b>return</b> { field_name: field_value, ... }</p>
+		</div>
+
+
+		<div class="item" data-permalink="execute">
+			<div class="name">execute( <span>*func_name</span>, <span>*this_el</span>, <span>params</span> )</div>
+			<a href="#methods/execute" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Method for executing defined field functions. (You can define them in
+				<a class="link" href="#options/fields">fields</a> options)</p>
+			<p><span class="code">*func_name</span> - {String}, name of function you want to execute</p>
+			<p><span class="code">*this_el</span> - HTML element that will be
+				<span>this</span> (context) in executed function</p>
+			<p><span class="code">params</span> - {Array}, list of function arguments.</p>
+			<p><b>return</b> the result of executed function.</p>
+		</div>
+
+
+		<div class="item" data-permalink="get">
+			<div class="name">get( <span>*option_name</span>, <span>field_name</span> )</div>
+			<a href="#methods/get" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Method for get form options.</p>
+			<p><span class="code">*option_name</span> - {String}, name of <a class="link" href="#options">option</a>.
+			</p>
+			<p><span class="code">field_name</span> - {String}, field name.</p>
+			<p>
+				<b>return</b> option value. If field_name defined - return related option value. If there is no such option for the field, or field_name no defined - returns global option value.
+			</p>
+		</div>
+
+
+		<div class="item" data-permalink="set">
+			<div class="name">set( <span>options</span>, <span>field_name</span> )</div>
+			<a href="#methods/set" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Method for setting form options.</p>
+			<p><span class="code">*options</span> - {Object}, list of options to set.</p>
+			<p>
+				<span class="code">field_name</span> - {String}, field name. All options will be set to one field. If not defined - options will be set globally.
+			</p>
+		</div>
+
+
+		<div class="item" data-permalink="setRules">
+			<div class="name">setRules( <span>*rules</span>, <span>*field_name</span>, <span>show_errors</span> )</div>
+			<a href="#methods/setRules" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Method for setting rules to the field.</p>
+			<p><span class="code">*rules</span> - {String}, string with rules.</p>
+			<p><span class="code">*field_name</span> - {String}, field name, that will receive new rules.</p>
+			<p>
+				<span class="code">show_errors</span> - {Boolean}, display errors if the field is not valid with new rules.
+			</p>
+		</div>
+
+
+		<div class="item" data-permalink="submitButtonControl">
+			<div class="name">submitButtonControl( <span>is_valid</span> )</div>
+			<a href="#methods/submitButtonControl" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Method for turning enabling/disabling submit button. (adding/removing
+				<a class="link" href="#options/disabledClass">disabledClass</a>)
+			</p>
+			<p><span class="code">is_valid</span> - {Boolean}, <span>true</span> to enable button,
+				<span>false</span> - disable</p>
+		</div>
+
+
+		<div class="item" data-permalink="submitButtonOn">
+			<div class="name">submitButtonOn()</div>
+			<a href="#methods/submitButtonOn" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Method for turning enabling submit button. (removing
+				<a class="link" href="#options/disabledClass">disabledClass</a>)</p>
+			<p>Alias to <span>submitButtonControl( true )</span></p>
+		</div>
+
+
+		<div class="item" data-permalink="submitButtonOff">
+			<div class="name">submitButtonOff()</div>
+			<a href="#methods/submitButtonOff" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Method for turning disabling submit button. (adding
+				<a class="link" href="#options/disabledClass">disabledClass</a>)</p>
+			<p>Alias to <span>submitButtonControl( false )</span></p>
+		</div>
+
+
+		<div class="item" data-permalink="processing">
+			<div class="name">processing( <span>show</span> )</div>
+			<a href="#methods/processing" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Method for turning on/off processing for submit button. (adding/removing
+				<a class="link" href="#options/processingClass">processingClass</a>)</p>
+			<p><span class="code">show</span> - {Boolean}, <span>true</span> to turn on processing,
+				<span>false</span> - off
+			</p>
+		</div>
+
+
+		<div class="item" data-permalink="processingOn">
+			<div class="name">processingOn( )</div>
+			<a href="#methods/processingOn" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Method for turning on processing for submit button. (adding
+				<a class="link" href="#options/processingClass">processingClass</a>)</p>
+			<p>Alias to <span>processing( true )</span></p>
+		</div>
+
+
+		<div class="item" data-permalink="processingOff">
+			<div class="name">processingOff( )</div>
+			<a href="#methods/processingOff" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Method for turning off processing for submit button. (removing
+				<a class="link" href="#options/processingClass">processingClass</a>)</p>
+			<p>Alias to <span>processing( false )</span></p>
+		</div>
+
+
+		<div class="item" data-permalink="errorControl">
+			<div class="name">errorControl( <span>*field</span>, <span>*errors</span>, <span>show_error</span> )</div>
+			<a href="#methods/errorControl" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Method that controls displaying field errors, disabling/enabling submit button and firing
+				<a class="link" href="#options/onerror">onerror</a> /
+				<a class="link" href="#options/onvalid">onvalid</a> functions.</p>
+			<p><span class="code">*field</span> - HTML form field element.</p>
+			<p><span class="code">*errors</span> - {Array}, array of errors. Empty array means no errors</p>
+			<p><span class="code">*show_error</span> - {Boolean}, should we display errors (add
+				<a class="link" href="#options/errorClass">errorClass</a> to <span class="code">field</span>) and fire
+				<a class="link" href="#options/onerror">onerror</a> /
+				<a class="link" href="#options/onvalid">onvalid</a> functions or not. If
+				<span>false</span> - errors won't be displayed and <a class="link" href="#options/onerror">onerror</a> /
+				<a class="link" href="#options/onvalid">onvalid</a> won't be fired.</p>
+		</div>
+
+
+		<div class="item" data-permalink="lock">
+			<div class="name">lock( )</div>
+			<a href="#methods/lock" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Method for locking form. (adding
+				<a class="link" href="#options/disabledClass">disabledClass</a> to submit button)</p>
+		</div>
+
+
+		<div class="item" data-permalink="unlock">
+			<div class="name">unlock( )</div>
+			<a href="#methods/unlock" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Method for unlocking form. (removing
+				<a class="link" href="#options/disabledClass">disabledClass</a> from submit button)</p>
+		</div>
+
+
+		<div class="item" data-permalink="init">
+			<div class="name">init( )</div>
+			<a href="#methods/init" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Method for initializing tFormer object (runs automatically while creating tFormer object). Can be used for reinitializing tFormer object after
+				<span>destroy()</span></p>
+		</div>
+
+
+		<div class="item" data-permalink="destroy">
+			<div class="name">destroy( )</div>
+			<a href="#methods/destroy" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Method for destroying tFormer object.</p>
+		</div>
+
+	</div>
+</div>
+
+<div data-section="options">
+	<div class="section">
+		<h3>Options</h3>
+
+
+		<div class="item" data-permalink="errorClass">
+			<span class="name">errorClass</span>
+			<span class="short_details"><b>:string</b>('error')</span>
+			<a href="#options/errorClass" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Defined <span class="code">errorClass</span> will be added to field classList if the validation returns
+				<span>false</span>.</p>
+		</div>
+
+
+		<div class="item" data-permalink="processingClass">
+			<span class="name">processingClass</span>
+			<span class="short_details"><b>:string</b>('processing')</span>
+			<a href="#options/processingClass" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Defined
+				<span class="code">processingClass</span> will be added to submit button (<span class="code">submitButton</span>) classList when yser submits the form.
+			</p>
+		</div>
+
+
+		<div class="item" data-permalink="disabledClass">
+			<span class="name">disabledClass</span>
+			<span class="short_details"><b>:string</b>('disabled')</span>
+			<a href="#options/disabledClass" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Defined
+				<span class="code">disabledClass</span> will be added to submit button (<span class="code">submitButton</span>) classList if the form elements has validation errors.<br/>
+				When all form fields validation returns <span class="cnh">true</span>,
+				<span class="code">disabledClass</span> will be automatically removed form submit button.</p>
+		</div>
+
+
+		<div class="item" data-permalink="timeout">
+			<span class="name">timeout</span>
+			<span class="short_details"><b>:number</b>(0)</span>
+			<a href="#options/timeout" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p><span class="code">timeout</span> option defines the delay before validating field only if.</p>
+		</div>
+
+
+		<div class="item" data-permalink="requestTimeout">
+			<span class="name">requestTimeout</span>
+			<span class="short_details"><b>:number</b>(2000)</span>
+			<a href="#options/requestTimeout" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p><span class="code">requestTimeout</span> option defines timeout before validation field with
+				<span>request</span> validation. <br/>
+				If <span class="code">timeout</span> option defined, than request validation will be delayed on a
+				<span class="cnh">requestTimeout - timeout</span> if the result is more than
+				<span class="cnh">0</span>, otherwise it will be ignored.</p>
+		</div>
+
+
+		<div class="item" data-permalink="validateEvent">
+			<span class="name">validateEvent</span>
+			<span class="short_details"><b>:string</b>('keyup')</span>
+			<a href="#options/validateEvent" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>This options defines field event for starting validation.</p>
+		</div>
+
+
+		<div class="item" data-permalink="submitButtonControl">
+			<span class="name">submitButtonControl</span>
+			<span class="short_details"><b>:boolean</b>(true)</span>
+			<a href="#options/submitButtonControl" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>This options tell the plugin should it controll submit button or not.</p>
+		</div>
+
+
+		<div class="item" data-permalink="submitButton">
+			<span class="name">submitButton</span>
+			<span class="short_details"><b>:boolean</b>(true)</span>
+			<a href="#options/submitButton" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>This options tell the plugin what element is a submit button.</p>
+
+			<p>If it's not defined and <span class="code">submitButtonControl</span> defined as
+				<span>true</span>, the plugin will find the first element with
+				<span>type="submit"</span> and will use it as the submit button.</p>
+		</div>
+
+		<div class="item" data-permalink="submit">
+			<span class="name">submit</span>
+			<span class="short_details"><b>:function( event )</b></span>
+			<a href="#options/submit" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Function for submitting form.</p>
+
+			<p>If submit option not defined - form will be submitted as usual HTML form element. Will fire only when all fields of form successfully validated.</p>
+
+			<p><span class="code">event</span> is original form submit event.</p>
+
+			<p><span class="code">this</span> here is current HTML form element.</p>
+
+<pre><code>// defining submit function
+submit: function(event) {
+	// 1. Disable default submit
+	event.preventDefault()
+	// 2. your submit code
+	// 3. finish
+	return false;
+}
+</code></pre>
+		</div>
+
+
+		<div class="item" data-permalink="before">
+			<span class="name">before</span>
+			<span class="short_details"><b>:function()</b></span>
+			<a href="#options/before" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Function will be executed just before each validation of the field.</p>
+
+			<p><span class="code">this</span> here is current HTML field element.</p>
+		</div>
+
+
+		<div class="item" data-permalink="onerror">
+			<span class="name">onerror</span>
+			<span class="short_details"><b>:function()</b></span>
+			<a href="#options/onerror" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Function will be executed each time when field validation will return <span>false</span>.</p>
+
+			<p><span class="code">this</span> here is current HTML field element.</p>
+		</div>
+
+
+		<div class="item" data-permalink="onvalid">
+			<span class="name">onvalid</span>
+			<span class="short_details"><b>:function()</b></span>
+			<a href="#options/onvalid" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Function will be executed each time when field validation will return <span class="cnh">true</span>.</p>
+
+			<p><span class="code">this</span> here is current HTML field element.</p>
+		</div>
+
+
+		<div class="item" data-permalink="fields">
+			<span class="name">fields</span>
+			<span class="short_details"><b>:object</b>({ field_name: {/*field_options*/}, ... })</span>
+			<a href="#options/fields" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Describes validation and control options for each field.</p>
+
+			<p>
+				<span>Fields</span> properties should be a list of objects, named exactly like form elements and contain all needed options.
+			</p>
+		</div>
+
+		<br/><br/>
+
+		<h3>Available fields options:</h3>
+
+		<div class="item" data-permalink="fields/rules">
+			<span class="name">rules</span>
+			<a href="#options/fields/rules" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<span class="short_details"><b>:string</b></span>
+			String with rules for validation
+		</div>
+
+
+		<div class="item" data-permalink="fields/before">
+			<span class="name">before</span>
+			<a href="#options/fields/before" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<span class="short_details"><b>:function()</b></span>
+			Like a global <span class="code">before</span> function.<br/><br/>
+
+			<div class="note">
+				Fires only for field in which it is defined.<br/>
+				Has higher priority than the same function defined globally.
+			</div>
+		</div>
+
+
+		<div class="item" data-permalink="fields/onerror">
+			<span class="name">onerror</span>
+			<span class="short_details"><b>:function()</b></span>
+			<a href="#options/fields/onerror" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Like a global <span class="code">onerror</span> function.</p>
+
+			<div class="note">
+				Fires only for field in which it is defined.<br/>
+				Has higher priority than <span class="code">onerror</span> function defined globally.
+			</div>
+		</div>
+
+
+		<div class="item" data-permalink="fields/onvalid">
+			<span class="name">onvalid</span>
+			<span class="short_details"><b>:function()</b></span>
+			<a href="#options/fields/onvalid" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Like a global <span class="code">onvalid</span> function.</p>
+
+			<div class="note">
+				Fires only for field in which it is defined.<br/>
+				Has higher priority than <span class="code">onvalid</span> function defined globally.
+			</div>
+		</div>
+
+
+		<div class="item" data-permalink="fields/url">
+			<span class="name">url</span>
+			<span class="short_details"><b>:string</b></span>
+			<a href="#options/fields/url" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>URL for request validation. default value gets from <div class="code">window.location.href</div></p>
+			<div class="note">
+				Used only for request validation.
+			</div>
+		</div>
+
+
+		<div class="item" data-permalink="fields/data">
+			<span class="name">data</span>
+			<span class="short_details"><b>:object</b>({})</span>
+			<a href="#options/fields/data" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Data that will be send with AJAX request. The structure of this object should be:</p>
+		<pre><code>{
+	param_name: param_value,
+	// other params
+}</code></pre>
+		</div>
+
+
+		<div class="item" data-permalink="fields/method">
+			<span class="name">method</span>
+			<span class="short_details"><b>:string</b>('get')</span>
+			<a href="#options/fields/method" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Request method: <span>POST</span> or <span>GET</span></p>
+			<div class="note">
+				Important only for request validation.
+			</div>
+		</div>
+
+
+		<div class="item" data-permalink="fields/start">
+			<span class="name">start</span>
+			<span class="short_details"><b>:function</b>()</span>
+			<a href="#options/fields/start" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Function that will fires when validation request will sent.</p>
+			<p><span class="code">this</span> here is current HTML field element.</p>
+		</div>
+
+
+		<div class="item" data-permalink="fields/end">
+			<span class="name">end</span>
+			<span class="short_details"><b>:function</b>(response)</span>
+			<a href="#options/fields/end" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Function that will fires when validation request result arrives.</p>
+			<p><span class="code">response</span> here is the returned result of your request.</p>
+			<p><span class="code">this</span> here is current HTML field element</p>
+			<div class="note alert">
+				<span>!important!</span><br/>
+				In the request validation
+				<span class="code">end(response)</span> function you can do whatever you want with the
+				<span class="code">response</span>, but at the end of funtion your have to return <span>true</span> or
+				<span>false</span> as the result of validation.
+			</div>
+		</div>
+
+
+		<div class="item" data-permalink="own">
+			<span class="name">own</span>
+			<span class="short_details"><b>:function()</b></span>
+			<a href="#options/own" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Function for own validation (ignores all defined rules).</p>
+			<p><span class="code">this</span> here is current HTML field element.</p>
+			<p>Should return <span>true</span> or
+				<span>false</span> (depends on what you decide whether the field valid or not).</p>
+		</div>
+
+	</div>
+</div>
+<div data-section="rules">
+	<div class="section">
+		<h3>Validator</h3>
+
+		<div class="details">
+			<p><b>Validator</b> - is separate object (<span>_v_</span>) that used by
+				<strong>tFormer</strong> for validating form elements values.</p>
+
+			<p>You can use it even without main tFormer plugin.</p>
+
+			<div class="code_tabs">
+				<div class="name">Example of use:</div>
+				<div class="tab" data-type="validator">JavaScript _v_</div>
+				<div class="name">(click to see the code)</div>
+			</div>
+
+<pre data-type="validator" class="nodisplay"><code>// this is how to use validator object separately
+_v_('').required(); // => false
+_v_('some value').required(); // => true
+_v_('some value').validateWithRules('*'); // => true
+
+
+// basic usage
+_v_('value to validate').validationMethod(options);
+
+// Examples
+_v_('i@tjrus.com').isValidEmail(); // => true
+_v_('i@..tjrus.com').isValidEmail(); // => false
+
+_v_(89).lessThen(100); // => true
+_v_(89).validateWithRules('<100'); // => true
+_v_(10).matchesTo([10,13]); // => true
+_v_(10).validateWithRules('=[10,13]'); // => true
+</code></pre>
+		</div>
+
+	</div>
+
+
+	<div class="section">
+		<h3>Validation rules</h3>
+
+
+
+		<div class="details">
+			<div class="note">
+				Rules can be combined as a simple string and separated by space or other defined character.
+			</div>
+
+			<div class="code_tabs">
+				<div class="name">Example of rules usage:</div>
+				<div class="tab" data-type="html">HTML</div>
+				<div class="tab" data-type="javascript">JavaScript</div>
+				<div class="name">(click to see the code)</div>
+			</div>
+<pre data-type="javascript" class="nodisplay"><code>// this is how to defined rules in JavaScript
+var my_tformer_object = tFormer('my_form_id', {
+	fields: {
+		// if the field has only rule option
+		test_required: '*', // rules here
+
+		// if field has multiple options
+		test_email_required: {
+			rules      : '* @', // rules here
+			timeout    : 1000,
+			errorClass : 'custom_error_class'
+		}
+	}
+});
+</code></pre>
+
+<pre data-type="html" class="nodisplay"><code>// this is how to define rules in HTML element for tFormer
+&lt;form id="my_form_id"&gt;
+	&lt;input name="test_required" data-rules="*" /&gt;
+	&lt;input name="test_required_and_other" data-rules="* a l>=10" /&gt;
+&lt;/form&gt;
+</code></pre>
+
+		</div>
+
+
+		<div class="item" data-permalink="*">
+			<span class="name">`*`</span>
+			<span class="short_details"><b>required()</b></span>
+			<a href="#rules/*" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Means that the value shouldn't be empty. Required rule have to be at the beginning of rules string.</p>
+		</div>
+
+
+		<div class="item" data-permalink="@">
+			<span class="name">`@`</span>
+			<span class="short_details"><b>isValidEmail()</b></span>
+			<a href="#rules/@" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Means that the value should be valid email address.</p>
+		</div>
+
+
+		<div class="item" data-permalink="@s">
+			<span class="name">`@s`</span>
+			<span class="short_details"><b>isValidEmails()</b></span>
+			<a href="#rules/@s" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Means that the value should be valid email addresses, separated by `<span>,</span>`.</p>
+		</div>
+
+
+		<div class="item" data-permalink="ip">
+			<span class="name">`ip`</span>
+			<span class="short_details"><b>isValidIP()</b></span>
+			<a href="#rules/ip" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Valid IP address.</p>
+		</div>
+
+
+		<div class="item" data-permalink="b64">
+			<span class="name">`b64`</span>
+			<span class="short_details"><b>isValidBase64()</b></span>
+			<a href="#rules/b64" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Validate Base64 string.</p>
+		</div>
+
+
+		<div class="item" data-permalink="url">
+			<span class="name">`url`</span>
+			<span class="short_details"><b>isValidUrl()</b></span>
+			<a href="#rules/url" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Validate URL.</p>
+		</div>
+
+
+		<div class="item" data-permalink="reg=">
+			<span class="name">`reg=`</span>
+			<span class="short_details"><b>validateRegular( regexp )</b></span>
+			<a href="#rules/reg=" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>validation with regular expression.</p>
+		</div>
+
+
+		<div class="item" data-permalink="a">
+			<span class="name">`a`</span>
+			<span class="short_details"><b>isAlpha()</b></span>
+			<a href="#rules/a" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Should contain only alphabet characters.</p>
+		</div>
+
+
+		<div class="item" data-permalink="a1">
+			<span class="name">`a1`</span>
+			<span class="short_details"><b>isAlphaNumeric()</b></span>
+			<a href="#rules/a1" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Should contain only alphabet characters and numbers.</p>
+		</div>
+
+
+		<div class="item" data-permalink="a_">
+			<span class="name">`a_`</span>
+			<span class="short_details"><b>isAlphaDash()</b></span>
+			<a href="#rules/a_" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Should contain only alphabet characters and dash symbol.</p>
+		</div>
+
+
+		<div class="item" data-permalink="a1_">
+			<span class="name">`a1_`</span>
+			<span class="short_details"><b>isAlphaNumDash()</b></span>
+			<a href="#rules/a1_" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Should contain only alphabet characters, numbers and dash symbol.</p>
+		</div>
+
+
+		<div class="item" data-permalink="num">
+			<span class="name">`num`</span>
+			<span class="short_details"><b>isNumeric()</b></span>
+			<a href="#rules/num" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Should contain only numbers.</p>
+		</div>
+
+
+		<div class="item" data-permalink="int">
+			<span class="name">`int`</span>
+			<span class="short_details"><b>isInteger()</b></span>
+			<a href="#rules/int" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Should contain only numbers.</p>
+		</div>
+
+
+		<div class="item" data-permalink="dec">
+			<span class="name">`dec`</span>
+			<span class="short_details"><b>isDecimal()</b></span>
+			<a href="#rules/dec" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Should contain only numbers.</p>
+		</div>
+
+
+		<div class="item" data-permalink="nat">
+			<span class="name">`nat`</span>
+			<span class="short_details"><b>isNatural()</b></span>
+			<a href="#rules/nat" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Should contain only numbers.</p>
+		</div>
+
+
+		<div class="item" data-permalink="l=">
+			<span class="name">`l=`</span>
+			<span class="short_details"><b>lengthEq( value )</b></span>
+			<a href="#rules/l=" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Value length should be equal to some value</p>
+
+			<p>l=10<br/>l=[10,13,15]</p>
+		</div>
+
+
+		<div class="item" data-permalink="l>">
+			<span class="name">`l>`</span>
+			<span class="short_details"><b>lengthMore( value )</b></span>
+			<a href="#rules/l&gt;" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Value length should be more then some value.</p>
+
+			<p>l>10</p>
+		</div>
+
+
+		<div class="item" data-permalink="l>=">
+			<span class="name">`l>=`</span>
+			<span class="short_details"><b>lengthEqOrMore( value )</b></span>
+			<a href="#rules/l&gt;=" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Value length should be equal or more then some value.</p>
+
+			<p>l>=10</p>
+		</div>
+
+
+		<div class="item" data-permalink="l<">
+			<span class="name">`l<`</span>
+			<span class="short_details"><b>lengthLess( value )</b></span>
+			<a href="#rules/l&lt;" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Value length should be less then some value.</p>
+
+			<p>l<10</p>
+		</div>
+
+
+		<div class="item" data-permalink="l<=">
+			<span class="name">`l<=`</span>
+			<span class="short_details"><b>lengthEqOrLess( value )</b></span>
+			<a href="#rules/l&lt;=" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Value length should be equal or less then some value.</p>
+
+			<p>l<=10</p>
+		</div>
+
+
+		<div class="item" data-permalink="lr=">
+			<span class="name">`lr=`</span>
+			<span class="short_details"><b>lengthInRange( range_array )</b></span>
+			<a href="#rules/lr=" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Value length should be in defined range.</p>
+
+			<p>lr=[10,15]</p>
+		</div>
+
+
+		<div class="item" data-permalink="<=">
+			<span class="name">`<=`</span>
+			<span class="short_details"><b>greaterOrEq( value )</b></span>
+			<a href="#rules/&lt;=" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Value should be eq or greater then some value.</p>
+
+			<p><=10</p>
+		</div>
+
+
+		<div class="item" data-permalink=">=">
+			<span class="name">`>=`</span>
+			<span class="short_details"><b>greaterOrEq( value )</b></span>
+			<a href="#rules/&gt;=" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Value should be eq or greater then some value.</p>
+
+			<p>>=10</p>
+		</div>
+
+
+		<div class="item" data-permalink=">">
+			<span class="name">`>`</span>
+			<span class="short_details"><b>greaterThan( value )</b></span>
+			<a href="#rules/&gt;" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Value should be greater then some value.</p>
+
+			<p>>10</p>
+		</div>
+
+
+		<div class="item" data-permalink="<">
+			<span class="name">`<`</span>
+			<span class="short_details"><b>lessThan( value )</b></span>
+			<a href="#rules/&lt;" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Value should be less then some value.</p>
+
+			<p><10</p>
+		</div>
+
+		<div class="item" data-permalink="r=">
+			<span class="name">`r=`</span>
+			<span class="short_details"><b>inRange( range_array )</b></span>
+			<a href="#rules/r=" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Value should be in defined range.</p>
+
+			<p>r=[10,15]</p>
+		</div>
+
+
+		<div class="item" data-permalink="=">
+			<span class="name">`=`</span>
+			<span class="short_details"><b>matchesTo( value )</b></span>
+			<a href="#rules/=" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Value should be equal to some value.</p>
+
+			<p>=10<br/>=[10,12,15]</p>
+		</div>
+
+
+		<div class="item" data-permalink="=id">
+			<span class="name">`=#`</span>
+			<span class="short_details"><b>matchesToId( value )</b></span>
+			<a href="#rules/=id" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Value should be equal to some value.</p>
+
+			<p>=#item_id<br/>=#[item1_id,item2_id]</p>
+		</div>
+
+
+		<div class="item" data-permalink="!=">
+			<span class="name">`!=`</span>
+			<span class="short_details"><b>notMatches( value )</b></span>
+			<a href="#rules/!=" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Value should be not equal to some value.</p>
+
+			<p>!=10<br/>!=[10,12,15]</p>
+		</div>
+
+
+		<div class="item" data-permalink="!">
+			<span class="name">`!`</span>
+			<span class="short_details"><b>notContain( value )</b></span>
+			<a href="#rules/!" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Value should not contain some value.</p>
+
+			<p>!10<br/>![10,12,15]</p>
+		</div>
+
+
+		<div class="item" data-permalink="c">
+			<span class="name">`c`</span>
+			<span class="short_details"><b>isValidCard()</b></span>
+			<a href="#rules/c" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>All Visa card numbers start with a 4. New cards have 16 digits. Old cards have 13</p>
+
+			<p>All MasterCard numbers start with the numbers 51 through 55. All have 16 digits</p>
+
+			<p>American Express card numbers start with 34 or 37 and have 15 digits</p>
+
+			<p>Discover card numbers begin with 6011 or 65. All have 16 digits</p>
+		</div>
+
+
+		<div class="item" data-permalink="cv">
+			<span class="name">`cv`</span>
+			<span class="short_details"><b>isValidVisa()</b></span>
+			<a href="#rules/cv" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>All Visa card numbers start with a 4. New cards have 16 digits. Old cards have 13</p>
+		</div>
+
+
+		<div class="item" data-permalink="cm">
+			<span class="name">`cm`</span>
+			<span class="short_details"><b>isValidMastercard()</b></span>
+			<a href="#rules/cm" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>All MasterCard numbers start with the numbers 51 through 55. All have 16 digits</p>
+		</div>
+
+
+		<div class="item" data-permalink="ca">
+			<span class="name">`ca`</span>
+			<span class="short_details"><b>isValidAmex()</b></span>
+			<a href="#rules/ca" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>American Express card numbers start with 34 or 37 and have 15 digits</p>
+		</div>
+
+
+		<div class="item" data-permalink="cd">
+			<span class="name">`cd`</span>
+			<span class="short_details"><b>isValidDiscover()</b></span>
+			<a href="#rules/cd" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Discover card numbers begin with 6011 or 65. All have 16 digits</p>
+		</div>
+
+
+		<div class="item" data-permalink="D=">
+			<span class="name">`D=`</span>
+			<span class="short_details"><b>isValidDate( date_format )</b></span>
+			<a href="#rules/D=" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Validate date in some defined date format. Format keys table:</p>
+			<table>
+				<tr>
+					<td>Field</td>
+					<td>Full Form</td>
+					<td>Short Form</td>
+				</tr>
+				<tr>
+					<td>Year</td>
+					<td>Y (4 digits)</td>
+					<td>y (2 digits)</td>
+				</tr>
+				<tr>
+					<td>Month</td>
+					<td>M (1 or 2 digits)</td>
+					<td>m (1 or 2 digits)</td>
+				</tr>
+				<tr>
+					<td>Month Name</td>
+					<td>N (full name)</td>
+					<td>n (abbr)</td>
+				</tr>
+				<tr>
+					<td>Day of Month</td>
+					<td>D (1 or 2 digits)</td>
+					<td>d (1 or 2 digits)</td>
+				</tr>
+				<tr>
+					<td>Day Name</td>
+					<td>W (full name)</td>
+					<td>w (abbr)</td>
+				</tr>
+				<tr>
+					<td>Hour (1-12)</td>
+					<td>H (1 or 2 digits)</td>
+					<td>h (1 or 2 digits)</td>
+				</tr>
+				<tr>
+					<td>Hour (0-23)</td>
+					<td>R (1 or 2 digits)</td>
+					<td>r (1 or 2 digits)</td>
+				</tr>
+				<tr>
+					<td>Minute</td>
+					<td>I (1 or 2 digits)</td>
+					<td>i (1 or 2 digits)</td>
+				</tr>
+				<tr>
+					<td>Second</td>
+					<td>S (1 or 2 digits)</td>
+					<td>s (1 or 2 digits)</td>
+				</tr>
+				<tr>
+					<td>AM/PM</td>
+					<td>A (upper case)</td>
+					<td>a (lower case)</td>
+				</tr>
+			</table>
+		</div>
+
+		<div class="item" data-permalink="request">
+			<span class="name">`request`</span>
+			<span class="short_details"><b>---</b></span>
+			<a href="#rules/request" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Tell the script that there should be validation with AJAX request.</p>
+			<p>
+				Required a few fields options to be set in tFormer config:
+				<a class="link" href="#options/fields/url">url</a>, <!--<a class="link" href="#options/fields/data">data</a>,-->
+				<a class="link" href="#options/fields/end">end()</a>
+			</p>
+			<div class="note alert">
+				(!) Request validation is not a part of _v_ object.
+			</div>
+		</div>
+
+
+	</div>
+</div>
+</div>
+
+</div>
+
+<script src="js/lib/jquery.min.js"></script>
+<script src="js/lib/prettify.js"></script>
+
+<!-- source files here... -->
+<script src="src/tFormer.src.js"></script>
+<script src="js/page.js"></script>
+
+
+<script type="text/javascript">
+	var _gaq = _gaq || [];
+	_gaq.push( ['_setAccount', 'UA-40014621-1'] );
+	_gaq.push( ['_trackPageview'] );
+	(function () {
+		var ga = document.createElement( 'script' );
+		ga.type = 'text/javascript';
+		ga.async = true;
+		ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+		var s = document.getElementsByTagName( 'script' )[0];
+		s.parentNode.insertBefore( ga, s );
+	})();
+</script>
+
+<!-- Place this tag after the last +1 button tag. -->
+<script type="text/javascript">
+	(function () {
+		var po = document.createElement( 'script' );
+		po.type = 'text/javascript';
+		po.async = true;
+		po.src = 'https://apis.google.com/js/plusone.js';
+		var s = document.getElementsByTagName( 'script' )[0];
+		s.parentNode.insertBefore( po, s );
+	})();
+</script>
+
+
+<script>!function ( d, s, id ) {
+	var js, fjs = d.getElementsByTagName( s )[0], p = /^http:/.test( d.location ) ? 'http' : 'https';
+	if ( !d.getElementById( id ) ) {
+		js = d.createElement( s );
+		js.id = id;
+		js.src = p + '://platform.twitter.com/widgets.js';
+		fjs.parentNode.insertBefore( js, fjs );
+	}
+}( document, 'script', 'twitter-wjs' );</script>
+
+<div id="fb-root"></div>
+<script>(function ( d, s, id ) {
+	var js, fjs = d.getElementsByTagName( s )[0];
+	if ( d.getElementById( id ) ) return;
+	js = d.createElement( s );
+	js.id = id;
+	js.src = "//connect.facebook.net/en_US/all.js#xfbml=1&appId=298476936836062";
+	fjs.parentNode.insertBefore( js, fjs );
+}( document, 'script', 'facebook-jssdk' ));</script>
+
+</body>
+</html>

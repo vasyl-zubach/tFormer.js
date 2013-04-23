@@ -1,0 +1,239 @@
+<div data-section="methods">
+	<div class="section">
+		<h3>Methods</h3>
+
+
+		<div class="item" data-permalink="validateForm">
+			<div class="name">validateForm( <span>event</span> )</div>
+			<a href="#methods/validateForm" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Method for validating form.</p>
+			<p>
+				<span class="code">event</span> - original event of form submit, or {Boolean} <span>true</span> or
+				<span>false</span>.<br/>
+				If <span class="code">event</span> not defined of
+				<span>false</span> form will be validated without displaying errors visually.
+				If defined as original submit event or
+				<span>true</span> - fields with errors in validation will receive error class (<a class="link" href="#options/errorClass">errorClass</a> option).
+			</p>
+			<p><b>return</b> <span>true</span> if current form passes all validations that defined, otherwise -
+				<span>false</span>.</p>
+		</div>
+
+
+		<div class="item" data-permalink="validateField">
+			<div class="name">
+				validateField( <span>*form_field</span>, <span>show_error</span>, <span>no_timeout</span> )
+			</div>
+			<a href="#methods/validateField" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Method for validating defined form field.</p>
+			<p><span class="code">*form_field</span> - original HTML element of form or field name.</p>
+			<p><span class="code">show_error</span> - {Boolean}, defines should the script add
+				<a class="link" href="#options/errorClass">errorClass</a> to field if not valid or not (<span>false</span> - no visual errors displayed).
+			</p>
+			<p>
+				<span class="code">no_timeout</span> - {Boolean}, tells the script should it validate the field with defined
+				<a class="link" href="#options/timeout">timeout</a> option or immediately.</p>
+			<p><b>return</b> <span>true</span> if current field passes validation, otherwise - <span>false</span>.</p>
+		</div>
+
+
+		<div class="item" data-permalink="toObject">
+			<div class="name">toObject()</div>
+			<a href="#methods/toObject" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Method for getting javascript object with form element names and values.</p>
+			<p><b>return</b> { field_name: field_value, ... }</p>
+		</div>
+
+
+		<div class="item" data-permalink="execute">
+			<div class="name">execute( <span>*func_name</span>, <span>*this_el</span>, <span>params</span> )</div>
+			<a href="#methods/execute" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Method for executing defined field functions. (You can define them in
+				<a class="link" href="#options/fields">fields</a> options)</p>
+			<p><span class="code">*func_name</span> - {String}, name of function you want to execute</p>
+			<p><span class="code">*this_el</span> - HTML element that will be
+				<span>this</span> (context) in executed function</p>
+			<p><span class="code">params</span> - {Array}, list of function arguments.</p>
+			<p><b>return</b> the result of executed function.</p>
+		</div>
+
+
+		<div class="item" data-permalink="get">
+			<div class="name">get( <span>*option_name</span>, <span>field_name</span> )</div>
+			<a href="#methods/get" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Method for get form options.</p>
+			<p><span class="code">*option_name</span> - {String}, name of <a class="link" href="#options">option</a>.
+			</p>
+			<p><span class="code">field_name</span> - {String}, field name.</p>
+			<p>
+				<b>return</b> option value. If field_name defined - return related option value. If there is no such option for the field, or field_name no defined - returns global option value.
+			</p>
+		</div>
+
+
+		<div class="item" data-permalink="set">
+			<div class="name">set( <span>options</span>, <span>field_name</span> )</div>
+			<a href="#methods/set" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Method for setting form options.</p>
+			<p><span class="code">*options</span> - {Object}, list of options to set.</p>
+			<p>
+				<span class="code">field_name</span> - {String}, field name. All options will be set to one field. If not defined - options will be set globally.
+			</p>
+		</div>
+
+
+		<div class="item" data-permalink="setRules">
+			<div class="name">setRules( <span>*rules</span>, <span>*field_name</span>, <span>show_errors</span> )</div>
+			<a href="#methods/setRules" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Method for setting rules to the field.</p>
+			<p><span class="code">*rules</span> - {String}, string with rules.</p>
+			<p><span class="code">*field_name</span> - {String}, field name, that will receive new rules.</p>
+			<p>
+				<span class="code">show_errors</span> - {Boolean}, display errors if the field is not valid with new rules.
+			</p>
+		</div>
+
+
+		<div class="item" data-permalink="submitButtonControl">
+			<div class="name">submitButtonControl( <span>is_valid</span> )</div>
+			<a href="#methods/submitButtonControl" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Method for turning enabling/disabling submit button. (adding/removing
+				<a class="link" href="#options/disabledClass">disabledClass</a>)
+			</p>
+			<p><span class="code">is_valid</span> - {Boolean}, <span>true</span> to enable button,
+				<span>false</span> - disable</p>
+		</div>
+
+
+		<div class="item" data-permalink="submitButtonOn">
+			<div class="name">submitButtonOn()</div>
+			<a href="#methods/submitButtonOn" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Method for turning enabling submit button. (removing
+				<a class="link" href="#options/disabledClass">disabledClass</a>)</p>
+			<p>Alias to <span>submitButtonControl( true )</span></p>
+		</div>
+
+
+		<div class="item" data-permalink="submitButtonOff">
+			<div class="name">submitButtonOff()</div>
+			<a href="#methods/submitButtonOff" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Method for turning disabling submit button. (adding
+				<a class="link" href="#options/disabledClass">disabledClass</a>)</p>
+			<p>Alias to <span>submitButtonControl( false )</span></p>
+		</div>
+
+
+		<div class="item" data-permalink="processing">
+			<div class="name">processing( <span>show</span> )</div>
+			<a href="#methods/processing" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Method for turning on/off processing for submit button. (adding/removing
+				<a class="link" href="#options/processingClass">processingClass</a>)</p>
+			<p><span class="code">show</span> - {Boolean}, <span>true</span> to turn on processing,
+				<span>false</span> - off
+			</p>
+		</div>
+
+
+		<div class="item" data-permalink="processingOn">
+			<div class="name">processingOn( )</div>
+			<a href="#methods/processingOn" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Method for turning on processing for submit button. (adding
+				<a class="link" href="#options/processingClass">processingClass</a>)</p>
+			<p>Alias to <span>processing( true )</span></p>
+		</div>
+
+
+		<div class="item" data-permalink="processingOff">
+			<div class="name">processingOff( )</div>
+			<a href="#methods/processingOff" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Method for turning off processing for submit button. (removing
+				<a class="link" href="#options/processingClass">processingClass</a>)</p>
+			<p>Alias to <span>processing( false )</span></p>
+		</div>
+
+
+		<div class="item" data-permalink="errorControl">
+			<div class="name">errorControl( <span>*field</span>, <span>*errors</span>, <span>show_error</span> )</div>
+			<a href="#methods/errorControl" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Method that controls displaying field errors, disabling/enabling submit button and firing
+				<a class="link" href="#options/onerror">onerror</a> /
+				<a class="link" href="#options/onvalid">onvalid</a> functions.</p>
+			<p><span class="code">*field</span> - HTML form field element.</p>
+			<p><span class="code">*errors</span> - {Array}, array of errors. Empty array means no errors</p>
+			<p><span class="code">*show_error</span> - {Boolean}, should we display errors (add
+				<a class="link" href="#options/errorClass">errorClass</a> to <span class="code">field</span>) and fire
+				<a class="link" href="#options/onerror">onerror</a> /
+				<a class="link" href="#options/onvalid">onvalid</a> functions or not. If
+				<span>false</span> - errors won't be displayed and <a class="link" href="#options/onerror">onerror</a> /
+				<a class="link" href="#options/onvalid">onvalid</a> won't be fired.</p>
+		</div>
+
+
+		<div class="item" data-permalink="lock">
+			<div class="name">lock( )</div>
+			<a href="#methods/lock" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Method for locking form. (adding
+				<a class="link" href="#options/disabledClass">disabledClass</a> to submit button)</p>
+		</div>
+
+
+		<div class="item" data-permalink="unlock">
+			<div class="name">unlock( )</div>
+			<a href="#methods/unlock" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Method for unlocking form. (removing
+				<a class="link" href="#options/disabledClass">disabledClass</a> from submit button)</p>
+		</div>
+
+
+		<div class="item" data-permalink="init">
+			<div class="name">init( )</div>
+			<a href="#methods/init" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Method for initializing tFormer object (runs automatically while creating tFormer object). Can be used for reinitializing tFormer object after
+				<span>destroy()</span></p>
+		</div>
+
+
+		<div class="item" data-permalink="destroy">
+			<div class="name">destroy( )</div>
+			<a href="#methods/destroy" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Method for destroying tFormer object.</p>
+		</div>
+
+	</div>
+</div>

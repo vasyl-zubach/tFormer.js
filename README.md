@@ -1,4 +1,5 @@
-tFormer.js
-==========
+#tFormer.js - empower your HTML forms
 
-tFormer.js - Empower your HTML forms
+Project page <http://tformerjs.com>
+
+![tFormer.js](http://tformerjs.com/img/tf_2.jpg)
