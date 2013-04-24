@@ -222,34 +222,21 @@
 		$el.html( forma );
 
 
-		//
 		// form
-		//
-		//
-
-		fff = tFormer( 'fff', {
-			//			submitButtonControl: false,
-			//			timeout            : 2000,
-			validateEvent: 'input',
-			//			fields             : {
-			//				required: {
-			//					own: function () {
-			//						return (this.value == 'aaa');
-			//					}
-			//				}
-			//			},
-			onvalid      : function () {
+		fff = tFormer( document.getElementById('fff'), {
+			onvalid: function () {
+				console.log( 'onvalid' );
 				$( '#error_' + this.name ).html( 0 );
 			},
-			onerror      : function () {
+			onerror: function () {
+				console.log( 'onerror' );
 				$( '#error_' + this.name ).html( 1 );
+			},
+			submit : function ( e ) {
+				e.preventDefault();
+				console.log( 'submit' );
+				return false;
 			}
-			//			submit : function ( e ) {
-			//				this.submit();
-			//				e.preventDefault();
-			//				console.log( fff.toObject() );
-			//				return false;
-			//			}
 		} );
 
 	} );
