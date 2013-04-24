@@ -39,17 +39,19 @@
 
 		<section>
 			<h1>tFormer.js</h1>
-			<h3>Empower your HTML forms</h3>
-			<p>
-				<small>Created by <a href="http://tjrus.com">Vasiliy Zubach</a> /
-					<a href="http://twitter.com/TjRus">@TjRus</a></small>
+			<h3 class="fragment">Empower your HTML forms</h3>
+			<p class="fragment">
+				<small>Created by <a href="http://tjrus.com">Vasiliy Zubach</a><span class="fragment"> /
+					<a href="http://twitter.com/TjRus">@TjRus</a>
+					</span>
+				</small>
 			</p>
 		</section>
 
 
 		<section>
 			<h2>The main idea</h2>
-			<p>
+			<p class="fragment">
 				tFormer is a JavaScript plugin for validation and basic controlling your HTML forms.
 			</p>
 		</section>
@@ -106,13 +108,17 @@
 			</section>
 			<section>
 				<p>3. Define new tFormer and it's rules for your form:</p>
+				<div class="fragment">
+					<p>Our form:</p>
 					<pre><code contenteditable style="font-size: 16px;">&lt;form id="my_form_id"&gt;
 	&lt;input type="text" name="zip" /&gt;
 	&lt;input type="text" name="email" /&gt;
 	&lt;input type="submit" value="Submit" /&gt;
-&lt;/form&gt;
-&lt;script&gt;
-	var my_form_id = new tFormer('my_form_id',{
+&lt;/form&gt;</code></pre>
+				</div>
+				<div class="fragment">
+					<p>Defining tFormer:</p>
+<pre><code contenteditable style="font-size: 16px;">var my_form_id = new tFormer('my_form_id',{
 		fields: {
 			zip: 'a1 l=5', // define only rules
 			email: { //defining rules and other options
@@ -122,6 +128,8 @@
 		}
 	});
 &lt;/script&gt;</code></pre>
+				</div>
+
 			</section>
 			<section>
 				<p>And the main step... </p>
@@ -179,7 +187,9 @@
 					<li>Timeouts - <a href="http://tformerjs.com/#options/timeout" target="_blank">timeout</a> and
 						<a href="http://tformerjs.com/#options/requestTimeout" target="_blank">requestTimeout</a>;
 					</li>
-					<li>Validation event - <a href="http://tformerjs.com/#options/validateEvent" target="_blank">validateEvent</a>;</li>
+					<li>Validation event -
+						<a href="http://tformerjs.com/#options/validateEvent" target="_blank">validateEvent</a>;
+					</li>
 					<li>Submit button -
 						<a href="http://tformerjs.com/#options/submitButtonControl" target="_blank">submitButtonControl</a>,
 						<a href="http://tformerjs.com/#options/submitButton" target="_blank">submitButton</a>,
@@ -189,7 +199,8 @@
 						<a href="http://tformerjs.com/#options/onvalid" target="_blank">onvalid()</a>,
 						<a href="http://tformerjs.com/#options/onerror" target="_blank">onerror()</a>;
 					</li>
-					<li>AJAX validation options - <a href="http://tformerjs.com/#options/fields/url" target="_blank">url</a>,
+					<li>AJAX validation options -
+						<a href="http://tformerjs.com/#options/fields/url" target="_blank">url</a>,
 						<a href="http://tformerjs.com/#options/fields/method" target="_blank">method</a>,
 						<a href="http://tformerjs.com/#options/fields/data" target="_blank">data</a>,
 						<a href="http://tformerjs.com/#options/fields/start" target="_blank">start()</a>,
@@ -209,7 +220,8 @@ _v_('value to validate').validateWithRules(rules_string);
 _v_('').required(); // => false
 _v_('i@tjrus.com').validateWithRules('* @'); // => true</code></pre>
 				<br/>
-				<p>View all <a href="http://tformerjs.com/#rules" target="_blank">documented rules</a> and their functions.</p>
+				<p>View all
+					<a href="http://tformerjs.com/#rules" target="_blank">documented rules</a> and their functions.</p>
 			</section>
 		</section>
 
@@ -225,7 +237,8 @@ _v_('i@tjrus.com').validateWithRules('* @'); // => true</code></pre>
 					<a href="http://tformerjs.com/#methods/submitButtonControl" target="_blank">submitButtonOn/Off</a>,
 					<a href="http://tformerjs.com/#methods/processing" target="_blank">processingOn/Off</a>
 				</li>
-				<li>Errors controlling - <a href="http://tformerjs.com/#methods/errorControl" target="_blank">errorControl</a></li>
+				<li>Errors controlling -
+					<a href="http://tformerjs.com/#methods/errorControl" target="_blank">errorControl</a></li>
 				<li>Form
 					<a href="http://tformerjs.com/#methods/lock" target="_blank">lock</a>/<a href="http://tformerjs.com/#methods/unlock" target="_blank">unlock</a>
 				</li>
@@ -240,7 +253,9 @@ _v_('i@tjrus.com').validateWithRules('* @'); // => true</code></pre>
 				<ul>
 					<li><a href="http://tformerjs.com/#examples/login" target="_blank">login form</a>;</li>
 					<li><a href="http://tformerjs.com/#examples/card" target="_blank">card validation</a>;</li>
-					<li><a href="http://tformerjs.com/#examples/request" target="_blank">validation with AJAX request</a></li>
+					<li>
+						<a href="http://tformerjs.com/#examples/request" target="_blank">validation with AJAX request</a>
+					</li>
 				</ul>
 			</section>
 		</section>
