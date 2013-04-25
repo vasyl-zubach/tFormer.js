@@ -1627,7 +1627,8 @@
 	 * @returns {boolean}
 	 */
 	var __hasClass = function ( element, class_name ) {
-		return !!(( ~element.className.indexOf( class_name ) ));
+		class_name = " " + class_name + " ";
+		return !!(( ~(" " + element.className + " ").indexOf( class_name ) ));
 	};
 
 
