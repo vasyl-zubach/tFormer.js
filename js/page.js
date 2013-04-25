@@ -226,6 +226,46 @@ var page_func = {
 				}
 			} );
 
+
+			var check_button_example = tFormer( 'check_button_example', {
+				fields: {
+					field_name: '* l>=10'
+				},
+				submit: function ( event ) {
+					if ( event.preventDefault ) {
+						event.preventDefault();
+					} else {
+						event.returnValue = false;
+					}
+					// rewriting default submit code
+					alert( 'Your form verified successfully.' );
+					check_button_example.processingOff();
+					return false;
+				}
+			} );
+
+			var date_example = tFormer( 'date_example', {
+				fields: {
+					date_hard: {
+						rules: '*',
+						own: function(){
+							return _v_(this.value).validateWithRules({rules: '*|D=Y-M-D R:I:S', rule_separator: '|'});
+						}
+					}
+				},
+				submit: function ( event ) {
+					if ( event.preventDefault ) {
+						event.preventDefault();
+					} else {
+						event.returnValue = false;
+					}
+					// rewriting default submit code
+					alert( 'Your form verified successfully.' );
+					date_example.processingOff();
+					return false;
+				}
+			} );
+
 		},
 
 		after_all: function () {

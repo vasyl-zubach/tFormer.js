@@ -628,7 +628,110 @@ input.ok {
 
 		</div>
 
+
+		<div class="item" data-permalink="request">
+			<div class="name">Check button demo</div>
+			<a href="#examples/check-button" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Check button should have <span>data-check</span> attribute with the value equals to the name of the field it should check.</p>
+			<form id="check_button_example" style="width: 400px">
+				Some field: <input type="text" name="field_name" />
+				<input type="button" data-check="field_name" value="<-- Check that field" />
+				<input type="submit" value="Submit"/>
+			</form>
+
+			<div class="code_tabs">
+				<div class="name">Code:</div>
+				<div class="tab" data-type="html">HTML</div>
+				<div class="tab" data-type="javascript">JavaScript</div>
+				<div class="name">(click to see the code)</div>
+			</div>
+
+<pre data-type="javascript" class="nodisplay"><code>var check_button_example = tFormer( 'check_button_example', {
+	fields: {
+		field_name: '* l>=10'
+	},
+	submit: function ( event ) {
+		if ( event.preventDefault ) {
+			event.preventDefault();
+		} else {
+			event.returnValue = false;
+		}
+		// rewriting default submit code
+		alert( 'Your form verified successfully.' );
+		check_button_example.processingOff();
+		return false;
+	}
+} );
+</code></pre>
+
+<pre data-type="html" class="nodisplay"><code>&lt;form id="check_button_example" style="width: 400px"&gt;
+	Some field: &lt;input type="text" name="field_name" /&gt;
+	&lt;input type="button" data-check="field_name" value="&lt;-- Check that field" /&gt;
+	&lt;input type="submit" value="Submit"/&gt;
+&lt;/form&gt;
+</code></pre>
+
+		</div>
+
+
+		<div class="item" data-permalink="request">
+			<div class="name">Date validation and own() validation function demo</div>
+			<a href="#examples/date-own" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<ul>
+				<li>Easy date - rules are 'D=Y-M-D';</li>
+				<li>Hard date - rules are 'D=Y-M-D R:I:S', can be validated with own() function for now (will be updated in further versions of tFormer);</li>
+			</ul>
+			<form id="date_example" style="width: 400px">
+				Easy date: <input type="text" name="date_easy" data-rules="* D=Y-M-D" /><br /><br />
+				Hard date: <input type="text" name="date_hard" />
+				<input type="submit" value="Submit"/>
+			</form>
+
+			<div class="code_tabs">
+				<div class="name">Code:</div>
+				<div class="tab" data-type="html">HTML</div>
+				<div class="tab" data-type="javascript">JavaScript</div>
+				<div class="name">(click to see the code)</div>
+			</div>
+
+<pre data-type="javascript" class="nodisplay"><code>var date_example = tFormer( 'date_example', {
+	fields: {
+		date_hard: {
+			rules: '*', // have to tell the field that it is required
+			own: function(){ // own validation function
+				return _v_(this.value).validateWithRules({rules: '*|D=Y-M-D R:I:S', rule_separator: '|'});
+			}
+		}
+	},
+	submit: function ( event ) {
+		if ( event.preventDefault ) {
+			event.preventDefault();
+		} else {
+			event.returnValue = false;
+		}
+		// rewriting default submit code
+		alert( 'Your form verified successfully.' );
+		date_example.processingOff();
+		return false;
+	}
+} );
+</code></pre>
+
+<pre data-type="html" class="nodisplay"><code>&lt;form id="date_example" style="width: 400px"&gt;
+	Easy date: &lt;input type="text" name="date_easy" data-rules="D=Y-M-D" /&gt;<br />
+	Hard date: &lt;input type="text" name="date_hard" /&gt;
+	&lt;input type="submit" value="Submit" /&gt;
+&lt;/form>
+</code></pre>
+
+		</div>
+
 	</div>
+
 </div>
 
 <div data-section="features">
