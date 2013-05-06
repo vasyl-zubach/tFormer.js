@@ -541,7 +541,7 @@
 	 * @param {Array} params
 	 */
 	tFormer_proto.execute = function ( func_name, this_el, params ) {
-		var func = this.get( func_name, (this_el.getAttribute(name) || null) );
+		var func = this.get( func_name, (this_el.getAttribute('name') || null) );
 		if ( typeof func == 'function' ) {
 			return func.apply( this_el, (params || []) );
 		}
