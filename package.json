@@ -1,8 +1,8 @@
 {
   "name": "tFormer",
-  "version": "0.3.1",
-  "description": "Empower your forms",
-  "main": "src/tFormer.src.js",
+  "version": "0.4.0",
+  "description": "Empower your HTML forms",
+  "main": "tFormer.js",
   "directories": {
     "test": "test"
   },
@@ -24,7 +24,7 @@
   "devDependencies": {
     "grunt": "~0.4.1",
     "grunt-gcc": "~0.2.0",
-    "grunt-autoprefixer": "~0.1.0",
-    "grunt-contrib-concat": "~0.2.0"
+    "grunt-contrib-concat": "~0.2.0",
+    "grunt-contrib-copy": "~0.4.1"
   }
 }

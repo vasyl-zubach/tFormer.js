@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>tFormer</title>
+	<!--<script src="http://code.jquery.com/jquery-2.0.0.min.js"></script>-->
+	<script src="../jquery.2.0.min.js"></script>
+	<script src="../tFormer.js"></script>
+
+	<style>
+
+		body {
+			padding : 20px;
+		}
+
+		table {
+			border-collapse : collapse;
+			border          : 1px #ccc solid;
+		}
+
+		table td {
+			border-collapse : collapse;
+			border          : 1px #ccc solid;
+			padding         : 2px 10px;
+		}
+
+		tr.error {
+			background : #ffb6a5;
+		}
+
+		input { outline : none; }
+
+		input.error { border-color : red; }
+
+		input.processing { border-type : dashed; }
+	</style>
+
+</head>
+
+<body>
+
+<form id="form_1" novalidate>
+	<input type="text" data-rules="* l<5"/>
+	<input type="submit" value="Submit"/>
+</form>
+
+
+<form id="form_2" novalidate>
+	<div id="main"></div>
+	<input type="submit" value="Submit"/>
+</form>
+
+
+<script>
+	$( document ).ready( function () {
+		var $el = $( '#main' );
+
+		var f_table = [
+			// dates
+			{ show: true, name: 'html5_date', type: 'date', rules: '*', value: '123', check: false },
+			{ show: true, name: 'html5_datetime', type: 'datetime', rules: '*', check: false },
+			{ show: true, name: 'html5_datetime-local', type: 'datetime-local', rules: '*', check: false },
+			{ show: true, name: 'html5_month', type: 'month', rules: '*', check: false },
+			{ show: true, name: 'html5_week', type: 'week', rules: '*', check: false },
+
+			{ show: true, name: 'html5_search', type: 'search', rules: '*', check: false },
+			{ show: true, name: 'html5_tel', type: 'tel', rules: '*', value: '123', check: false },
+			{ show: true, name: 'html5_time', type: 'time', rules: '*', check: false },
+			{ show: true, name: 'html5_url', type: 'url', rules: '*', check: false },
+
+			{ show: true, name: 'fi__le', type: 'file', rules: '*', check: false },
+			{ show: true, name: 'checkbox', type: 'checkbox', rules: '*', value: '123', check: false },
+			{ show: true, name: 'hid__den', type: 'hidden', rules: '*', check: false },
+			{ show: true, name: 'pass__word', type: 'password', rules: '*', check: false },
+			{ show: true, name: 'required', type: 'text', rules: '*', check: false },
+
+			{ show: true, name: 'required', type: 'text', rules: '*', check: false },
+			{ show: true, name: 'range', type: 'number', rules: '* >10', value: 5, check: false },
+			{ show: true, name: 'required_email', type: 'email', rules: '* @', check: false, value: 'tjrus.com' },
+			{ show: true, name: 'required_alpha', type: 'text', rules: '* a', check: false, value: 'tjruscom' },
+			{ show: true, name: 'reg', type: 'text', rules: 'reg=^([a-z]{2,4})(((\\.)([A-Za-z0-9-]+))+)$', check: false, value: 'tjrus.com' },
+			{ show: true, name: 'password', id: 'password', type: 'text', rules: '*', check: false, value: '' },
+			{ show: true, name: 'password_repeat', type: 'text', rules: '* =#password', check: false, value: '' },
+			{ show: true, name: 'password_rep2', type: 'text', rules: '* =[#password,123]', check: false, value: '' }
+		];
+
+		var get_tpl = function ( obj ) {
+			var html = '<tr>';
+			// rules
+			html += '<td>' + obj.rules + '</td>';
+
+			// name
+			html += '<td>' + obj.name + '</td>';
+
+			// field
+			html += '<td>';
+			switch ( obj.type ) {
+				case 'text':
+				case 'range':
+				case 'number':
+				case 'password':
+				case 'email':
+				case 'file':
+				case 'hidden':
+				case 'checkbox':
+				//				case 'color':
+				case 'date':
+				case 'datetime':
+				case 'datetime-local':
+				case 'email':
+				case 'number':
+				case 'range':
+				case 'search':
+				case 'tel':
+				case 'time':
+				case 'url':
+				case 'month':
+				case 'week':
+					html += '<input type="' + obj.type + '" ' + ((obj.id) ? ' id="' + obj.id + '" ' : '' ) + 'name="' + obj.name + '" data-rules="' + obj.rules + '" value = "' + (obj.value || '') + '" />';
+					break;
+
+				case 'textarea':
+					html += '<textarea ' + ((obj.id) ? ' id="' + obj.id + '" ' : '' ) + 'name="' + obj.name + '" data-rules="' + obj.rules + '">' + (obj.value || '') + '</textarea>';
+					break;
+
+				case 'radio':
+					html += '<input type="' + obj.type + '" ' + ((obj.id) ? ' id="' + obj.id + '" ' : '' ) + 'name="' + obj.name + '" data-rules="' + obj.rules + '" value = "' + (obj.value || '') + '" />';
+					break;
+			}
+			html += '</td>';
+			// type
+			html += '<td>' + obj.type + '</td>';
+			// check button
+			if ( obj.check ) {
+				html += '<td><input type="button" data-check="' + obj.name + '" value = "check" /></td>';
+			} else {
+				html += '<td>-</td>';
+			}
+			// error
+			//			html += '<td id="error_' + obj.name + '"></td>';
+			// validation methods
+			//			html += '<td>' + (new _v_( obj.rules ).validateMethods()).join( ', ' ) + '</td>';
+			html += '</tr>';
+			return html;
+		}
+
+		var forma = '<table>';
+		forma += '<tr>';
+		forma += '<td><b>Rules</b></td>';
+		forma += '<td><b>Name</b></td>';
+		forma += '<td><b>Field</b></td>';
+		forma += '<td><b>Type</b></td>';
+		forma += '<td><b>Check</b></td>';
+		//		forma += '<td><b>Error</b></td>';
+		//		forma += '<td><b>Validate Methods</b></td>';
+		forma += '</tr>';
+
+
+		for ( var i = 0; i < f_table.length; i++ ) {
+			//			if ( f_table[i].show == 'ololo' )
+			if ( f_table[i].show !== false )
+				forma += get_tpl( f_table[i] );
+		}
+
+		forma += '</table>';
+		$el.html( forma );
+
+
+		// form
+		form_1 = tFormer( 'form_1' );
+
+		form_2 = tFormer( document.getElementById( 'form_2' ), {
+			onvalid: function () {
+				$( this ).parents( 'tr' ).removeClass( 'error' );
+			},
+			onerror: function () {
+				$( this ).parents( 'tr' ).addClass( 'error' );
+			},
+			submit : function ( e ) {
+				e.preventDefault();
+				console.log( 'submit' );
+				return false;
+			}
+		} );
+
+	} );
+</script>
+
+</body>
+</html>
