@@ -248,6 +248,7 @@
 	var _submitFunction = function () {
 		this.form.onsubmit = (function ( self ) {
 			return function ( event ) {
+
 				event = event || window.event;
 				// disable double submit
 				var processing = self.get( 'processingClass' ),
@@ -394,8 +395,7 @@
 	};
 
 	var __check_cache = function ( our_form ) {
-		var cache = window.tFormer_cache;
-		var finded;
+		var cache = this.tF_cache;
 		for ( var i = 0, cache_l = cache.length; i < cache_l; i++ ) {
 			if ( cache[i].form == our_form ) {
 				return cache[i];
@@ -433,7 +433,7 @@
 		if ( !__data( our_form, 'empowered' ) ) {
 			__data( our_form, 'empowered', 1 )
 		} else {
-			var cached = __check_cache( our_form );
+			var cached = __check_cache.call( this, our_form );
 			if ( cached ) {
 				var inited = cached.inited;
 				if ( inited ) {
@@ -488,15 +488,16 @@
 		// fully valid
 		this.valid = true;
 
-		this.locked = 0;
-
-
 		var tf = this.init();
-		window.tFormer_cache.push( tf );
+		this.tF_cache.push( tf );
+		//		window.tFormer_cache.push( tf );
 		return tf;
 	};
 
 	var tFormer_proto = tFormer.prototype;
+
+	/** cache object for initialized forms */
+	tFormer_proto.tF_cache = [];
 
 	/**
 	 * init tFormer()
@@ -508,6 +509,8 @@
 		if ( this.inited ) {
 			return this;
 		}
+
+		this.locked = 0;
 
 		for ( var i = 0, fieldLength = this.form.length; i < fieldLength; i++ ) {
 			var field = this.form[i];
@@ -540,12 +543,11 @@
 	 * @returns {*}
 	 */
 	tFormer_proto.get = function ( option_name, field_name ) {
-		if ( field_name && this.fields[field_name][option_name] !== null && this.fields[field_name][option_name] !== undefined ) {
+		if ( field_name && this.fields[field_name] && this.fields[field_name][option_name] !== null && this.fields[field_name][option_name] !== undefined ) {
 			return this.fields[field_name][option_name];
 		} else {
 			return this.options[option_name];
 		}
-		//		return (!field_name) ? this.options[option_name] : (this.fields[field_name][option_name] || this.options[option_name]);
 	};
 
 
@@ -591,7 +593,7 @@
 	 * @param {Array} params
 	 */
 	tFormer_proto.execute = function ( func_name, this_el, params ) {
-		var func = this.get( func_name, (this_el.name || null) );
+		var func = this.get( func_name, (__getAttr( this_el, 'name' ) || null) );
 		if ( typeof func == 'function' ) {
 			return func.apply( this_el, (params || []) );
 		}
@@ -882,54 +884,27 @@
 		this.events = {};
 
 		// remove timers
-		for ( var key in this.fields ) {
-			if ( this.fieldTimeout[key] ) {
-				clearTimeout( this.fieldTimeout[key] );
-				delete this.fieldTimeout[key];
-			}
-			if ( this.fieldTimeout[key] ) {
-				clearTimeout( this.xhrTimeout[key] );
-				delete this.xhrTimeout[key];
-			}
-			if ( this.xhr[key] ) {
-				this.xhr[key].abort();
-			}
+		for ( var key in this.fieldTimeout ) {
+			clearTimeout( this.fieldTimeout[key] );
+			delete this.fieldTimeout[key];
+		}
+
+		for ( var key in this.xhrTimeout ) {
+			clearTimeout( this.xhrTimeout[key] );
+			delete this.xhrTimeout[key];
+		}
+
+		for ( var key in this.xhr ) {
+			this.xhr[key].abort();
+			delete this.xhr[key];
 		}
 
 		// remove onsubmit validation function
 		this.form.onsubmit = null;
 
-
-		//		this.fields = this.options.fields || {};
-		//		this.events = {};
-		//		this.btn_events = [];
-		//
-		//		// timeouts for fields
-		//		this.fieldTimeout = {};
-		//
-		//		// Errors stuff
-		//		this.errors = {};
-		//		this.errorsArray = []; // current errors Array
-		//		this.errorsCount = 0; // current fields with errors count
-		//
-		//		// Counter for fields holded for validation
-		//		this.holdedCount = 0; // current holded fields count
-		//
-		//		// XHR stuff
-		//		this.xhr = {};
-		//		this.xhrTimeout = {};
-		//
-		//		// fully valid
-		//		this.valid = true;
-		//
-		//		this.locked = 0;
-		//
-
 		this.inited = false;
-
 	};
 	window.tFormer = tFormer;
-	window.tFormer_cache = [];
 
 
 	/**
@@ -1800,35 +1775,28 @@
 	var __data = function ( element, attr, value ) {
 		switch ( value ) {
 			case null:
-				// delete
-				try {
-					delete element.dataset[attr];
-				} catch ( e ) {
-					element.removeAttribute( 'data-' + attr );
-				}
-
+				__delAttr( element, 'data-' + attr );
 				break;
 			case undefined:
-				// get
-				var data;
-				try {
-					data = element.dataset[attr];
-				} catch ( e ) {
-					data = element.getAttribute( 'data-' + attr );
-				}
-				return data;
+				return __getAttr( element, 'data-' + attr );
 				break;
 			default:
-				// set
-				try {
-					element.dataset[attr] = value;
-				} catch ( e ) {
-					element.setAttribute( 'data-' + attr, value );
-				}
+				__setAttr( element, 'data-' + attr, value );
 				break;
 		}
 	};
 
+	var __getAttr = function ( el, attr ) {
+		return el.getAttribute( attr );
+	};
+
+	var __setAttr = function ( el, attr, value ) {
+		el.setAttribute( attr, value );
+	};
+
+	var __delAttr = function ( el, attr ) {
+		el.removeAttribute( attr );
+	};
 
 	/**
 	 *
@@ -1853,6 +1821,5 @@
 		}
 		return tf;
 	}
-
 
 })( window, document );
