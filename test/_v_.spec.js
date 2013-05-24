@@ -3,10 +3,8 @@ describe( "Test Validator (_v_) methods", function () {
 
 	describe( '`*`, Required', function () {
 		it( 'field should not be empty', function () {
-			expect( new _v_( '' ).required() ).not.toBe( true );
-			expect( new _v_( '1' ).required() ).toBe( true );
 			expect( new _v_( '1' ).validateWithRules( '*' ) ).toBe( true );
-			expect( new _v_( '' ).validateWithRules( '*' ) ).not.toBe( true );
+			expect( new _v_( '' ).validateWithRules( '*' ) ).toBe( false );
 		} );
 	} );
 

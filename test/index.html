@@ -25,140 +25,26 @@
 	<input type="hidden" id="unique_test_id" value=""/>
 	<input type="hidden" id="unique_test_id2" value=""/>
 
-
 	<!-- tFormer options -->
-	<form id="form_defaults"></form>
-	<script>
-		form__defaults = new tFormer( 'form_defaults' );
-	</script>
-	<form id="form_defaults_edited">
-		<input type="text" name="test_field1"/>
-		<button id="form_defaults_edited_submit"></button>
+	<form id="f_no_sb">
+		<input type="text" name="t_text"/>
 	</form>
-	<script>
-		form__defaults_edited = tFormer( 'form_defaults_edited', {
-			timeout            : 12345,
-			requestTimeout     : 29876,
-			validateEvent      : 'blur',
-			submitButtonControl: false,
-			submitButton       : document.getElementById( 'form_defaults_edited_submit' ),
-			errorClass         : 'error_edited',
-			processingClass    : 'processing_edited',
-			disabledClass      : 'disabled_edited',
-			fields             : {
-				test_field1: '*'
-			}
 
-		} );
-	</script>
-	<form id="form_submit_button">
-		<input type="submit" value="Submit"/>
+	<form id="f_sb_not_button">
+		<input type="text" name="t_text"/>
+		<div class="submit"></div>
 	</form>
-	<script>
-		form__submit_button = tFormer( 'form_submit_button' );
-	</script>
 
-
-	<!-- tFormer.methods() -->
-	<form id="form_validate">
-		<input type="text" name="test_input" value="test_input_value"/>
-		<select name="test_select">
-			<option value="asdf">asdf</option>
-			<option value="test_select_value" selected>test_select_value</option>
+	<form id="f">
+		<input type="text" name="t_text"/>
+		<input type="checkbox" name="t_checkbox"/>
+		<textarea name="t_textarea"></textarea>
+		<select name="t_select">
+			<option value="test_select_value"></option>
 		</select>
-		<input type="checkbox" name="test_checkbox" checked="checked"/>
-		<input type="checkbox" name="test_checkbox_false"/>
-		<input type="radio" name="test_radio" value="false"/>
-		<input type="radio" name="test_radio" value="test_radio_selected" checked="checked"/>
-		<input type="submit" value="submit"/>
+		<input type="submit"/>
 	</form>
-	<script>
-		form__validate_before = 0;
-		request_start = 0;
-		request_end = 0;
-		request_result = '';
-		form__validate = tFormer( 'form_validate', {
-			requestTimeout: 0,
-			before        : function () {
-				form__validate_before = 1;
-			},
-			fields        : {
-				test_input: {
-					timeout       : 10,
-					rules         : '* request',
-					requestTimeout: 0,
-					start         : function () {
-						request_start = 1;
-					},
-					url           : 'ajax.html',
-					method        : 'get',
-					end           : function ( result ) {
-						request_result = (result) ? result.toString() : '';
-						request_end = 1;
-						return false;
-					}
-				}
-			}
-		} );
-	</script>
 
-	<!-- Form defaults -->
-	<form id="form_request">
-		<input type="text" name="request" value="123"/>
-		<input type="submit" value="submit"/>
-	</form>
-	<script>
-		form__request_results = {
-			request_start : 0,
-			request_end   : 0,
-			request_result: ''
-		};
-		form__request = tFormer( 'form_request', {
-			fields: {
-				request: {
-					requestTimeout: 500,
-					rules         : '* request',
-					start         : function () {
-						form__request_results.request_start++;
-					},
-					url           : 'ajax.html',
-					method        : 'get',
-					end           : function ( result ) {
-						form__request_results.request_result = (result) ? result.toString() : '';
-						form__request_results.request_end++;
-						return result;
-					}
-				}
-			}
-		} );
-	</script>
-
-	<form id="form_toobject">
-		<input type="text" name="test_input" value="input"/>
-		<input type="checkbox" name="test_checkbox" value="checkbox"/>
-		<textarea name="test_textarea"></textarea>
-		<select name="test_select">
-			<option value="test_select">test_select</option>
-			<option value="test_select2">test_select</option>
-		</select>
-	</form>
-	<script>
-		form__toobject = tFormer( 'form_toobject' );
-	</script>
-
-	<form id="form_get">
-		<input type="text" name="test"/>
-	</form>
-	<script>
-		form__get = tFormer( 'form_get', {
-			errorClass: 'abracadabra',
-			fields    : {
-				test: {
-					requestTimeout: 500
-				}
-			}
-		} );
-	</script>
 
 	<form id="form_destroy">
 		<input type="text" name="test" data-rules="*" id="test_id"/>
@@ -169,22 +55,22 @@
 		<input type="submit" value="submit"/>
 	</form>
 	<script>
-		form__destroy_results = {
-			before : 0,
-			onerror: 0,
-			onvalid: 0
-		};
-		form__destroy = tFormer( 'form_destroy', {
-			before : function () {
-				form__destroy_results.before++;
-			},
-			onerror: function () {
-				form__destroy_results.onerror++;
-			},
-			onvalid: function () {
-				form__destroy_results.onvalid++;
-			}
-		} );
+//		form__destroy_results = {
+//			before : 0,
+//			onerror: 0,
+//			onvalid: 0
+//		};
+//		form__destroy = tFormer( 'form_destroy', {
+//			before : function () {
+//				form__destroy_results.before++;
+//			},
+//			onerror: function () {
+//				form__destroy_results.onerror++;
+//			},
+//			onvalid: function () {
+//				form__destroy_results.onvalid++;
+//			}
+//		} );
 	</script>
 
 
@@ -266,39 +152,13 @@
 
 
 <!-- spec files here... -->
-<script src="tFormer._v_.spec.js"></script>
-<script src="tFormer._form_.spec.js"></script>
-<script src="tFormer._form_options_.spec.js"></script>
-<script src="tFormer._form_methods_.spec.js"></script>
+<script src="_v_.spec.js"></script>
+<script src="tFormer.options.spec.js"></script>
+<script src="tFormer.methods.spec.js"></script>
+<script src="tFormer.ui.spec.js"></script>
 
+<script src="js/run_tests.js"></script>
 
-<script type="text/javascript">
-	(function () {
-		var jasmineEnv = jasmine.getEnv();
-		jasmineEnv.updateInterval = 1000;
-
-		var htmlReporter = new jasmine.HtmlReporter();
-
-		jasmineEnv.addReporter( htmlReporter );
-
-		jasmineEnv.specFilter = function ( spec ) {
-			return htmlReporter.specFilter( spec );
-		};
-
-		var currentWindowOnload = window.onload;
-
-		window.onload = function () {
-			if ( currentWindowOnload ) {
-				currentWindowOnload();
-			}
-			execJasmine();
-		};
-
-		function execJasmine() {
-			jasmineEnv.execute();
-		}
-	})();
-</script>
 
 </body>
 </html>
