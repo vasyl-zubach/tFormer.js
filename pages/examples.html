@@ -1,0 +1,539 @@
+<div data-section="examples">
+	<div class="section">
+		<h3>Examples</h3>
+
+		<div class="item" data-permalink="login">
+			<div class="name">Login form demonstration</div>
+			<a href="#examples/login" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<form id="login_example" style="width: 400px">
+				<table>
+					<tr>
+						<td>Login ( >4 symbols):</td>
+						<td>
+							<div>
+								<input type="text" name="login" data-rules="* l>4"/>
+								<div class="result_block"></div>
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td>Password:</td>
+						<td>
+							<div>
+								<input type="password" name="password" data-rules="*"/>
+								<div class="result_block"></div>
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td colspan="2" align="right">
+							<input type="submit" value="Login"/>
+						</td>
+					</tr>
+				</table>
+			</form>
+
+			<div class="code_tabs">
+				<div class="name">Code:</div>
+				<div class="tab" data-type="html">HTML</div>
+				<div class="tab" data-type="css">CSS</div>
+				<div class="tab" data-type="javascript">JavaScript</div>
+				<div class="name">(click to see the code)</div>
+			</div>
+
+<pre data-type="css" class="nodisplay"><code class="language-css">input {
+	position : relative;
+	z-index  : 1;
+}
+input.error { border-color : #fc6869; }
+input.ok { border-color : #98cd6d; }
+td div { position : relative; padding : 1px; }
+.result_block {
+	position   : absolute;
+	right      : 0;
+	top        : 1px;
+	width      : 25px;
+	height     : 25px;
+	text-align : center;
+	opacity    : 0;
+	z-index    : 0;
+}
+.result_block.ok { background : #98cd6d; }
+.result_block.error { background : #fc6869; }
+.result_block.ok:before,
+.result_block.error:before {
+	color       : #fff;
+	width       : 100%;
+	height      : 100%;
+	line-height : 26px;
+	text-align  : center;
+	text-shadow : 0 1px 1px rgba(0, 0, 0, .6);
+}
+.result_block.ok:before { content : "\02714"; }
+.result_block.error:before { content : "\2718"; }
+.result_block.ok,
+.result_block.error {
+	opacity : 1;
+	right   : -24px;
+}
+.result_block,
+input.error,
+input.ok {
+	-webkit-transition : all .3s;
+	-moz-transition    : all .3s;
+	transition         : all .3s;
+}
+</code></pre>
+
+<pre data-type="javascript" class="nodisplay"><code>var login_example = new tFormer( 'login_example', {
+	onerror: function () {
+		$( this ).removeClass( 'ok' );
+		$( this ).next( '.result_block' ).removeClass( 'ok' ).addClass( 'error' );
+	},
+	onvalid: function () {
+		$( this ).addClass( 'ok' );
+		$( this ).next( '.result_block' ).removeClass( 'error' ).addClass( 'ok' );
+	},
+	submit: function(event){
+		event.preventDefault();
+		// rewriting default submit code
+		alert('Your form passed all validations and submit core executed.');
+		login_example.processingOff();
+		return false;
+	}
+} );
+</code></pre>
+
+<pre data-type="html" class="nodisplay"><code>&lt;form id="login_example"&gt;
+	&lt;table&gt;
+		&lt;tr&gt;
+			&lt;td&gt;Login:&lt;/td&gt;
+			&lt;td&gt;
+				&lt;div&gt;
+					&lt;input type="text" name="login" data-rules="* l&gt;4" /&gt;
+					&lt;div class="result_block error"&gt;&lt;/div&gt;
+				&lt;/div&gt;
+			&lt;/td&gt;
+		&lt;/tr&gt;
+		&lt;tr&gt;
+			&lt;td&gt;Password:&lt;/td&gt;
+			&lt;td&gt;
+				&lt;div&gt;
+					&lt;input type="password" name="password" data-rules="*" /&gt;
+					&lt;div class="result_block ok"&gt;&lt;/div&gt;
+				&lt;/div&gt;
+			&lt;/td&gt;
+		&lt;/tr&gt;
+		&lt;tr&gt;
+			&lt;td colspan="2" align="right"&gt;
+				&lt;input type="submit" value="Login" /&gt;
+			&lt;/td&gt;
+		&lt;/tr&gt;
+	&lt;/table&gt;
+&lt;/form&gt;
+</code></pre>
+
+		</div>
+
+
+
+		<div class="item" data-permalink="card">
+			<div class="name">Visa card validation demo</div>
+			<a href="#examples/card" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>All Visa card numbers start with a 4. New cards have 16 digits. Old cards have 13.</p>
+
+			<form id="visa_example">
+				<div class="card">
+					<div class="card-title">Payment details:</div>
+					<div class="card-type">Visa</div>
+					<div class="card-number">Card number</div>
+					<input type="text" name="card" data-rules="* cv" placeholder="xxxxxxxxxxxxxxxx"/>
+
+					<div class="card-expiration">Expiration</div>
+					<div class="card-cvc">CVC code</div>
+					<select name="month" data-rules="*">
+						<option value="1">January</option>
+						<option value="2">February</option>
+						<option value="3">March</option>
+						<option value="4">April</option>
+						<option value="5">May</option>
+						<option value="6">June</option>
+						<option value="7">July</option>
+						<option value="8">August</option>
+						<option value="9">September</option>
+						<option value="10">October</option>
+						<option value="11">November</option>
+						<option value="13">December</option>
+					</select>
+					<select name="year" data-rules="*">
+						<option value="2013">2013</option>
+						<option value="2014">2014</option>
+						<option value="2015">2015</option>
+						<option value="2016">2016</option>
+						<option value="2017">2017</option>
+					</select>
+					<input type="text" name="cvc" data-rules="* dec lr=[3,4]" placeholder="123"/>
+				</div>
+				<input type="submit" value="Pay with Visa" class="button">
+			</form>
+
+			<div class="code_tabs">
+				<div class="name">Code:</div>
+				<div class="tab" data-type="html">HTML</div>
+				<div class="tab" data-type="css">CSS</div>
+				<div class="tab" data-type="javascript">JavaScript</div>
+				<div class="name">(click to see the code)</div>
+			</div>
+
+<pre data-type="css" class="nodisplay"><code class="language-css">#visa_example {
+	z-index  : 1;
+	position : relative;
+}
+.card {
+	background            : -webkit-linear-gradient(top, #14b2df, #0e7cca);
+	background            : -moz-linear-gradient(top, #14b2df, #0e7cca);
+	background            : linear-gradient(top, #14b2df, #0e7cca);
+	-webkit-border-radius : 5px;
+	-moz-border-radius    : 5px;
+	border-radius         : 5px;
+	-webkit-box-shadow    : 0 1px 3px rgba(0, 0, 0, .4), inset 0 0 1px 1px rgba(0, 0, 0, .1), inset 0 2px 1px rgba(255, 255, 255, .38), inset 0 1px 0px rgba(0, 0, 0, .2);
+	-moz-box-shadow       : 0 1px 3px rgba(0, 0, 0, .4), inset 0 0 1px 1px rgba(0, 0, 0, .1), inset 0 2px 1px rgba(255, 255, 255, .38), inset 0 1px 0px rgba(0, 0, 0, .2);
+	box-shadow            : 0 1px 3px rgba(0, 0, 0, .4), inset 0 0 1px 1px rgba(0, 0, 0, .1), inset 0 2px 1px rgba(255, 255, 255, .38), inset 0 1px 0px rgba(0, 0, 0, .2);
+	padding               : 20px;
+	width                 : 365px;
+	height                : 220px;
+	position              : relative;
+}
+.card::before,
+.card::after {
+	content               : '';
+	height                : 100%;
+	width                 : 15px;
+	position              : absolute;
+	display               : block;
+	top                   : 0;
+	right                 : 0;
+	z-index               : -1;
+	-webkit-border-radius : 5px;
+	-moz-border-radius    : 5px;
+	border-radius         : 5px;
+	opacity               : 0;
+}
+.card::before { background : red; }
+.card::after { background : green; }
+.card.error::before,
+.card.ok::after {
+	right   : -6px;
+	opacity : .5;
+}
+.card::after,
+.card::before {
+	-webkit-transition : all .2s;
+	-moz-transition    : all .2s;
+	transition         : all .2s;
+}
+.card-title,
+.card-type {
+	color       : #fff;
+	font-size   : 15px;
+	height      : 30px;
+	line-height : 30px;
+	font-weight : 600;
+	text-shadow : 0 1px 1px rgba(0, 0, 0, .5);
+}
+.card-type {
+	text-align : right;
+	margin     : -30px 10px 0 0;
+	font-size  : 30px;
+}
+.card-number,
+.card-expiration,
+.card-cvc {
+	color          : #d7eaf1;
+	text-transform : uppercase;
+	font-size      : 13px;
+	line-height    : 20px;
+	height         : 20px;
+	font-weight    : 600;
+	margin-top     : 10px;
+	margin-bottom  : 3px;
+	text-shadow    : 0 -1px 0 rgba(0, 0, 0, .4), 0 1px 0 rgba(255, 255, 255, .3);
+	clear          : both;
+}
+.card-cvc {
+	text-align : right;
+	margin-top : -23px;
+}
+#visa_example input,
+#visa_example select {
+	border                : 1px #156f9b solid;
+	-webkit-border-radius : 3px;
+	-moz-border-radius    : 3px;
+	border-radius         : 3px;
+	-webkit-box-shadow    : inset 0 1px 2px rgba(0, 0, 0, .2), 0 1px 0 rgba(255, 255, 255, .2);
+	-moz-box-shadow       : inset 0 1px 2px rgba(0, 0, 0, .2), 0 1px 0 rgba(255, 255, 255, .2);
+	box-shadow            : inset 0 1px 2px rgba(0, 0, 0, .2), 0 1px 0 rgba(255, 255, 255, .2);
+	height                : 40px;
+	padding               : 10px;
+	line-height           : 20px;
+	color                 : #7d7d7d;
+	font-family           : Menlo, Lucida Console, Arial, serif;
+}
+#visa_example input.error,
+#visa_example select.error {
+	border             : 1px #b83d43 solid;
+	-webkit-box-shadow : inset 0 0 0 1px #b83d43;
+	-moz-box-shadow    : inset 0 0 0 1px #b83d43;
+	box-shadow         : inset 0 0 0 1px #b83d43;
+}
+#visa_example .card select {
+	margin-right : 15px;
+	float        : left;
+}
+#visa_example select {
+	-webkit-appearance  : none;
+	-moz-appearance     : none;
+	appearance          : none;
+	background-repeat   : no-repeat;
+	background-position : 100px center;
+	background-image    : url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAAMCAYAAAC0qUeeAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAANBJREFUeNpi+P//PwMMp6WlMSLz0TETAxSkp6crAqlnUBorgCvm5OSczcfHJwGkp+NVDDTNm4mJyRmIGYDYHcTHppgR6E4Obm7ue6ysrJIwwd+/fz/9+vWr8syZM3+iKAY6nB1I7wNiOSTx+0DsAsS/0BUzEAtAzgCZfBmIVZHEbwCxATZnsF28ePHssmXLdGCCUVFRl/T19U3RnQEKjV9AiRwNDY3vIAEtLa3vQH4uukIwgMXO06dPl7e2tv4B0otxxSAyRxqIj0NprIoBAgwAst6YrhX1J5sAAAAASUVORK5CYII=);
+}
+#visa_example input[name="card"] { width : 100%; }
+#visa_example select[name="month"] { width : 120px; }
+#visa_example select[name="year"] {
+	width               : 80px;
+	background-position : 60px center;
+}
+#visa_example input[name="cvc"] {
+	width        : 80px;
+	float        : right;
+	margin-right : 0;
+}
+#visa_example input[type="submit"] { margin : 10px; color: #fff; }
+</code></pre>
+
+<pre data-type="javascript" class="nodisplay"><code>var visa_example = new tFormer( 'visa_example', {
+	onerror: function () {
+		$( '#visa_example .card' ).removeClass( 'ok' ).addClass( 'error' );
+	},
+	onvalid: function () {
+		if ( visa_example.valid ) {
+			$( '#visa_example .card' ).removeClass( 'error' ).addClass( 'ok' );
+		}
+	},
+	submit : function ( event ) {
+		event.preventDefault();
+		// rewriting default submit code
+		alert( 'Your card verified successfully.' );
+		visa_example.processingOff();
+		return false;
+	}
+} );
+</code></pre>
+
+<pre data-type="html" class="nodisplay"><code>&lt;form id="visa_example"&gt;
+	&lt;div class="card"&gt;
+		&lt;div class="card-title"&gt;Payment details:&lt;/div&gt;
+		&lt;div class="card-type"&gt;Visa&lt;/div&gt;
+		&lt;div class="card-number"&gt;Card number&lt;/div&gt;
+		&lt;input type="text" name="card" data-rules="* cv" placeholder="xxxxxxxxxxxxxxxx"/&gt;
+
+		&lt;div class="card-expiration"&gt;Expiration&lt;/div&gt;
+		&lt;div class="card-cvc"&gt;CVC code&lt;/div&gt;
+		&lt;select name="month" data-rules="*"&gt;
+			&lt;option value="1"&gt;January&lt;/option&gt;
+			&lt;option value="2"&gt;February&lt;/option&gt;
+			&lt;option value="3"&gt;March&lt;/option&gt;
+			&lt;option value="4"&gt;April&lt;/option&gt;
+			&lt;option value="5"&gt;May&lt;/option&gt;
+			&lt;option value="6"&gt;June&lt;/option&gt;
+			&lt;option value="7"&gt;July&lt;/option&gt;
+			&lt;option value="8"&gt;August&lt;/option&gt;
+			&lt;option value="9"&gt;September&lt;/option&gt;
+			&lt;option value="10"&gt;October&lt;/option&gt;
+			&lt;option value="11"&gt;November&lt;/option&gt;
+			&lt;option value="13"&gt;December&lt;/option&gt;
+		&lt;/select&gt;
+		&lt;select name="year" data-rules="*"&gt;
+			&lt;option value="2013"&gt;2013&lt;/option&gt;
+			&lt;option value="2014"&gt;2014&lt;/option&gt;
+			&lt;option value="2015"&gt;2015&lt;/option&gt;
+			&lt;option value="2016"&gt;2016&lt;/option&gt;
+			&lt;option value="2017"&gt;2017&lt;/option&gt;
+		&lt;/select&gt;
+		&lt;input type="text" name="cvc" data-rules="* dec lr=[3,4]" placeholder="123"/&gt;
+	&lt;/div&gt;
+	&lt;input type="submit" value="Pay with Visa"/&gt;
+&lt;/form&gt;
+</code></pre>
+
+		</div>
+
+
+
+
+		<div class="item" data-permalink="request">
+			<div class="name">Request validation demo</div>
+			<a href="#examples/request" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<form id="request_example" style="width: 400px">
+				Some field: <input type="text" name="field_name" data-rules="* request"/>
+				<input type="submit" value="Login"/>
+			</form>
+
+			<div class="code_tabs">
+				<div class="name">Code:</div>
+				<div class="tab" data-type="html">HTML</div>
+				<div class="tab" data-type="javascript">JavaScript</div>
+				<div class="name">(click to see the code)</div>
+			</div>
+
+<pre data-type="javascript" class="nodisplay"><code>var request_example = tFormer( 'request_example', {
+	fields: {
+		field_name: {
+			url   : 'ajax.html',
+			method: 'post',
+			data  : { // this params will be in post request
+				custom_param: 'custom value',
+				twitter     : '@TjRus'
+			},
+			start : function () {}, // function executed when ajax request starts
+			end   : function ( result ) { // function executed when ajax request ends
+				// `result` is what your request returns
+				// here you should decide is the field valid or no and return true/false.
+				return false;
+			}
+		}
+	},
+	submit: function ( event ) {
+		if ( event.preventDefault ) {
+			event.preventDefault();
+		} else {
+			event.returnValue = false;
+		}
+		// rewriting default submit code
+		alert( 'Your request form verified successfully.' );
+		request_example.processingOff();
+		return false;
+	}
+} );
+</code></pre>
+
+<pre data-type="html" class="nodisplay"><code>&lt;form id="request_example" style="width: 400px"&gt;
+	Some field: &lt;input type="text" name="field_name" data-rules="* request"/&gt;
+	&lt;input type="submit" value="Login"/&gt;
+&lt;/form&gt;
+</code></pre>
+
+		</div>
+
+
+		<div class="item" data-permalink="request">
+			<div class="name">Check button demo</div>
+			<a href="#examples/check-button" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Check button should have <span>data-check</span> attribute with the value equals to the name of the field it should check.</p>
+			<form id="check_button_example" style="width: 400px">
+				Some field: <input type="text" name="field_name" />
+				<input type="button" data-check="field_name" value="<-- Check that field" />
+				<input type="submit" value="Submit"/>
+			</form>
+
+			<div class="code_tabs">
+				<div class="name">Code:</div>
+				<div class="tab" data-type="html">HTML</div>
+				<div class="tab" data-type="javascript">JavaScript</div>
+				<div class="name">(click to see the code)</div>
+			</div>
+
+<pre data-type="javascript" class="nodisplay"><code>var check_button_example = tFormer( 'check_button_example', {
+	fields: {
+		field_name: '* l>=10'
+	},
+	submit: function ( event ) {
+		if ( event.preventDefault ) {
+			event.preventDefault();
+		} else {
+			event.returnValue = false;
+		}
+		// rewriting default submit code
+		alert( 'Your form verified successfully.' );
+		check_button_example.processingOff();
+		return false;
+	}
+} );
+</code></pre>
+
+<pre data-type="html" class="nodisplay"><code>&lt;form id="check_button_example" style="width: 400px"&gt;
+	Some field: &lt;input type="text" name="field_name" /&gt;
+	&lt;input type="button" data-check="field_name" value="&lt;-- Check that field" /&gt;
+	&lt;input type="submit" value="Submit"/&gt;
+&lt;/form&gt;
+</code></pre>
+
+		</div>
+
+
+		<div class="item" data-permalink="request">
+			<div class="name">Date validation and own() validation function demo</div>
+			<a href="#examples/date-own" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<ul>
+				<li>Easy date - rules are 'D=Y-M-D';</li>
+				<li>Hard date - rules are 'D=Y-M-D R:I:S', can be validated with own() function for now (will be updated in further versions of tFormer);</li>
+			</ul>
+			<form id="date_example" style="width: 400px">
+				Easy date: <input type="text" name="date_easy" data-rules="* D=Y-M-D" /><br /><br />
+				Hard date: <input type="text" name="date_hard" />
+				<input type="submit" value="Submit"/>
+			</form>
+
+			<div class="code_tabs">
+				<div class="name">Code:</div>
+				<div class="tab" data-type="html">HTML</div>
+				<div class="tab" data-type="javascript">JavaScript</div>
+				<div class="name">(click to see the code)</div>
+			</div>
+
+<pre data-type="javascript" class="nodisplay"><code>var date_example = tFormer( 'date_example', {
+	fields: {
+		date_hard: {
+			rules: '*', // have to tell the field that it is required
+			own: function(){ // own validation function
+				return _v_(this.value).validateWithRules({rules: '*|D=Y-M-D R:I:S', rule_separator: '|'});
+			}
+		}
+	},
+	submit: function ( event ) {
+		if ( event.preventDefault ) {
+			event.preventDefault();
+		} else {
+			event.returnValue = false;
+		}
+		// rewriting default submit code
+		alert( 'Your form verified successfully.' );
+		date_example.processingOff();
+		return false;
+	}
+} );
+</code></pre>
+
+<pre data-type="html" class="nodisplay"><code>&lt;form id="date_example" style="width: 400px"&gt;
+	Easy date: &lt;input type="text" name="date_easy" data-rules="D=Y-M-D" /&gt;<br />
+	Hard date: &lt;input type="text" name="date_hard" /&gt;
+	&lt;input type="submit" value="Submit" /&gt;
+&lt;/form>
+</code></pre>
+
+		</div>
+
+	</div>
+
+</div>

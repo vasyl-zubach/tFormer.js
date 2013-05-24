@@ -1,0 +1,316 @@
+<div data-section="options">
+	<div class="section">
+		<h3>Options</h3>
+
+
+		<div class="item" data-permalink="errorClass">
+			<span class="name">errorClass</span>
+			<span class="short_details"><b>:string</b>('error')</span>
+			<a href="#options/errorClass" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Defined <span class="code">errorClass</span> will be added to field classList if the validation returns
+				<span>false</span>.</p>
+		</div>
+
+
+		<div class="item" data-permalink="processingClass">
+			<span class="name">processingClass</span>
+			<span class="short_details"><b>:string</b>('processing')</span>
+			<a href="#options/processingClass" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Defined
+				<span class="code">processingClass</span> will be added to submit button (<span class="code">submitButton</span>) classList when yser submits the form.
+			</p>
+		</div>
+
+
+		<div class="item" data-permalink="disabledClass">
+			<span class="name">disabledClass</span>
+			<span class="short_details"><b>:string</b>('disabled')</span>
+			<a href="#options/disabledClass" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Defined
+				<span class="code">disabledClass</span> will be added to submit button (<span class="code">submitButton</span>) classList if the form elements has validation errors.<br/>
+				When all form fields validation returns <span class="cnh">true</span>,
+				<span class="code">disabledClass</span> will be automatically removed form submit button.</p>
+		</div>
+
+
+		<div class="item" data-permalink="timeout">
+			<span class="name">timeout</span>
+			<span class="short_details"><b>:number</b>(0)</span>
+			<a href="#options/timeout" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p><span class="code">timeout</span> option defines the delay before validating field only if.</p>
+		</div>
+
+
+		<div class="item" data-permalink="requestTimeout">
+			<span class="name">requestTimeout</span>
+			<span class="short_details"><b>:number</b>(2000)</span>
+			<a href="#options/requestTimeout" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p><span class="code">requestTimeout</span> option defines timeout before validation field with
+				<span>request</span> validation. <br/>
+				If <span class="code">timeout</span> option defined, than request validation will be delayed on a
+				<span class="cnh">requestTimeout - timeout</span> if the result is more than
+				<span class="cnh">0</span>, otherwise it will be ignored.</p>
+		</div>
+
+
+		<div class="item" data-permalink="validateEvent">
+			<span class="name">validateEvent</span>
+			<span class="short_details"><b>:string</b>('keyup')</span>
+			<a href="#options/validateEvent" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>This options defines field event for starting validation.</p>
+		</div>
+
+
+		<div class="item" data-permalink="submitButtonControl">
+			<span class="name">submitButtonControl</span>
+			<span class="short_details"><b>:boolean</b>(true)</span>
+			<a href="#options/submitButtonControl" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>This options tell the plugin should it controll submit button or not.</p>
+		</div>
+
+
+		<div class="item" data-permalink="submitButton">
+			<span class="name">submitButton</span>
+			<span class="short_details"><b>:boolean</b>(true)</span>
+			<a href="#options/submitButton" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>This options tell the plugin what element is a submit button.</p>
+
+			<p>If it's not defined and <span class="code">submitButtonControl</span> defined as
+				<span>true</span>, the plugin will find the first element with
+				<span>type="submit"</span> and will use it as the submit button.</p>
+		</div>
+
+		<div class="item" data-permalink="submit">
+			<span class="name">submit</span>
+			<span class="short_details"><b>:function( event )</b></span>
+			<a href="#options/submit" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Function for submitting form.</p>
+
+			<p>If submit option not defined - form will be submitted as usual HTML form element. Will fire only when all fields of form successfully validated.</p>
+
+			<p><span class="code">event</span> is original form submit event.</p>
+
+			<p><span class="code">this</span> here is current HTML form element.</p>
+
+<pre><code>// defining submit function
+submit: function(event) {
+	// 1. Disable default submit
+	event.preventDefault()
+	// 2. your submit code
+	// 3. finish
+	return false;
+}
+</code></pre>
+		</div>
+
+
+		<div class="item" data-permalink="before">
+			<span class="name">before</span>
+			<span class="short_details"><b>:function()</b></span>
+			<a href="#options/before" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Function will be executed just before each validation of the field.</p>
+
+			<p><span class="code">this</span> here is current HTML field element.</p>
+		</div>
+
+
+		<div class="item" data-permalink="onerror">
+			<span class="name">onerror</span>
+			<span class="short_details"><b>:function()</b></span>
+			<a href="#options/onerror" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Function will be executed each time when field validation will return <span>false</span>.</p>
+
+			<p><span class="code">this</span> here is current HTML field element.</p>
+		</div>
+
+
+		<div class="item" data-permalink="onvalid">
+			<span class="name">onvalid</span>
+			<span class="short_details"><b>:function()</b></span>
+			<a href="#options/onvalid" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Function will be executed each time when field validation will return <span class="cnh">true</span>.</p>
+
+			<p><span class="code">this</span> here is current HTML field element.</p>
+		</div>
+
+
+		<div class="item" data-permalink="fields">
+			<span class="name">fields</span>
+			<span class="short_details"><b>:object</b>({ field_name: {/*field_options*/}, ... })</span>
+			<a href="#options/fields" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Describes validation and control options for each field.</p>
+
+			<p>
+				<span>Fields</span> properties should be a list of objects, named exactly like form elements and contain all needed options.
+			</p>
+		</div>
+
+		<br/><br/>
+
+		<h3>Available fields options:</h3>
+
+		<div class="item" data-permalink="fields/rules">
+			<span class="name">rules</span>
+			<a href="#options/fields/rules" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<span class="short_details"><b>:string</b></span>
+			String with rules for validation
+		</div>
+
+
+		<div class="item" data-permalink="fields/before">
+			<span class="name">before</span>
+			<a href="#options/fields/before" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<span class="short_details"><b>:function()</b></span>
+			Like a global <span class="code">before</span> function.<br/><br/>
+
+			<div class="note">
+				Fires only for field in which it is defined.<br/>
+				Has higher priority than the same function defined globally.
+			</div>
+		</div>
+
+
+		<div class="item" data-permalink="fields/onerror">
+			<span class="name">onerror</span>
+			<span class="short_details"><b>:function()</b></span>
+			<a href="#options/fields/onerror" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Like a global <span class="code">onerror</span> function.</p>
+
+			<div class="note">
+				Fires only for field in which it is defined.<br/>
+				Has higher priority than <span class="code">onerror</span> function defined globally.
+			</div>
+		</div>
+
+
+		<div class="item" data-permalink="fields/onvalid">
+			<span class="name">onvalid</span>
+			<span class="short_details"><b>:function()</b></span>
+			<a href="#options/fields/onvalid" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Like a global <span class="code">onvalid</span> function.</p>
+
+			<div class="note">
+				Fires only for field in which it is defined.<br/>
+				Has higher priority than <span class="code">onvalid</span> function defined globally.
+			</div>
+		</div>
+
+
+		<div class="item" data-permalink="fields/url">
+			<span class="name">url</span>
+			<span class="short_details"><b>:string</b></span>
+			<a href="#options/fields/url" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>URL for request validation. default value gets from <div class="code">window.location.href</div></p>
+			<div class="note">
+				Used only for request validation.
+			</div>
+		</div>
+
+
+		<div class="item" data-permalink="fields/data">
+			<span class="name">data</span>
+			<span class="short_details"><b>:object</b>({})</span>
+			<a href="#options/fields/data" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Data that will be send with AJAX request. The structure of this object should be:</p>
+		<pre><code>{
+	param_name: param_value,
+	// other params
+}</code></pre>
+		</div>
+
+
+		<div class="item" data-permalink="fields/method">
+			<span class="name">method</span>
+			<span class="short_details"><b>:string</b>('get')</span>
+			<a href="#options/fields/method" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Request method: <span>POST</span> or <span>GET</span></p>
+			<div class="note">
+				Important only for request validation.
+			</div>
+		</div>
+
+
+		<div class="item" data-permalink="fields/start">
+			<span class="name">start</span>
+			<span class="short_details"><b>:function</b>()</span>
+			<a href="#options/fields/start" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Function that will fires when validation request will sent.</p>
+			<p><span class="code">this</span> here is current HTML field element.</p>
+		</div>
+
+
+		<div class="item" data-permalink="fields/end">
+			<span class="name">end</span>
+			<span class="short_details"><b>:function</b>(response)</span>
+			<a href="#options/fields/end" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Function that will fires when validation request result arrives.</p>
+			<p><span class="code">response</span> here is the returned result of your request.</p>
+			<p><span class="code">this</span> here is current HTML field element</p>
+			<div class="note alert">
+				<span>!important!</span><br/>
+				In the request validation
+				<span class="code">end(response)</span> function you can do whatever you want with the
+				<span class="code">response</span>, but at the end of funtion your have to return <span>true</span> or
+				<span>false</span> as the result of validation.
+			</div>
+		</div>
+
+
+		<div class="item" data-permalink="own">
+			<span class="name">own</span>
+			<span class="short_details"><b>:function()</b></span>
+			<a href="#options/own" class="permalink">permalink</a>
+		</div>
+		<div class="details">
+			<p>Function for own validation (ignores all defined rules).</p>
+			<p><span class="code">this</span> here is current HTML field element.</p>
+			<p>Should return <span>true</span> or
+				<span>false</span> (depends on what you decide whether the field valid or not).</p>
+		</div>
+
+	</div>
+</div>
