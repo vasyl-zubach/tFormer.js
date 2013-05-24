@@ -7,7 +7,14 @@ module.exports = function ( grunt ) {
 			dist   : {
 				src : [
 					'pages/header.html',
-					'pages/*.html',
+					'pages/about.html',
+					'pages/discuss.html',
+					'pages/examples.html',
+					'pages/features.html',
+					'pages/install.html',
+					'pages/methods.html',
+					'pages/options.html',
+					'pages/rules.html',
 					'pages/footer.html'
 				],
 				dest: 'index.html'
