@@ -2,6 +2,8 @@
 
 Project page <http://tformerjs.com>
 
+Official twitter [@tFormerjs](http://twitter.com/tformerjs)
+
 Small presentation <http://tformerjs.com/p/>
 
 
