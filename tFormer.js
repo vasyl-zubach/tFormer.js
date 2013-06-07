@@ -32,6 +32,7 @@
 	var CHANGE_DEFAULT = [
 		'checkbox',
 		'select-one',
+		'select',
 		'range',
 		'number',
 		'file',
@@ -103,6 +104,7 @@
 			if ( field.value == self.get( 'value', field.name ) && field.type !== 'checkbox' ) {
 				return;
 			}
+
 			__removeClass( field, self.get( 'errorClass', field.name ) );
 			__removeClass( field, self.get( 'processingClass', field.name ) );
 
@@ -155,11 +157,7 @@
 					var el = document.getElementById( (options[i][0] == 'matchesToId') ? param : param[j].replace( '#', '' ) );
 					if ( el ) {
 						__on( el, 'keyup', function ( e ) {
-							var error = __data( field, 'error' );
-							var has_error_class = __hasClass( field, self.get( 'errorClass', field.name ) );
-							if ( !(error && !has_error_class ) ) {
-								self.validateField( field );
-							}
+							self.validateField( field, true, true );
 						}, self )
 					}
 				}
@@ -1662,12 +1660,13 @@
 	 * @returns {*}
 	 */
 	var __removeClass = function ( element, old_class ) {
-		if ( element.length ) {
+		if ( __isArray( element ) ) {
 			for ( var i = 0; i < element.length; i++ ) {
 				__removeClass( element[i], old_class );
 			}
 		} else {
 			var class_name = element.className;
+			if ( !class_name ) return this;
 			if ( ~class_name.indexOf( old_class ) ) {
 				var re = new RegExp( '(\\s|^)' + old_class + '(\\s|$)' );
 				element.className = class_name.replace( re, ' ' );
