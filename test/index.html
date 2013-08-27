@@ -9,21 +9,24 @@
 	<script src="js/jasmine/jasmine.js"></script>
 	<script src="js/jasmine/jasmine-html.js"></script>
 
-	<!-- source files here... -->
-	<script src="../tFormer.js"></script>
+	<!-- source files : min -->
+	<script src="../tFormer.min.js"></script>
+
+	<!-- source files : dev -->
+	<!--<script src="../_v_.js"></script>-->
+	<!--<script src="../tFormer.dev.js"></script>-->
+
+	<!-- source files: not nim -->
+	<!--<script src="../tFormer.js"></script>-->
 
 </head>
 
 <body>
 
 
-<h1>tFormer tests:</h1>
+<!--<h1>tFormer tests:</h1>-->
 
 <div id="test_forms" style="position: absolute; top: -999px; right: 0;">
-
-	<!-- _v_ -->
-	<input type="hidden" id="unique_test_id" value=""/>
-	<input type="hidden" id="unique_test_id2" value=""/>
 
 	<!-- tFormer options -->
 	<form id="f_no_sb">
@@ -32,11 +35,15 @@
 
 	<form id="f_sb_not_button">
 		<input type="text" name="t_text"/>
+
 		<div class="submit"></div>
 	</form>
 
 	<form id="f">
 		<input type="text" name="t_text"/>
+		<input type="button" data-check="t_checkbox"/>
+
+
 		<input type="checkbox" name="t_checkbox"/>
 		<textarea name="t_textarea"></textarea>
 		<select name="t_select">
@@ -45,117 +52,25 @@
 		<input type="submit"/>
 	</form>
 
-
-	<form id="form_destroy">
-		<input type="text" name="test" data-rules="*" id="test_id"/>
-		<input type="button" value="check" data-check="test"/>
-
-		<input type="text" name="parent_depender" id="parent_depender" data-rules="*"/>
-		<input type="text" name="depended" data-rules="* =#parent_depender"/>
-		<input type="submit" value="submit"/>
+	<form id="f_html5">
+		<input type="text" name="t_required" required/>
+		<input type="email" name="t_email"/>
+		<input type="url" name="t_url"/>
+		<input type="number" name="t_number"/>
+		<input type="number" name="t_number_min" min="6"/>
+		<input type="number" name="t_number_max" max="6"/>
+		<input type="number" name="t_number_min_max" min="0" max="10"/>
 	</form>
-	<script>
-//		form__destroy_results = {
-//			before : 0,
-//			onerror: 0,
-//			onvalid: 0
-//		};
-//		form__destroy = tFormer( 'form_destroy', {
-//			before : function () {
-//				form__destroy_results.before++;
-//			},
-//			onerror: function () {
-//				form__destroy_results.onerror++;
-//			},
-//			onvalid: function () {
-//				form__destroy_results.onvalid++;
-//			}
-//		} );
-	</script>
-
-
-	<!-- validation process form -->
-	<form id="form_process">
-		<input type="text" name="test" data-rules="*"/>
-		<input type="button" value="check" data-check="test"/>
-		<input type="text" name="request" data-rules="* request" value=""/>
-		<input type="submit" value="submit"/>
-	</form>
-	<script>
-		form__process_results = {
-			before : [0, 0],
-			onerror: [0, 0],
-			onvalid: [0, 0],
-			fields : {
-				request: {
-					before : [0, 0],
-					onerror: [0, 0],
-					onvalid: [0, 0],
-					start  : [0, 0],
-					end    : [0, 0],
-					result : ''
-				}
-			}
-		};
-		form__process = tFormer( 'form_process', {
-			before : function () {
-				form__process_results.before[0]++;
-				form__process_results.before[1] = this;
-			},
-			onerror: function () {
-				form__process_results.onerror[0]++;
-				form__process_results.onerror[1] = this;
-			},
-			onvalid: function () {
-				form__process_results.onvalid[0]++;
-				form__process_results.onvalid[1] = this;
-			},
-			fields : {
-				request: {
-					before: function () {
-						form__process_results.fields.request.before[0]++;
-						form__process_results.fields.request.before[1] = this;
-					},
-
-					onerror: function () {
-						form__process_results.fields.request.onerror[0]++;
-						form__process_results.fields.request.onerror[1] = this;
-					},
-
-					onvalid: function () {
-						form__process_results.fields.request.onerror[0]++;
-						form__process_results.fields.request.onerror[1] = this;
-					},
-
-					start: function () {
-						form__process_results.fields.request.start[0]++;
-						form__process_results.fields.request.start[1] = this;
-					},
-
-					end: function ( result ) {
-						form__process_results.fields.request.end[0]++;
-						form__process_results.fields.request.end[1] = this;
-						form__process_results.fields.request.result = result;
-						return result;
-					},
-
-					requestTimeout: 0,
-					url           : 'ajax.html?ololo=asdf',
-					method        : 'get'
-				}
-			}
-		} );
-	</script>
-
 
 </div>
 
 
 <!-- spec files here... -->
-<script src="_v_.spec.js"></script>
+
 <script src="tFormer.options.spec.js"></script>
 <script src="tFormer.methods.spec.js"></script>
 <script src="tFormer.ui.spec.js"></script>
+<script src="tFormer.html5.spec.js"></script>
 
 <script src="js/run_tests.js"></script>
 

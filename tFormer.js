@@ -6,363 +6,1046 @@
  */
 "use strict";
 
-(function ( window, document, undefined ) {
+(function ( window, document, undefined ){
 
-	var TYPES = [
-		'submit',
-		'text',
-		'password',
-		'select-one',
-		'checkbox',
-		'textarea',
-		'range',
-		'number',
-		'email',
-		'hidden',
-		'file',
-		'date',
-		'datetime-local',
-		'search',
-		'tel',
-		'time',
-		'url',
-		'month',
-		'week'
-	];
-	var CHANGE_DEFAULT = [
-		'checkbox',
-		'select-one',
-		'select',
-		'range',
-		'number',
-		'file',
-		'time',
-		'date',
-		'datetime-local',
-		'month',
-		'week'
-	];
-	var CHANGE_ALSO = [
-		'number',
-		'date',
-		'datetime-local',
-		'time',
-		'month',
-		'week'
-	];
+	// button types
+	var BUTTON_TYPES = ['button', 'submit'];
+	// all field types that can be empowered with tFormer
+	var FIELD_TYPES = ['text', 'password', 'select-one', 'checkbox', 'textarea', 'range', 'number', 'email', 'hidden', 'file', 'date', 'datetime-local', 'search', 'tel', 'time', 'url', 'month', 'week'];
+	// fields that has only 'change' event
+	var HAS_CHANGE_EVENT = ['checkbox', 'select-one', 'select', 'file'];
+	// fields that has also 'change' event
+	var CHANGE_ALSO = ['number', 'date', 'datetime-local', 'time', 'month', 'week', 'range'];
 
-	// default options
+	// tFormer options
+	var TF_OPTIONS = ['timeout', 'requestTimeout', 'errorClass', 'disabledClass', 'processingClass', 'validateEvent', 'submitButtonControl', 'submitButton', 'submit', 'before', 'onerror', 'onvalid', 'eventBefore', 'eventError', 'eventValid'];
+	var FIELD_OPTIONS = ['timeout', 'requestTimeout', 'request', 'validClass', 'errorClass', 'disabledClass', 'processingClass', 'rules', 'validateEvent', 'before', 'onerror', 'onvalid', 'own', 'eventBefore', 'eventError', 'eventValid'];
+	var BUTTON_OPTIONS = ['disabledClass', 'processingClass'];
+
+
+	var EMPOWERED = 'empowered';
+
 	var defaults = {
-		errorClass         : 'error', // error class
-		processingClass    : 'processing', // processing class
-		disabledClass      : 'disabled', // disabled class for submit button
-		//
-		timeout            : 0, // timeout for validation on keyup
-		requestTimeout     : 2000, // timeout for request field
-		//
-		validateEvent      : 'input keyup',
-		//
-		submitButtonControl: true, // submit button controll
-		submitButton       : null // defining submit button
+		errorClass     : 'error',
+		processingClass: 'processing',
+		disabledClass  : 'disabled',
+		validClass     : 'valid',
+
+		eventBefore: 'tFormer:before',
+		eventError : 'tFormer:error',
+		eventValid : 'tFormer:valid',
+
+		timeout       : 0,
+		requestTimeout: 2000,
+
+		validateEvent: 'input keyup',
+
+		fields : {},
+		buttons: {},
+
+		submitButtonControl: true,
+		submitButton       : null
 	};
 
 	/**
-	 * Adds validation event to fields ( 'keyup' by default )
-	 * @param field - HTML element to add event
-	 * @private
+	 * Main tFormer constructor
+	 * @param form_el - our form that should be empowered
+	 * @param options - tFormer options
+	 * @returns {tFormer}
 	 */
-	var _addElementEvent = function ( field ) {
+	var tFormer = function ( form_el, options ){
+		if ( !(this instanceof tFormer) ) {
+			return new tFormer( form_el, options );
+		}
+
 		var self = this;
-		var validate_event = self.get( 'validateEvent' );
-		var event_keyword = validate_event;
-		if ( !event_keyword ) {
-			return;
+		// our main form DOM element
+		self.form = (function ( form_el ){
+			form_el = typeof(form_el) === 'string' ? document.forms[form_el] : form_el;
+			return __isForm( form_el ) ? form_el : null;
+		})( form_el );
+
+		var my_form = self.form;
+		if ( self.form === null ) {
+			return null;
 		}
 
-		// Disable submit button on field change (field should be validated again)
-		__on( field, 'input keyup', function () {
-			if ( field.value != self.get( 'value', field.name ) ) {
-				self.valid = false;
-				self.submitButtonOff();
-			}
-		}, this );
-
-
-		var validationTimeout = self.get( 'timeout', field.name );
-
-		if ( ~__inArray( CHANGE_DEFAULT, field.type ) ) {
-			event_keyword = 'change';
-			validationTimeout = 0;
-		}
-
-		if ( ~__inArray( CHANGE_ALSO, field.type ) && validate_event !== 'change' ) {
-			event_keyword += ' ' + validate_event;
-		}
-
-		__on( field, event_keyword, function ( e ) {
-			// if not changed - no need to validate again
-			if ( field.value == self.get( 'value', field.name ) && field.type !== 'checkbox' ) {
-				return;
-			}
-
-			__removeClass( field, self.get( 'errorClass', field.name ) );
-			__removeClass( field, self.get( 'processingClass', field.name ) );
-
-			if ( validationTimeout && (~validate_event.indexOf( 'keyup' ) || ~validate_event.indexOf( 'input' )) ) {
-				clearTimeout( self.fieldTimeout[field.name] );
-				clearTimeout( self.xhrTimeout[field.name] );
-				self.fieldTimeout[field.name] = setTimeout( function () {
-					self.validateField( field );
-				}, validationTimeout );
-			} else {
-				self.validateField( field );
-			}
-		}, this );
-
-		// add onblur validation
-		if ( ~__inArray( event_keyword, 'blur' ) ) {
-			return;
-		}
-		__on( field, 'blur', function () {
-			// if not changed - no need to validate again
-			if ( (field.value != self.get( 'value', field.name ) && !__hasClass( field, self.get( 'errorClass' ) )) || __data( field, 'holded' ) ) {
-				self.validateField( field, true, true );
-			}
-		}, this );
-	};
-
-	/**
-	 * add dependency event
-	 * @param field
-	 * @private
-	 */
-	var _dependencyEvent = function ( field ) {
-		var self = this;
-		var rules = self.get( 'rules', field.name );
-		if ( !rules || rules.indexOf( '=' ) === -1 ) {
-			return;
-		}
-		var options = _v_( rules ).parseValidateOptions();
-		for ( var i = 0, options_length = options.length; i < options_length; i++ ) {
-			if ( options[i][0] != 'matchesTo' && options[i][0] != 'matchesToId' ) {
-				continue;
-			}
-
-			var param = options[i][1];
-			var paramArray = regex.ruleArray.exec( param );
-			param = (( paramArray ) ? paramArray[1] : param ).split( ',' );
-
-			for ( var j = 0, param_length = param.length; j < param_length; j++ ) {
-				if ( param[j].indexOf( '#' ) === 0 || options[i][0] == 'matchesToId' ) {
-					var el = document.getElementById( (options[i][0] == 'matchesToId') ? param : param[j].replace( '#', '' ) );
-					if ( el ) {
-						__on( el, 'keyup', function ( e ) {
-							self.validateField( field, true, true );
-						}, self )
+		if ( !__getAttr( my_form, EMPOWERED ) ) {
+			__setAttr( my_form, EMPOWERED, 1 );
+			__setAttr( my_form, 'novalidate', 'novalidate' );
+		} else {
+			var cached = (function (){
+				for ( var i = 0, c_l = self.cache.length; i < c_l; i++ ) {
+					if ( self.cache[i].form == my_form ) {
+						return self.cache[i];
 					}
+				}
+				return null;
+			})();
+			if ( cached ) {
+				var initialized = cached.inited;
+				cached.set( options );
+				return cached;
+			}
+		}
+		self.config = (self.config || __clone( defaults ));
+		self.set( options );
+
+		self.init();
+		self.cache.push( self );
+		return self;
+	};
+	var tf_proto = tFormer.prototype;
+	tf_proto.cache = [];
+
+
+	tf_proto.init = function (){
+		var self = this;
+		if ( self.inited ) {
+			return self;
+		}
+
+		self.fields = {};
+		self.buttons = {};
+
+		self.inited = true;
+
+		self.locked = 0;
+		self.holded = 0;
+		self.invalid = 0;
+		self.valid = true;
+
+		self.fields = {};
+		self.buttons = {};
+
+		// XHR stuff
+		self.xhr = {};
+		self.xhrTimeout = {};
+
+		var sb = self.get( 'submitButton' );
+		if ( sb ) {
+			self.buttons['submit'] = new tButton( self, sb );
+		}
+
+		for ( var i = 0, f_l = self.form.length; i < f_l; i++ ) {
+			var el = self.form[i],
+				type = el.type,
+				name = type !== 'button' ? __getAttr( el, 'name' ) : __data( el, 'check' );
+
+			if ( __inArray( FIELD_TYPES, type ) !== -1 && name ) {
+				self.fields[name] = new tField( self, el );
+			}
+
+			if ( __inArray( BUTTON_TYPES, type ) !== -1 ) {
+				name = (type == 'submit') ? type : name;
+				if ( name && !(name == 'submit' && self.button[name]) ) {
+					self.buttons[name] = new tButton( self, el );
 				}
 			}
 		}
 
-	};
-
-	/**
-	 * Adds `validation by click` to check buttons
-	 *
-	 * @param element - HTML element to add click event
-	 * @private
-	 */
-	var _addCheckButtonEvent = function ( element ) {
-		var self = this;
-		var check = __data( element, 'check' );
-		var field = self.form[check];
-		if ( !check || !field ) {
-			return;
-		}
-
-		__on( element, 'click', function () {
-			clearTimeout( self.fieldTimeout[field.name] );
-			self.validateField( field, true, 'no_timeout' );
-		}, this );
-	};
-
-	/**
-	 * find Submit button (if not defined);
-	 *
-	 * @param field - HTML element to add click event
-	 * @private
-	 */
-	var _findSubmitButton = function ( field ) {
-		if ( !this.get( 'submitButton' ) && field.type == 'submit' ) {
-			this.options.submitButton = field;
-		}
-	};
-
-	/**
-	 * Get field options
-	 *
-	 * @param field
-	 * @private
-	 */
-	var _getFieldOptions = function ( field ) {
-		this.fields[field.name] = __extend( this.fields[field.name] || {}, {
-			name   : field.name,
-			type   : field.type,
-			value  : '',
-			checked: null,
-			rules  : (this.fields[field.name] || {}).rules || __data( field, 'rules' )
-		} );
-	};
-
-	/**
-	 * Ads submit event on click;
-	 *
-	 * @private
-	 */
-	var _submitButtonEvent = function () {
-		var self = this;
-		var submit_button = self.get( 'submitButton' );
-		if ( submit_button && submit_button.type != 'submit' ) {
-			__on( submit_button, 'click', function ( e ) {
-				self.form.onsubmit( e );
-			}, self );
-		}
-	};
-
-
-	/**
-	 * Hidden form validate
-	 * validate form without showing the errors
-	 * @private
-	 */
-	var _hidenFormValidate = function () {
-		this.validateForm();
-	};
-
-	/**
-	 * Submit function
-	 * @private
-	 */
-	var _submitFunction = function () {
-		this.form.onsubmit = (function ( self ) {
-			return function ( event ) {
-
+		self.form.onsubmit = (function ( self ){
+			return function ( event ){
 				event = event || window.event;
-				// disable double submit
-				var processing = self.get( 'processingClass' ),
-					submit_btn = self.get( 'submitButton' ),
-					submit_processing = ~submit_btn.className.indexOf( processing );
 
-				if ( ( processing && submit_processing ) || self.locked ) {
-					if ( event.preventDefault ) {
-						event.preventDefault();
-					} else {
-						event.returnValue = false;
-					}
+				var sb = self.button( 'submit' ),
+					sb_control = self.get( 'submitButtonControl' ),
+					s_func = typeof self.get( 'submit' ) == 'function',
+					processing = sb.get( 'processingClass' ),
+					prevent = self.valid && s_func,
+					e_prevent = function ( event ){
+						if ( event.preventDefault ) {
+							event.preventDefault();
+						} else {
+							event.returnValue = false;
+						}
+					};
+
+				// disable double submit
+				if ( (processing && sb.hasClass( processing )) || self.locked ) {
+					e_prevent( event );
 					return false;
 				}
 
-				self.processing( true );
-
-				if ( self.get( 'submitButtonControl' ) && self.valid && typeof(self.get( 'submit' )) == 'function' ) {
-					if ( event.preventDefault ) {
-						event.preventDefault();
-					} else {
-						event.returnValue = false;
+				if ( prevent ) {
+					e_prevent( event );
+				}
+				if ( self.valid ) {
+					if ( sb_control ) {
+						sb.processing( true );
 					}
-					self.execute( 'submit', self.form, [event] );
+					if ( s_func ) {
+						self.execute( self.form, 'submit', [event, self] );
+					}
+				}
+				if ( prevent ) {
 					return false;
-				} else {
-					self.processing( false );
 				}
 
 				try {
-					if ( !self.validateForm( event, true ) ) {
-						if ( event.preventDefault ) {
-							event.preventDefault();
-						} else {
-							event.returnValue = false;
-						}
-						self.processing( false );
+					if ( !self.valid && !self.validate() ) {
+						e_prevent( event );
+						sb.processing( false );
 						return false;
 					}
 
-					if ( typeof self.options.submit == 'function' ) {
-						if ( event.preventDefault ) {
-							event.preventDefault();
-						} else {
-							event.returnValue = false;
-						}
-						self.execute( 'submit', self.form, [event] );
+					if ( s_func ) {
+						e_prevent( event );
+						self.execute( self.form, 'submit', [event, self] );
 						return false;
 					}
+					self.form.submit();
 					return true;
 
 				} catch ( e ) {
 				}
 			};
-		})( this );
+		})( self );
+
+
+		self.validate( {
+			highlight : false,
+			fire_event: false,
+
+			silence: true
+		} );
+		return self.submitControl();
 	};
 
 
-	/**
-	 *
-	 * @param field
-	 * @param {boolean} showError
-	 * @param {boolean} no_timeout
-	 * @private
-	 */
-	var _request = function ( field, showError, no_timeout ) {
+	tf_proto.destroy = function (){
+		var self = this;
+		for ( var name in self.fields ) {
+			self.fields[name].destroy();
+		}
+		for ( var name in this.buttons ) {
+			self.buttons[name].destroy();
+		}
+		self.inited = false;
+		return self;
+	};
 
+	//	function for dropping options
+	tf_proto.drop = function (){
 		var self = this,
-			method = this.get( 'method', field.name ) || 'GET',
-			data = this.get( 'data', field.name ) || {},
-			url = this.get( 'url', field.name ) || window.location.href;
+			fields = self.fields,
+			buttons = self.buttons;
+		self.destroy();
+		self.set( __clone( defaults ) );
+		for ( var name in fields ) {
+			fields[name].drop();
+		}
+		for ( var name in buttons ) {
+			buttons[name].drop();
+		}
+		self.locked = 0;
+		return self.init();
+	};
 
-		if ( method.toLowerCase() == 'get' ) {
-			url += (~url.indexOf( '?' ) ) ? '&' : '?';
-			url += field.name + '=' + field.value;
-		} else {
-			data[field.name] = field.value;
+	tf_proto.validate = function ( options ){
+		var self = this,
+			fields = self.fields,
+			errors = 0;
+
+		for ( var key in fields ) {
+			errors += (fields[key].validate( options || {} )) ? 0 : 1;
+		}
+		self.invalid = errors;
+		self.valid = errors === 0;
+		return errors === 0;
+	};
+
+
+	tf_proto.toObject = function (){
+		var self = this,
+			fields = self.fields,
+			obj = {};
+		for ( var name in fields ) {
+			var el = fields[name].el;
+			if ( el.type == 'checkbox' ) {
+				obj[name] = el.checked;
+			} else if ( el.type == 'radio' ) {
+				if ( !obj[name] ) {
+					obj[name] = '';
+				}
+				if ( el.checked ) {
+					obj[name] = el.value;
+				}
+			} else {
+				obj[name] = el.value;
+			}
+		}
+		return obj;
+	};
+
+	tf_proto.get = function ( option ){
+		return this.config[option];
+	};
+
+	tf_proto.set = function ( options ){
+		var self = this,
+			is_inited = self.inited;
+		if ( is_inited ) {
+			self.destroy();
+		}
+		self.config = __extend( self.config, options );
+		if ( is_inited ) {
+			self.init();
+		}
+		return self;
+	};
+
+	/**
+	 * Get field object to work with
+	 * @param {string} name - field name
+	 * @returns {*} - field Object
+	 */
+	tf_proto.field = function ( name ){
+		return this.fields[name];
+	};
+
+	/**
+	 * Get button object to work with
+	 * @param {string} name - button name
+	 * @returns {*} - button Object
+	 */
+	tf_proto.button = function ( name ){
+		return this.buttons[name];
+	};
+
+	/**
+	 * Rewrite default form submit function with current one
+	 * (default HTML form submit function will be prevented)
+	 * @param {function} func - function that should be executed on form submit
+	 * @returns {*}
+	 */
+	tf_proto.submit = function ( func ){
+		var self = this;
+		if ( typeof func == 'function' ) {
+			self.config.submit = func;
+		}
+		return self;
+	};
+
+	/**
+	 * Form Submit button control function
+	 * (enabling/disabling while validating)
+	 * @param {!boolean} valid - is current form valid or not?
+	 * @returns {*}
+	 */
+	tf_proto.submitControl = function ( valid ){
+		var self = this,
+			sb = self.button( 'submit' ),
+			sb_control = self.get( 'submitButtonControl' );
+
+		self.valid = (self.invalid === 0 && self.holded === 0 && self.locked === 0);
+		valid = (valid === false || valid === true) ? valid : self.valid;
+
+		if ( sb && sb_control ) {
+			sb[(valid) ? 'enable' : 'disable']();
+		}
+		return self;
+	};
+	/**
+	 * Submit button disable
+	 * @returns {*}
+	 */
+	tf_proto.submitDisable = function (){
+		return this.submitControl( false );
+	};
+	/**
+	 * Submit button enable
+	 * @returns {*}
+	 */
+	tf_proto.submitEnable = function (){
+		return this.submitControl( true );
+	};
+
+	/**
+	 * Submit button processing control
+	 * @returns {*}
+	 */
+	tf_proto.processing = function ( action ){
+		var self = this,
+			sb = self.button( 'submit' );
+		if ( sb ) {
+			sb.processing( action );
+		}
+		return self;
+	};
+
+	/**
+	 * Lock form
+	 * @returns {*}
+	 */
+	tf_proto.lock = function ( num ){
+		var self = this;
+		self.locked += num || 1;
+		return self.submitControl( false );
+	};
+
+	/**
+	 * Unlock form
+	 * @returns {*}
+	 */
+	tf_proto.unlock = function ( num ){
+		var self = this;
+		self.locked -= num || 1;
+		return self.submitControl();
+	};
+
+	/**
+	 * Execute function
+	 * @param context
+	 * @param func
+	 * @param params
+	 * @returns {*}
+	 */
+	tf_proto.execute = function ( context, func, params ){
+		var self = this;
+		if ( typeof func == 'string' ) {
+			func = self.get( func );
+		}
+		if ( typeof func == 'function' ) {
+			return func.apply( context, (params || []) );
+		}
+		return null;
+	};
+
+	window.tFormer = tFormer;
+
+
+	/**
+	 * Form element constructor
+	 * @returns {*}
+	 * @constructor
+	 */
+	var Element = function (){
+	};
+	var El_p = Element.prototype;
+	El_p.destroy = function (){
+		var self = this,
+			el = this.el,
+			events = self.events;
+
+		for ( var i = 0, e_l = events.length; i < e_l; i++ ) {
+			self.off( events[0][0], events[0][1] );
 		}
 
-		var readyStateChange = function () {
-			var xhr = self.xhr[field.name];
+		self.removeClass( self.get( 'errorClass' ) );
+		self.removeClass( self.get( 'desabledClass' ) );
+		self.removeClass( self.get( 'processignClass' ) );
 
-			// run start request function
+		__data( el, 'holded', null );
+		__data( el, 'error', null );
+		// remove hold attributes
+
+		if ( self.timer ) {
+			clearTimeout( self.timer );
+		}
+		if ( self.xhr ) {
+			self.xhr.abort();
+		}
+		if ( self.xhrTimeout ) {
+			clearTimeout( self.xhrTimeout );
+		}
+
+		if ( !self.valid ) {
+			self.parent.invalid = self.parent.invalid !== 0 ? self.parent.invalid - 1 : 0;
+		}
+
+		self.parent.submitControl();
+
+		self.inited = false;
+		return self;
+	};
+
+	El_p.drop = function (){
+		return this.set( __clone( defaults ) );
+	};
+
+	El_p.set = function ( options ){
+		var self = this,
+			name = __getAttr( self.el, 'name' ),
+			_set = function ( key, value ){
+				self.config[key] = value;
+				if ( !self.parent.config.fields[name] ) {
+					self.parent.config.fields[name] = __clone( defaults );
+				}
+				self.parent.config.fields[name][key] = value;
+			},
+			is_inited = self.inited;
+
+		if ( is_inited ) {
+			self.destroy();
+		}
+		for ( var key in options ) {
+			if ( ~__inArray( FIELD_OPTIONS, key ) ) {
+				_set( key, options[key] );
+			}
+		}
+		if ( is_inited ) {
+			self.init();
+		}
+		return self;
+	};
+
+	El_p.get = function ( option ){
+		return this.config[option];
+	};
+
+	/**
+	 * subscribe this.el to some event
+	 * @param {string} evnt - event name
+	 * @param {function} func - function that should be executed on event
+	 * @param {object} el - element to attach event
+	 * @returns {*}
+	 */
+	El_p.on = function ( evnt, func, el ){
+		var self = this,
+			el = el || self.el,
+			events = evnt.split( ' ' );
+
+		for ( var i = 0, e_l = events.length; i < e_l; i++ ) {
+			if ( el.addEventListener ) { // W3C DOM
+				el.addEventListener( events[i], func, false );
+			} else if ( element.attachEvent ) { // IE DOM
+				el.attachEvent( "on" + events[i], func );
+			} else { // No much to do
+				el[events[i]] = func;
+			}
+			self.events.push( [events[i], func] );
+		}
+		return self;
+	};
+
+	/**
+	 * unsubscribe this.el (Button || Field) from some event
+	 * @param {string} evnt - event name
+	 * @param {function} func - function that should be executed on event
+	 * @returns {*}
+	 */
+	El_p.off = function ( evnt, func ){
+		var self = this,
+			el = self.el,
+			events = self.events;
+
+		evnt = evnt.split( ' ' );
+		if ( !func ) {
+			for ( var i = 0, e_l = events.length; i < e_l; i++ ) {
+				if ( __inArray( evnt, events[i][0] ) !== -1 ) {
+					events.splice( i, 1 );
+				}
+			}
+			return self;
+		}
+
+		if ( el.removeEventListener ) { // W3C DOM
+			el.removeEventListener( evnt, func, false );
+		} else if ( el.detachEvent ) { // IE DOM
+			el.detachEvent( "on" + evnt, func );
+		} else { // No much to do
+			el[evnt] = null;
+		}
+
+		for ( var i = 0, e_l = events.length; i < e_l; i++ ) {
+			if ( __inArray( evnt, events[i][0] ) !== -1 && events[i][1] == func ) {
+				events.splice( i, 1 );
+				return self;
+			}
+		}
+		return self;
+	};
+
+	/**
+	 * fire some event for this.field
+	 * @param {string} evnt - event name
+	 * @returns {*}
+	 */
+	El_p.trigger = function ( evnt ){
+		var el = this.el,
+			evt;
+
+		if ( this.silence ) {
+			return;
+		}
+
+		if ( document.createEventObject ) { // dispatch for IE
+			evt = document.createEventObject();
+			return el.fireEvent( 'on' + evnt, evt );
+		} else { // dispatch for firefox + others
+			evt = document.createEvent( "HTMLEvents" );
+			evt.initEvent( evnt, true, true ); // event type,bubbling,cancelable
+			return !el.dispatchEvent( evt );
+		}
+	};
+
+
+	El_p.addClass = function ( new_class ){
+		var self = this,
+			el = self.el,
+			class_names = el.className.split( ' ' ) || [];
+
+		if ( __inArray( class_names, new_class ) === -1 ) {
+			class_names.push( new_class );
+			class_names = __clear( class_names );
+			el.className = (class_names.length > 0) ? class_names.join( ' ' ) : '';
+		}
+		return self;
+	};
+
+	El_p.removeClass = function ( old_class ){
+		var self = this,
+			el = self.el;
+
+		if ( self.hasClass( old_class ) ) {
+			var re = new RegExp( '(\\s|^)' + old_class + '(\\s|$)' );
+			el.className = el.className.replace( re, ' ' );
+		}
+		return self;
+	}
+
+	El_p.hasClass = function ( name ){
+		return !!((~(' ' + this.el.className + ' ').indexOf( ' ' + name + ' ' )));
+	};
+
+	El_p.data = function ( attr, value ){
+		var self = this,
+			el = self.el,
+			result = __data( el, attr, value );
+
+		if ( value === undefined ) {
+			return result;
+		}
+		return self;
+	};
+
+	El_p.attr = function ( attr, value ){
+		var self = this,
+			el = self.el;
+		switch ( value ) {
+			case null:
+				__delAttr( el, attr );
+				break;
+			case undefined:
+				return __getAttr( el, attr );
+				break;
+			default:
+				__setAttr( el, attr, value );
+				break;
+		}
+	};
+
+	El_p.processing = function ( action ){
+		var self = this,
+			processingClass = self.get( 'processingClass' ),
+			is_processing = self.hasClass( processingClass );
+
+		if ( action === false || (action === null && is_processing) ) {
+			self.removeClass( processingClass );
+		} else if ( action === true || (action === null && is_processing) ) {
+			self.addClass( processingClass );
+		}
+		return this;
+	};
+
+
+	/** extent subclass with superclass prototype */
+	var __extend_proto = function ( Child, Parent ){
+		var F = function (){
+		}
+		F.prototype = Parent.prototype
+		Child.prototype = new F()
+		Child.prototype.constructor = Child
+		Child.superclass = Parent.prototype
+	};
+
+
+
+	var tField = function ( parent, el ){
+		var self = this,
+			type = el.type,
+			name, rules,
+			attr_required, attr_min, attr_max,
+			rules2add = [],
+			config;
+
+		self.parent = parent;
+		self.el = el;
+		self.config = {};
+
+		self.events = [];
+		name = self.attr( 'name' );
+		attr_required = self.attr( 'required' ) !== null;
+		attr_min = self.attr( 'min' );
+		attr_max = self.attr( 'max' );
+
+		config = parent.config.fields ? parent.config.fields[name] : {};
+		if ( typeof config == 'string' ) {
+			config = {
+				rules: config
+			};
+		}
+		self.set( __extend( __clone( parent.config ), __clone( config ) ) );
+		self.config.rules = self.config.rules || self.data( 'rules' );
+
+		if ( attr_required ) {
+			rules2add.push( '*' );
+		}
+
+		if ( type == 'email' ) {
+			rules2add.push( '@' );
+		}
+
+		if ( type == 'url' ) {
+			rules2add.push( 'url' );
+		}
+
+		if ( type == 'number' ) {
+			rules2add.push( 'num' )
+
+			if ( attr_min !== null ) {
+				rules2add.push( '>' + attr_min );
+			}
+			if ( attr_max !== null ) {
+				rules2add.push( '<' + attr_max );
+			}
+		}
+
+
+		if ( rules2add.length > 0 ) {
+			self.config.rules = _v_( '' ).rules( self.config.rules || self.data( 'rules' ) ).addRule( rules2add.join( ' ' ) ).rule;
+		}
+
+		self.value = el.value;
+
+		// validate after init
+		self.validationStart = 'v_start';
+		self.validationSuccess = 'v_success';
+		self.validationError = 'v_error';
+
+		self.highlight = true;
+		self.fire_event = true;
+		self.silence = false;
+
+		return self.init();
+	};
+	__extend_proto( tField, Element );
+	var tField_p = tField.prototype;
+
+	tField_p.init = function (){
+		var self = this,
+			field = self.el,
+			value = field.value,
+			type = self.attr( 'type' ),
+			is_checkbox = type == 'checkbox';
+
+		if ( self.inited ) {
+			return self;
+		}
+
+		self.events = [];
+
+		self.valid = true;
+		self.holded = false;
+
+		self.value = value;
+
+		// adding validate event to the field;
+		var validate_event = self.get( 'validateEvent' );
+
+		if ( ~__inArray( CHANGE_ALSO, type ) && validate_event.indexOf( 'change' ) === -1 ) {
+			validate_event = validate_event.split( ' ' );
+			validate_event.push( 'change' );
+			validate_event = validate_event.join( ' ' );
+		}
+		if ( ~__inArray( HAS_CHANGE_EVENT, type ) ) {
+			validate_event = 'change';
+		}
+
+		self.set( {
+			validateEvent: validate_event
+		} );
+
+		self.on( validate_event, function (){
+			if ( !self.get( 'rules' ) ) {
+				return;
+			}
+			if ( self.value != self.el.value || is_checkbox ) {
+				self.value = self.el.value;
+
+				// clear field before validation
+				self.removeClass( self.get( 'errorClass' ) );
+				self.removeClass( self.get( 'processingClass' ) );
+
+				// disable submit button before validation
+				self.parent.invalid += (self.valid) ? 1 : 0;
+				self.valid = false;
+				self.removeClass( self.get( 'errorClass' ) );
+				self.parent.submitControl();
+
+				var timeout = self.get( 'timeout' );
+				if ( self.get( 'timeout' ) > 0 ) {
+					if ( self.timer ) {
+						clearTimeout( self.timer );
+					}
+					self.timer = setTimeout( function (){
+						self.validate();
+					}, timeout );
+				} else {
+					self.validate();
+				}
+			}
+		} );
+
+
+
+		if ( self.hasRules( '=#' ) ) {
+			var self_v_ = _v_().rules( self.config.rules ),
+				depended_id = self_v_.parsedRules['=#'],
+				el = document.getElementById( depended_id );
+
+			if ( el ) {
+				self.on( 'input keyup', function ( e ){
+					self.validate( {
+						highlight: !!self.value
+					} );
+				}, el )
+			}
+		}
+
+		// blur validation without timeout
+		if ( !~validate_event.indexOf( 'blur' ) && validate_event !== 'change' ) {
+			self.on( 'blur', function (){
+				if ( !self.get( 'rules' ) ) {
+					return;
+				}
+				if ( self.timer ) {
+					clearTimeout( self.timer );
+				}
+				self.validate( {
+					no_timeout: true
+				} );
+			} );
+		}
+
+		self.validate( { silence: true } );
+
+		self.inited = true;
+		return self;
+	};
+	tField_p.setRules = function ( rules, options ){
+		var self = this;
+		self.set( {
+			rules: rules
+		}, options );
+		self.validate( options );
+		return self;
+	};
+
+	tField_p.hasRules = function ( rules ){
+		return _v_().rules( this.get( 'rules' ) ).hasRule( rules );
+	};
+
+	tField_p.addRules = function ( rules, options ){
+		var self = this;
+		return self.setRules( _v_().rules( self.get( 'rules' ) ).addRule( rules ).rule, options );
+	};
+
+	tField_p.delRule = function ( rules, options ){
+		var self = this;
+		return self.setRules( _v_().rules( self.get( 'rules' ) ).delRule( rules ).rule, options );
+	};
+
+	/**
+	 * Highlight field with errorClass
+	 * @param valid
+	 * @returns {*}
+	 */
+	tField_p.error = function ( valid ){
+		var self = this;
+		self.valid = (!valid) ? true : false;
+
+		if ( !self.highlight && !self.valid ) {
+			return this;
+		}
+
+		var field = self.el,
+			errorClass = self.get( 'errorClass' );
+
+		if ( self.valid ) {
+			self.removeClass( errorClass );
+			self.data( 'error', null );
+		} else {
+			self.addClass( errorClass );
+			self.data( 'error', '1' );
+		}
+		return self;
+	};
+
+	/**
+	 * Hold field for a while
+	 * @param {!boolean} hold
+	 * @returns {*}
+	 */
+	tField_p.hold = function ( hold ){
+		var self = this,
+			is_holded = self.data( 'holded' );
+
+		if ( hold === undefined ) {
+			self.holded = !self.holded;
+		} else {
+			self.holded = (hold === true) ? true : false
+		}
+		self.data( 'holded', (self.holded ? 1 : null) );
+		if ( !is_holded && self.holded === true ) {
+			self.parent.holded++;
+		} else if ( is_holded && self.holded === false ) {
+			self.parent.holded--;
+		}
+		self.parent.submitControl();
+		return self;
+	};
+
+	/**
+	 * Here is the main field validation process
+	 * @param {object} options
+	 * @returns {boolean}
+	 */
+	tField_p.validate = function ( options ){
+		var self = this,
+			field = self.el,
+			type = self.attr( 'type' ),
+			result = true,
+			own = self.get( 'own' ),
+			request = self.get( 'request' ),
+			rules = self.get( 'rules' ),
+			_v_check = _v_( self.value || '' ).rules( rules ),
+			is_checkbox = type == 'checkbox',
+			is_required = _v_check.hasRule( '*' );
+
+		if ( !rules ) {
+			return result;
+		}
+
+		options = options || {};
+		self.silence = (options.silence === true) ? true : false;
+
+		self.highlight = (options.highlight === false || options.silence === true) ? false : true;
+		self.fire_event = (options.fire_event === false || options.silence === true) ? false : true;
+
+		if ( !self.silence ) {
+			self.execute( 'before' );
+			self.trigger( self.get( 'eventBefore' ) );
+			self.trigger( self.validationStart );
+		}
+
+		if ( typeof own == 'function' ) {
+			result = own.call( self.el );
+		} else {
+			if ( is_checkbox ) {
+				var is_checked = field.checked;
+				if ( !is_checked && is_required ) {
+					result = false;
+				}
+			} else {
+				// check request validation
+				if ( is_required || self.el.value.length > 0 ) {
+					result = _v_check.validate();
+				}
+
+				if ( request && result ) {
+					self.requestValidate( options );
+					self.highlight = true;
+					return null;
+				}
+			}
+		}
+
+		if ( result ) {
+			self.__validationSuccess();
+		} else {
+			self.__validationError();
+		}
+
+		self.highlight = true;
+		self.fire_event = true;
+		self.silence = false;
+		return result;
+	};
+
+	tField_p.__validationStart = function (){
+
+	};
+
+	tField_p.__validationError = function (){
+		var self = this;
+		self.trigger( self.get( 'eventError' ) );
+		self.parent.invalid += (self.valid) ? 1 : 0;
+		self.parent.submitControl();
+		self.error( true );
+		self.execute( 'onerror' );
+	};
+	tField_p.__validationSuccess = function (){
+		var self = this;
+		self.trigger( self.get( 'eventValid' ) );
+		self.parent.invalid -= (!self.valid) ? 1 : 0;
+		self.parent.submitControl();
+		self.error( false );
+		self.execute( 'onvalid' );
+	};
+
+
+
+	tField_p.requestValidate = function ( options ){
+
+		var self = this,
+			name = self.attr( 'name' ),
+			value = self.value,
+			request = self.get( 'request' );
+
+		var method = request.method.toLowerCase() == 'post' ? 'POST' : 'GET';
+		var data = request.data || {};
+
+		var success = request.success;
+
+		var url = (function (){
+			var url = request.url || window.location.href;
+			if ( method == 'GET' ) {
+				url += (~url.indexOf( '?' )) ? '&' : '?';
+				url += name + '=' + value;
+			} else {
+				data[name] = value;
+			}
+			return url;
+		})();
+
+		var timeout = self.get( 'requestTimeout' );
+
+		var readyStateChange = function (){
+			var xhr = self.xhr;
 			if ( xhr.readyState == 1 ) {
-				self.execute( 'start', field );
+				self.execute( request.start, [xhr] );
 			}
 
 			if ( xhr.readyState == 4 ) {
+				// TODO: handle other errors (maybe with switch);
 				if ( xhr.status == 200 ) {
-					var errors = [];
-					//					var validation = endFunction.call( field, xhr.response );
-					var validation = self.execute( 'end', field, [xhr.response] );
-					__removeClass( field, self.get( 'processingClass' ) );
-					__mark_field( field, 'h', 0, self );
-					if ( !validation ) {
-						errors = ['request', ''];
-					}
-					self.errorControl( field, errors, true );
+					var result = (self.execute( request.end, [xhr.response] ) === true) ? true : false;
+					self.processing( false ).hold( false );
+					self['__validation' + (result ? 'Success' : 'Error')]();
 				}
 			}
 		};
 
-		var makeRequest = function () {
-			// self.xhr[field.name] = new XMLHttpRequest();
-			self.xhr[field.name] = HTTP.newRequest();
-
-			var xhr = self.xhr[field.name];
-
+		var makeRequest = function (){
+			var xhr = HTTP.newRequest();
+			self.xhr = xhr;
 			xhr.onreadystatechange = readyStateChange;
-
-			// TODO: ajax start function should be here (fix bug in IE);
-			__addClass( field, self.get( 'processingClass' ) );
-
-			xhr.open( method.toUpperCase(), url, true );
+			self.processing( true ).hold( true );
+			xhr.open( method, url, true );
 			xhr.setRequestHeader( "Accept-Language", "en" );
-			if ( method.toLowerCase() == 'post' ) {
+			if ( method == 'POST' ) {
 				xhr.setRequestHeader( "Content-type", "application/x-www-form-urlencoded; charset=UTF-8" );
 				xhr.send( __serialize( data ) );
 			} else {
@@ -370,820 +1053,425 @@
 			}
 		};
 
-		if ( self.xhr[field.name] ) {
-			self.xhr[field.name].abort();
+		if ( self.xhr ) {
+			self.xhr.abort();
 		}
 
-		clearTimeout( self.xhrTimeout[field.name] );
-		__mark_field( field, 'h', 1, self );
+		if ( self.xhrTimeout ) {
+			clearTimeout( self.xhrTimeout );
+		}
+		self.hold( false );
 
-		var requestTimeout = (function () {
-			var timeout = self.get( 'timeout', field.name );
-			var requestTimeout = self.get( 'requestTimeout', field.name );
-			return requestTimeout - timeout;
-		})();
-
-		if ( !no_timeout && requestTimeout > 0 ) {
-			self.xhrTimeout[field.name] = setTimeout( function () {
+		if ( timeout > 0 && options.no_timeout !== true ) {
+			self.xhrTimeout = setTimeout( function (){
 				makeRequest();
-			}, requestTimeout );
+			}, timeout );
 		} else {
 			makeRequest();
 		}
 	};
 
-	var __check_cache = function ( our_form ) {
-		var cache = this.tF_cache;
-		for ( var i = 0, cache_l = cache.length; i < cache_l; i++ ) {
-			if ( cache[i].form == our_form ) {
-				return cache[i];
-			}
-		}
-		return null;
-	};
-
-	/**
-	 * @constructor
-	 * @param formId
-	 * @param options
-	 * @returns {*}
-	 */
-	var tFormer = function ( formId, options ) {
-
-		// check is this a new object;
-		if ( !(this instanceof tFormer) ) {
-			return new tFormer( formId, options );
-		}
-
-		// our form
-		var our_form;
-		if ( typeof(formId) === 'string' ) { // this it is selector
-			our_form = document.forms[formId];
-		} else if ( typeof(formId) === 'object' && formId.nodeName.toLowerCase() == 'form' ) { // lets hope it is DOM Object
-			our_form = formId;
-		}
-
-		if ( !our_form ) {
+	tField_p.execute = function ( func, params ){
+		var self = this;
+		if ( self.silence ) {
 			return;
 		}
 
-		// check is tFormer was allready inited for current form
-		if ( !__data( our_form, 'empowered' ) ) {
-			__data( our_form, 'empowered', 1 )
+		if ( typeof func == 'string' ) {
+			func = self.get( func );
+		}
+		return self.parent.execute( self.el, func, params );
+	};
+
+
+	/*
+	 * Test tButton created by Element constructor
+	 */
+	var tButton = function ( parent, el ){
+		var self = this,
+			type = self.attr( 'type' ),
+			name;
+
+		self.parent = parent;
+		self.el = el;
+		self.config = {};
+
+		self.events = [];
+
+		name = type === 'submit' ? type : self.data( 'check' );
+		self.name = name;
+		self.set( __extend( __clone( parent.config ), __clone( (parent.config.buttons ? parent.config.buttons[name] : {}) ) ) );
+
+		return self.init();
+	};
+	__extend_proto( tButton, Element );
+	var tButton_p = tButton.prototype;
+
+	tButton_p.init = function (){
+		var self = this,
+			el = self.el,
+			parent = self.parent;
+
+		if ( self.inited ) {
+			self.destroy();
+		}
+		if ( el.type == 'submit' || el == parent.get( 'submitButton' ) ) {
+			self.on( 'click', function ( e ){
+				e.preventDefault();
+				parent.form.onsubmit( e );
+				return false;
+			} );
 		} else {
-			var cached = __check_cache.call( this, our_form );
-			if ( cached ) {
-				var inited = cached.inited;
-				if ( inited ) {
-					cached.destroy();
+			self.on( 'click', function (){
+				var field = parent.field( self.data( 'check' ) );
+				if ( field ) {
+					field.validate();
 				}
-				cached.options = __extend( __clone( defaults ), options );
-				cached.fields = cached.options.fields || {};
-				for ( var f in cached.fields ) {
-					if ( typeof cached.fields[f] == 'string' ) {
-						cached.fields[f] = {
-							rules: cached.fields[f]
-						}
-					}
-				}
-				if ( inited ) {
-					cached.init();
-				}
-				return cached;
-			}
-			return;
+			} );
 		}
-		this.form = our_form;
-
-		this.options = __extend( __clone( defaults ), options );
-		// default options
-		this.fields = this.options.fields || {};
-		for ( var f in this.fields ) {
-			if ( typeof this.fields[f] == 'string' ) {
-				this.fields[f] = {
-					rules: this.fields[f]
-				}
-			}
-		}
-		this.events = {};
-		this.btn_events = [];
-
-		// timeouts for fields
-		this.fieldTimeout = {};
-
-		// Errors stuff
-		this.errors = {};
-		this.errorsArray = []; // current errors Array
-		this.errorsCount = 0; // current fields with errors count
-
-		// Counter for fields holded for validation
-		this.holdedCount = 0; // current holded fields count
-
-		// XHR stuff
-		this.xhr = {};
-		this.xhrTimeout = {};
-
-		// fully valid
-		this.valid = true;
-
-		var tf = this.init();
-		this.tF_cache.push( tf );
-		//		window.tFormer_cache.push( tf );
-		return tf;
-	};
-
-	var tFormer_proto = tFormer.prototype;
-
-	/** cache object for initialized forms */
-	tFormer_proto.tF_cache = [];
-
-	/**
-	 * init tFormer()
-	 *
-	 * @returns {*}
-	 */
-	tFormer_proto.init = function () {
-
-		if ( this.inited ) {
-			return this;
-		}
-
-		this.locked = 0;
-
-		for ( var i = 0, fieldLength = this.form.length; i < fieldLength; i++ ) {
-			var field = this.form[i];
-
-			_addCheckButtonEvent.call( this, field );
-			_findSubmitButton.call( this, field );
-			// If passed in incorrectly, we need to skip the field.
-			if ( !field.name ) {
-				continue;
-			}
-			_getFieldOptions.call( this, field ); // get all field stuff
-			_addElementEvent.call( this, field ); // add eventListener to form element
-			_dependencyEvent.call( this, field ); // check dependency field
-		}
-		_submitButtonEvent.call( this ); // add submit button event
-		_hidenFormValidate.call( this ); // hidden validate without error showing
-		_submitFunction.call( this ); // Add formSubmit validation event
-
 		this.inited = true;
-
 		return this;
 	};
 
+	tButton_p.disable = function (){
+		var self = this;
+		self.addClass( self.get( 'disabledClass' ) );
+		return self;
+	};
 
-	/**
-	 * Get field options (default or custom)
-	 *
-	 * @param {string} option_name
-	 * @param {!string} field_name
-	 * @returns {*}
-	 */
-	tFormer_proto.get = function ( option_name, field_name ) {
-		if ( field_name && this.fields[field_name] && this.fields[field_name][option_name] !== null && this.fields[field_name][option_name] !== undefined ) {
-			return this.fields[field_name][option_name];
-		} else {
-			return this.options[option_name];
-		}
+	tButton_p.enable = function (){
+		var self = this;
+		self.removeClass( self.get( 'disabledClass' ) );
+		return self;
 	};
 
 
-	/**
-	 * set options to the field (if field_name os defined)
-	 *
-	 * @param options
-	 * @param field_name
+
+	/*
+	 * Helpers
+	 * ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
 	 */
-	tFormer_proto.set = function ( options, field_name ) {
-		for ( var key in options ) {
-			if ( !field_name ) {
-				this.options[key] = options[key];
-			} else {
-				this.fields[field_name] = this.fields[field_name] || {};
-				this.fields[field_name][key] = options[key];
+	/**
+	 * Object extend
+	 * @param object
+	 * @param new_obj
+	 * @returns {object}
+	 */
+	var __extend = function ( object, new_obj ){
+		for ( var key in new_obj ) {
+			if ( new_obj.hasOwnProperty( key ) ) {
+				object[key] = new_obj[key];
 			}
 		}
-		this.destroy();
-		this.init();
+		return object;
 	};
 
-
 	/**
-	 * setRules and revalidate form without showing the errors
-	 *
-	 * @param rules - string with rules
-	 * @param field_name
-	 * @param {boolean} show_errors
+	 * Object clone
+	 * @returns {*|array|string}
 	 */
-	tFormer_proto.setRules = function ( rules, field_name, show_errors ) {
-
-		this.set( {rules: rules}, field_name );
-		this.validateForm( show_errors ? true : false );
+	var __clone = function ( obj ){
+		return __isArray( obj ) ? obj.slice() : __extend( {}, obj );
 	};
 
 
 	/**
-	 * Execute custom eventFunction (default or custom)
-	 *
-	 * @param func_name
-	 * @param this_el
-	 * @param {Array} params
-	 */
-	tFormer_proto.execute = function ( func_name, this_el, params ) {
-		var func = this.get( func_name, (__getAttr( this_el, 'name' ) || null) );
-		if ( typeof func == 'function' ) {
-			return func.apply( this_el, (params || []) );
-		}
-	};
-
-
-	/**
-	 * Control processing class of submit button
-	 *
-	 * @param {boolean} processing
-	 */
-	tFormer_proto.processing = function ( processing ) {
-		if ( !this.get( 'submitButtonControl' ) ) {
-			return;
-		}
-		var sb = this.get( 'submitButton' );
-		var pc = this.get( 'processingClass' );
-		if ( processing ) {
-			__addClass( sb, pc );
-		} else {
-			__removeClass( sb, pc );
-		}
-		return this;
-	};
-	tFormer_proto.processingOn = function () {
-		return this.processing( true );
-	};
-	tFormer_proto.processingOff = function () {
-		return this.processing( false );
-	};
-
-
-	/**
-	 * validateForm - function for validating field
-	 *
-	 * @param event - form submit event
-	 * @param {!boolean} no_timeout - no request timeout - immediately validate the field
+	 * is array function
 	 * @returns {boolean}
-	 * @private
 	 */
-	tFormer_proto.validateForm = function ( event, no_timeout ) {
-		//empty errors
-		this.errorsArray = [];
-		// go through all fields and validate them
-		for ( var key in this.fields ) {
-			if ( !this.fields.hasOwnProperty( key ) ) {
-				continue;
-			}
-			var field = this.form[key];
-			var show_errors = (event) ? true : false;
-			this.validateField( field, show_errors, no_timeout );
-		}
-		return !(this.errorsCount > 0 || this.holdedCount > 0);
+	var __isObject = function ( obj ){
+		return toString.call( obj ) == '[object Object]';
+	};
+
+
+	var __isForm = function ( obj ){
+		return toString.call( obj ) == '[object HTMLFormElement]';
+	};
+
+	/**
+	 * is array function
+	 * @returns {boolean}
+	 */
+	var __isArray = function ( obj ){
+		return Object.prototype.toString.call( obj ) == '[object Array]';
 	};
 
 
 	/**
-	 * validateField - function for validating field
+	 * detects is defined array has some value
+	 * @param array
+	 * @param value
+	 * @returns {number}
+	 * @private
+	 */
+	var __inArray = function ( array, value ){
+		var index = -1,
+			length = array ? array.length : 0;
+		while ( ++index < length ) {
+			if ( array[index] === value ) {
+				return index;
+			}
+		}
+		return -1;
+	};
+
+	var __clear = function ( arr ){
+		if ( __isArray( arr ) ) {
+			var new_arr = [];
+			for ( var i = 0, a_l = arr.length; i < a_l; i++ ) {
+				if ( arr[i] !== '' ) {
+					new_arr.push( arr[i] );
+				}
+			}
+			return new_arr;
+		}
+	};
+
+
+	/**
+	 * Work with data-attributes
 	 *
-	 * @param that - HTML element to test
-	 * @param {!boolean} showError - show error for field or not
-	 * @param {!boolean} no_timeout - validate with/without timeout
+	 * @param {object} element - element
+	 * @param {string} attr - data-attribute
+	 * @param {!string|number} value - new attribute value. [null - delete attr, undefined - return attr value, defined - set new value]
 	 * @returns {*}
-	 * @private
 	 */
-	tFormer_proto.validateField = function ( that, showError, no_timeout ) {
-		if ( typeof that == 'string' && this.form ) {
-			that = this.form[that];
+	var __data = function ( element, attr, value ){
+		switch ( value ) {
+			case null:
+				__delAttr( element, 'data-' + attr );
+				break;
+			case undefined:
+				return __getAttr( element, 'data-' + attr );
+				break;
+			default:
+				__setAttr( element, 'data-' + attr, value );
+				break;
 		}
-		if ( !that || __inArray( TYPES, that.type ) === -1 ) {
-			return;
+	};
+
+	var __getAttr = function ( el, attr ){
+		if ( !el ) {
+			return null;
 		}
-		var field = this.fields[that.name];
-		field.value = that.value;
-		field.checked = that.checked;
-
-		var errors = [];
-		var own_func = this.get( 'own', that.name );
-
-		if ( !field.rules ) {
-			this.errorControl( that, errors, true );
-			return true;
+		return el.getAttribute( attr );
+	};
+	var __setAttr = function ( el, attr, value ){
+		if ( !el ) {
+			return null;
 		}
-		showError = !(showError === false);
-
-		this.execute( 'before', that );
-
-		if ( own_func && typeof(own_func) == "function" ) {
-			var validate_result = own_func.call( that );
-			if ( !validate_result ) {
-				errors.push( ['own', ''] );
-			}
-			this.errorControl( that, errors, showError );
-			return validate_result;
+		el.setAttribute( attr, value );
+	};
+	var __delAttr = function ( el, attr ){
+		if ( !el ) {
+			return null;
 		}
-
-		var request = ~field.rules.indexOf( 'request' );
-
-		clearTimeout( this.xhrTimeout[that.name] );
-		clearTimeout( this.fieldTimeout[that.name] );
-
-		// check if empty and not required
-		if ( field.rules.indexOf( '*' ) !== 0 && field.value === '' ) {
-			if ( request ) {
-				clearTimeout( this.xhrTimeout[that.name] );
-				__removeClass( that, this.get( 'processingClass' ) );
-				__mark_field( that, 'h', 0, this );
-			}
-			this.errorControl( that, errors, true );
-			return true;
-		}
-
-		// check if field is checkbox
-		if ( field.type == 'checkbox' ) {
-			var checkbox_checked = field.checked;
-			if ( !checkbox_checked ) {
-				errors.push( ['required', ''] );
-			}
-			this.errorControl( that, errors, showError );
-			return checkbox_checked;
-		}
-
-		errors = _v_( field.value ).validateWithRules( {rules: field.rules, result: 'array' } );
-
-		// run request if needed and other rules validated successfully;
-		if ( request && errors.length === 0 ) {
-			_request.call( this, that, showError, no_timeout );
-		} else {
-			__mark_field( that, 'h', 0, this );
-		}
-
-
-		// controll all errors
-		this.errorControl( that, errors, showError );
-
-		return (errors && errors.length > 0) ? false : true;
+		el.removeAttribute( attr );
 	};
 
 
-	/**
-	 * controllSubmitButton - method for adding disable status to submit button when some field is invalid
-	 *
-	 * @param {!boolean} is_valid  - shows is form valid or not
-	 * @private
-	 */
-	tFormer_proto.submitButtonControl = function ( is_valid ) {
-		var submit_button_controll = this.get( 'submitButtonControl' ),
-			submit_button = this.get( 'submitButton' );
-		if ( !submit_button_controll || !submit_button ) {
-			return;
-		}
-		if ( is_valid ) {
-			if ( this.locked === 0 ) {
-				__removeClass( submit_button, this.get( 'disabledClass' ) );
-			}
-		} else {
-			__addClass( submit_button, this.get( 'disabledClass' ) );
-		}
-	};
-	tFormer_proto.submitButtonOn = function () {
-		this.submitButtonControl( true );
-	};
-	tFormer_proto.submitButtonOff = function () {
-		this.submitButtonControl( false );
-	};
 
-
-	/**
-	 * toObject - Form -> object
-	 * get all for fields and theirs values to single Object
-	 *
-	 * @returns {{}}
-	 */
-	tFormer_proto.toObject = function () {
-		var obj = {};
-		for ( var i = 0, formLength = this.form.length; i < formLength; i++ ) {
-			var el = this.form[i];
-			if ( !el.name ) {
+	// AJAX Request functionality
+	var HTTP = {};
+	HTTP._factories = [
+		function (){
+			return new XMLHttpRequest();
+		},
+		function (){
+			return new ActiveXObject( "Msxml2.XMLHTTP" );
+		},
+		function (){
+			return new ActiveXObject( "Microsoft.XMLHTTP" );
+		}
+	];
+	HTTP._factory = null;
+	HTTP.newRequest = function (){
+		if ( HTTP._factory !== null ) {
+			return HTTP._factory();
+		}
+		for ( var i = 0; i < HTTP._factories.length; i++ ) {
+			try {
+				var factory = HTTP._factories[i];
+				var request = factory();
+				if ( request !== null ) {
+					HTTP._factory = factory;
+					return request;
+				}
+			} catch ( e ) {
 				continue;
 			}
-			if ( el.type == 'checkbox' ) {
-				obj[el.name] = el.checked;
-			} else if ( el.type == 'radio' ) {
-				if ( !obj[el.name] ) {
-					obj[el.name] = '';
-				}
-				if ( el.checked ) {
-					obj[el.name] = el.value;
-				}
-			} else {
-				obj[el.name] = el.value;
-			}
 		}
-		return obj;
+		HTTP._factory = function (){
+			throw new Error( 'Object XMLHttpRequest not supported' );
+		};
+		HTTP._factory();
 	};
 
 
 	/**
-	 * Controll error classNames
-	 *
-	 * @param field - currently validating HTML element
-	 * @param errors - errors in validating @that element
-	 * @param {!boolean} showError - show error on the field or not
-	 * @private
+	 * Serrialize data for request
+	 * @param {object} data - object to serialize
+	 * @returns {string}
 	 */
-	tFormer_proto.errorControl = function ( field, errors, showError ) {
-		// show || hide error
-		var with_errors = errors.length > 0;
-
-		if ( this.get( 'errorClass' ) ) {
-			if ( with_errors && showError ) {
-				__addClass( field, this.get( 'errorClass' ) );
-			} else {
-				__removeClass( field, this.get( 'errorClass' ) );
-			}
+	var __serialize = function ( data ){
+		var pairs = [];
+		var regexp = /%20/g;
+		for ( var name in data ) {
+			var pair = encodeURIComponent( name ).replace( regexp, '+' ) + '=';
+			pair += encodeURIComponent( data[name].toString() ).replace( regexp, '+' );
+			pairs.push( pair );
 		}
-
-		// add errors to this object and to field dataset
-		if ( errors && with_errors ) {
-			this.errors[field.name] = errors;
-			__mark_field( field, 'e', 1, this );
-		} else {
-			delete this.errors[field.name];
-			__mark_field( field, 'e', 0, this );
-		}
-
-		this.valid = !(this.holdedCount > 0 || this.errorsCount > 0 );
-
-		if ( showError && !__data( field, 'holded' ) ) {
-			// Execute error/valid functions
-			this.execute( (with_errors) ? 'onerror' : 'onvalid', field );
-		}
-
-		this.submitButtonControl( this.valid );
+		return pairs.join( '&' );
 	};
 
-	/**
-	 * Destroy tFormer
-	 */
-	tFormer_proto.lock = function () {
-		this.locked += 1;
-		this.submitButtonOff();
-	}
+})( window, document );
 
-	tFormer_proto.unlock = function () {
-		this.locked -= 1;
-		if ( this.locked === 0 ) {
-			this.submitButtonControl( !(this.errorsCount > 0 || this.holdedCount > 0) );
-		}
-	}
+/**
+ * _v_.js - validator
+ * http://github.com/TjRus/_v_.js
+ * (c) 2013 Vasiliy Zubach (aka TjRus) - http://tjrus.com/
+ * _v_ may be freely distributed under the MIT license.
+ */
+"use strict";
 
-	/**
-	 * Destroy tFormer
-	 */
-	tFormer_proto.destroy = function () {
-		// remove events from buttons
-		var el = this.btn_events;
-		for ( var key = 0; key < el.length; key++ ) {
-			__off( el[key][0], el[key][1], el[key][2] );
-		}
-		this.btn_events = [];
-
-		var sb = this.get( 'submitButton' );
-		if ( sb ) {
-			__removeClass( sb, this.get( 'processingClass' ) );
-			__removeClass( sb, this.get( 'disabledClass' ) );
-		}
-
-		// remove events from fields
-		if ( !this.form ) {
-			return;
-		}
-
-		el = this.events;
-		for ( var key in el ) {
-			var field = this.form[key];
-			if ( !field ) {
-				continue;
-			}
-			__removeClass( field, this.get( 'errorClass', field.name ) );
-			__removeClass( field, this.get( 'processingClass', field.name ) );
-			for ( var e in el[key] ) {
-				for ( var i = 0; i < el[key][e].length; i++ ) {
-					__off( this.form[key], e, el[key][e][i] );
-				}
-			}
-		}
-		this.events = {};
-
-		// remove timers
-		for ( var key in this.fieldTimeout ) {
-			clearTimeout( this.fieldTimeout[key] );
-			delete this.fieldTimeout[key];
-		}
-
-		for ( var key in this.xhrTimeout ) {
-			clearTimeout( this.xhrTimeout[key] );
-			delete this.xhrTimeout[key];
-		}
-
-		for ( var key in this.xhr ) {
-			this.xhr[key].abort();
-			delete this.xhr[key];
-		}
-
-		// remove onsubmit validation function
-		this.form.onsubmit = null;
-
-		this.inited = false;
-	};
-	window.tFormer = tFormer;
-
-
-	/**
-	 * _v_ - Validator
-	 */
-	var regex = {
-		ruleArray   : /^\[(.+)\]$/,
-		email       : /^((([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+(\.([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+)*)|((\x22)((((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(([\x01-\x08\x0b\x0c\x0e-\x1f\x7f]|\x21|[\x23-\x5b]|[\x5d-\x7e]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(\\([\x01-\x09\x0b\x0c\x0d-\x7f]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))))*(((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(\x22)))@((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))$/i,
-		url         : /^(https?|s?ftp):\/\/(((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:)*@)?(((\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5]))|((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.?)(:\d*)?)(\/((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)+(\/(([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)*)*)?)?(\?((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)|[\uE000-\uF8FF]|\/|\?)*)?(#((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)|\/|\?)*)?$/i,
-		alpha       : /^[a-z]+$/i,
-		alphaNumeric: /^[a-z0-9]+$/i,
-		alphaDash   : /^[a-z_-]+$/i,
-		alphaNumDash: /^[a-z0-9_-]+$/i,
-		ip          : /^((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\.){3}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})$/i,
-		base64      : /^(?:[A-Za-z0-9+\/]{4})*(?:[A-Za-z0-9+\/]{2}==|[A-Za-z0-9+\/]{3}=|[A-Za-z0-9+\/]{4})$/,
-		integer     : /^\-?[0-9]+$/,
-		numeric     : /^[0-9]+$/,
-		natural     : /^[0-9]+$/i,
-		decimal     : /^\-?[0-9]*\.?[0-9]+$/,
-
-		card                 : /^(?:4[0-9]{12}(?:[0-9]{3})?|5[1-5][0-9]{14}|6(?:011|5[0-9][0-9])[0-9]{12}|3[47][0-9]{13}|3(?:0[0-5]|[68][0-9])[0-9]{11}|(?:2131|1800|35\d{3})\d{11})$/,
-		card_visa            : /^4[0-9]{12}(?:[0-9]{3})?$/,
-		card_mastercard      : /^5[1-5][0-9]{14}$/,
-		card_american_express: /^3[47][0-9]{13}$/,
-		card_discover        : /^6(?:011|5[0-9]{2})[0-9]{12}$/,
-		card_jcb             : /^(?:2131|1800|35\d{3})\d{11}$/
-	};
-
-	var keys = {
-		'*'  : 'required',
-		'@'  : 'isValidEmail',
-		'@s' : 'isValidEmails',
-		'ip' : 'isValidIP',
-		'b64': 'isValidBase64',
-
-		'url': 'isValidUrl',
-
-		'c' : 'isValidCard',
-		'cv': 'isValidVisa',
-		'cm': 'isValidMastercard',
-		'ca': 'isValidAmex',
-		'cd': 'isValidDiscover',
-
-		'a'  : 'isAlpha',
-		'a1' : 'isAlphaNumeric',
-		'a1_': 'isAlphaNumDash',
-		'a_' : 'isAlphaDash',
-
-		'num': 'isNumeric',
-		'int': 'isInteger',
-		'dec': 'isDecimal',
-		'nat': 'isNatural',
-
-		'l=' : 'lengthEq',
-		'l>' : 'lengthMore',
-		'l>=': 'lengthEqOrMore',
-		'l<' : 'lengthLess',
-		'l<=': 'lengthEqOrLess',
-
-		'lr=': 'lengthInRange',
-
-		'reg=': 'validateRegular',
-
-		'r=': 'inRange',
-
-		'>=': 'greaterOrEq',
-		'<=': 'lessOrEq',
-		'>' : 'greaterThen',
-		'<' : 'lessThen',
-		'=#': 'matchesToId',
-		'=' : 'matchesTo',
-
-		'!=': 'notMatches',
-		'!' : 'notContain',
-
-		'D=': 'isValidDate'
-	};
-	var rules_order = ['lr=', 'l=', 'l>=', 'l<=', 'l>', 'l<', 'reg=', 'r=', '>=', '<=', '>', '<', '=#', '=', '!=', '!', 'D='];
+(function ( window, document, undefined ){
 
 	/**
 	 * Validator constructor
 	 *
 	 * @constructor
-	 * @param value
+	 * @param {!string} value
 	 * @returns {*}
 	 * @private
 	 */
-	var _v_ = function ( value ) {
+	var _v_ = function ( value ){
 		if ( !(this instanceof _v_) ) {
 			return new _v_( value );
 		}
-		this.value = value;
+		this.value = value || '';
+		this.separator = ' ';
+		this.rule = '';
+
+		this.parsedRules = [];
+
 		return this;
 	};
 	var _v_proto = _v_.prototype;
 
-	_v_proto.required = function () {
-		return (this.value.length !== 0) ? true : false;
-	};
-	_v_proto.validateRegular = function ( regExpression ) {
-		var reg = new RegExp( regExpression, 'i' );
-		return reg.test( this.value );
-	};
-
-	_v_proto.isValidUrl = function () {
-		return regex.url.test( this.value );
-	};
-
-	_v_proto.isValidEmail = function () {
-		return regex.email.test( this.value.replace( /^\s+|\s+$/g, '' ) );
+	/**
+	 * sets rules separator
+	 * @param separator
+	 * @returns {*}
+	 */
+	_v_proto.separate = function ( separator ){
+		this.separator = separator;
+		this.rules( this.rule ); // pars rules again
+		return this;
 	};
 
-	_v_proto.isValidEmails = function ( separator ) {
-		var emails = this.value.split( separator || ',' );
-		for ( var i = 0; i < emails.length; i++ ) {
-			if ( !_v_( emails[i] ).isValidEmail() ) {
-				return false;
+	/**
+	 * set rules to validator
+	 * @param rules
+	 * @returns {*}
+	 */
+	_v_proto.rules = function ( rules ){
+		this.rule = rules || '';
+		this.parseRules();
+		return this;
+	};
+
+	/**
+	 * add rules to existed rules str
+	 * @param rule
+	 * @returns {*}
+	 */
+	_v_proto.addRule = function ( rule ){
+		var parsed = this.parsedRules;
+		var rule_v_ = _v_().rules( rule ).parsedRules;
+
+		for ( var key in rule_v_ ) {
+			var rule = rule_v_[key];
+			if ( !rule ) {
+				parsed[key] = rule;
+				continue;
 			}
-		}
-		return true;
-	};
-
-	_v_proto.isValidCard = function () {
-		return regex.card.test( this.value );
-	};
-
-	_v_proto.isValidVisa = function () {
-		return regex.card_visa.test( this.value );
-	};
-
-	_v_proto.isValidMastercard = function () {
-		return regex.card_mastercard.test( this.value );
-	};
-
-	_v_proto.isValidAmex = function () {
-		return regex.card_american_express.test( this.value );
-	};
-
-	_v_proto.isValidDiscover = function () {
-		return regex.card_discover.test( this.value );
-	};
-
-	_v_proto.isAlpha = function () {
-		return regex.alpha.test( this.value );
-	};
-
-	_v_proto.isAlphaNumeric = function () {
-		return regex.alphaNumeric.test( this.value );
-	};
-
-	_v_proto.isAlphaDash = function () {
-		return regex.alphaDash.test( this.value );
-	};
-
-	_v_proto.isAlphaNumDash = function () {
-		return regex.alphaNumDash.test( this.value );
-	};
-
-	_v_proto.isValidIP = function () {
-		return regex.ip.test( this.value );
-	};
-
-	_v_proto.isValidBase64 = function () {
-		return regex.base64.test( this.value );
-	};
-
-	_v_proto.isInteger = function () {
-		return regex.integer.test( this.value );
-	};
-
-	_v_proto.isDecimal = function () {
-		return regex.decimal.test( this.value );
-	};
-
-	_v_proto.isNumeric = function () {
-		return regex.numeric.test( this.value );
-	};
-
-	_v_proto.isNatural = function () {
-		return regex.natural.test( this.value );
-	};
-
-	_v_proto.lengthEq = function ( length ) {
-		if ( typeof(length) == 'number' || typeof(length) == 'string' ) {
-			return this.value.length == length;
-		} else {
-			for ( var key in length ) {
-				if ( this.value.length == length[key] ) return true;
-			}
-		}
-		return false;
-	};
-
-	_v_proto.lengthMore = function ( length ) {
-		return this.value.length > length;
-	};
-
-	_v_proto.lengthEqOrMore = function ( length ) {
-		return this.value.length >= length;
-	};
-
-	_v_proto.lengthLess = function ( length ) {
-		return this.value.length < length;
-	};
-
-	_v_proto.lengthEqOrLess = function ( length ) {
-		return this.value.length <= length;
-	};
-
-	_v_proto.lengthInRange = function ( range ) {
-		return (this.value.length >= range[0] && this.value.length <= range[1]);
-	};
-
-	_v_proto.greaterThen = function ( value ) {
-		return (_v_( this.value.toString() ).isDecimal() && parseFloat( this.value ) > parseFloat( value )) ? true : false;
-	};
-
-	_v_proto.greaterOrEq = function ( value ) {
-		return (_v_( this.value.toString() ).isDecimal() && parseFloat( this.value ) >= parseFloat( value )) ? true : false;
-	};
-
-	_v_proto.lessThen = function ( value ) {
-		return (_v_( this.value.toString() ).isDecimal() && parseFloat( this.value ) < parseFloat( value )) ? true : false;
-	};
-
-	_v_proto.lessOrEq = function ( value ) {
-		return (_v_( this.value.toString() ).isDecimal() && parseFloat( this.value ) <= parseFloat( value )) ? true : false;
-	};
-
-	_v_proto.inRange = function ( value ) {
-		return (_v_( this.value.toString() ).isDecimal() && parseFloat( this.value ) >= parseFloat( value[0] ) && parseFloat( this.value ) <= parseFloat( value[1] )) ? true : false;
-	};
-
-	_v_proto.matchesToId = function ( value ) {
-		if ( typeof value == 'string' || typeof value == 'number' ) {
-			value = value.split( ' ' );
-			var el = document.getElementById( value );
-			if ( !el ) {
-				return false;
-			}
-			return this.value == el.value;
-		} else {
-			for ( var i = 0; i < value.length; i++ ) {
-				var el = document.getElementById( value[i] );
-				if ( el && this.value == el.value ) {
-					return true;
-				}
-			}
-		}
-		return false;
-	};
-
-	_v_proto.matchesTo = function ( value ) {
-		if ( typeof value == 'string' || typeof value == 'number' ) {
-			return this.value == value;
-		} else {
-			for ( var i = 0, valueLength = value.length; i < valueLength; i++ ) {
-				if ( value[i].indexOf( '#' ) === 0 ) {
-					var el = document.getElementById( value[i].replace( '#', '' ) );
-					if ( !el ) {
-						return false;
+			// has params and is in defined rules
+			if ( rule && parsed.hasOwnProperty( key ) ) {
+				// params is array
+				parsed[key] = __toArray( parsed[key] );
+				rule = __toArray( rule );
+				for ( var i = 0, r_v_l = rule.length; i < r_v_l; i++ ) {
+					if ( __inArray( parsed[key], rule[i] ) !== -1 ) {
+						continue;
 					}
-					if ( this.value == el.value ) return true;
-				} else {
-					if ( this.value == value[i] ) return true;
+					parsed[key].push( rule[i] );
 				}
+			} else {
+				parsed[key] = rule;
 			}
 		}
-		return false;
+
+		this.rule = __rulesStr( this.parsedRules, this.separator );
+		return this;
 	};
 
-	_v_proto.notMatches = function ( value ) {
-		return !(_v_( this.value ).matchesTo( value ));
+	/**
+	 * Delete rule from validator rules
+	 * @param rule
+	 * @returns {*}
+	 */
+	_v_proto.delRule = function ( rule ){
+		var parsed = this.parsedRules;
+		var rule_v_ = _v_().rules( rule ).parsedRules;
+		for ( var key in rule_v_ ) {
+			var rules = rule_v_[key];
+			if (!parsed.hasOwnProperty(key)) {
+				continue;
+			}
+			if ( rules === undefined) {
+				delete parsed[key];
+				continue;
+			}
+
+			parsed[key] = __toArray( parsed[key] );
+			rules = __toArray( rules );
+			for ( var i = 0, r_l = rules.length; i < r_l; i++ ) {
+				var index = __inArray( parsed[key], rules[i] );
+				if ( ~index ) {
+					parsed[key].splice( index, 1 );
+				}
+			}
+			if ( parsed[key].length === 0 ) {
+				delete parsed[key];
+			} else if ( parsed[key].length === 1 ) {
+				parsed[key] = parsed[key][0];
+			}
+		}
+		this.rule = __rulesStr( this.parsedRules, this.separator );
+		return this;
 	};
 
-	_v_proto.notContain = function ( value ) {
-		if ( typeof value == 'string' || typeof value == 'number' ) {
-			return (this.value).toString().indexOf( value.toString() ) === -1;
-		} else {
-			for ( var key in value ) {
-				if ( ~(this.value).toString().indexOf( value[key].toString() ) ) {
+	/**
+	 * check has validator such rule or not
+	 * @param rules
+	 * @returns {boolean}
+	 */
+	_v_proto.hasRule = function ( rules ){
+		var rule_v_ = _v_().rules( rules ).parsedRules;
+		var parsed = this.parsedRules;
+		for ( var key in rule_v_ ) {
+			var rule = rule_v_[key];
+			if ( !rule ) {
+				if ( !parsed.hasOwnProperty( key ) ) {
+					return false;
+				} else {
+					continue;
+				}
+			}
+			parsed[key] = __toArray( parsed[key] );
+			rule = __toArray( rule );
+			for ( var i = 0, r_l = rule.length; i < r_l; i++ ) {
+				if ( __inArray( parsed[key], rule[i] ) === -1 ) {
 					return false;
 				}
 			}
@@ -1191,94 +1479,347 @@
 		return true;
 	};
 
-	_v_proto.isValidDate = function ( date_formar ) {
-		return (__toDate( this.value, date_formar )) ? true : false;
-	};
 
-	_v_proto.validateMethods = function ( separator ) {
-		var validate_options = _v_( this.value ).parseValidateOptions( separator );
-		var validate_methods = [];
-		for ( var i = 0, vo_length = validate_options.length; i < vo_length; i++ ) {
-			validate_methods[i] = validate_options[i][0];
-		}
-		return validate_methods;
-	};
+	/**
+	 * parse validator rules and return object with rule keys and their values
+	 * @returns {{}}
+	 */
+	_v_proto.parseRules = function (){
+		var rules = this.rule.split( this.separator );
+		var parsed = {};
+		var keys = this.keys;
 
-	_v_proto.parseValidateOptions = function ( separator ) {
-		var options = this.value.split( separator || ' ' ),
-			parsed_options = [];
-
-		for ( var i = 0; i < options.length; i++ ) {
-			var option = options[i],
-				func = '',
-				param = '';
-
+		for ( var i = 0, rules_length = rules.length; i < rules_length; i++ ) {
+			var option = rules[i], func, rule, params = undefined;
 			if ( keys[ option ] ) {
 				func = keys[ option ];
+				rule = option;
 			} else {
-				for ( var j = 0, roLength = rules_order.length; j < roLength; j++ ) {
-					if ( option.indexOf( rules_order[j] ) === 0 ) {
-						param = option.replace( rules_order[j], '' );
-						func = keys[rules_order[j]];
+				var keys_order = this.keys_order;
+				for ( var j = 0, koLength = keys_order.length; j < koLength; j++ ) {
+					var key = keys_order[j];
+					if ( option.indexOf( key ) === 0 ) {
+						rule = key;
+						params = option.replace( key, '' );
+						var paramArray = (/^\[(.+)\]$/).exec( params );
+						if ( paramArray ) params = paramArray[1].split( ',' ); // TODO: params separator
+						func = this.keys[rule];
 						break;
 					}
 				}
 			}
 			if ( func ) {
-				parsed_options.push( [func, param] );
+				parsed[rule] = params;
 			}
 		}
-		return parsed_options;
+		this.parsedRules = parsed;
+		this.rule = __rulesStr( parsed, this.separator );
+		return parsed;
 	};
 
 	/**
-	 *
-	 * @param options
-	 * options.value_separator
-	 * options.rule_separator
-	 * options.result
-	 * @returns {*}
+	 * main validate function.
+	 * @param rules
+	 * @returns {boolean}
 	 */
-	_v_proto.validateWithRules = function ( options ) {
-		var rules = (typeof options == 'string') ? options : options.rules;
-		var value_separator = options.value_separator || ',';
-		var rule_separator = options.rule_separator || ' ';
-		var result = options.result;
-		if ( !rules ) {
-			return true;
+	_v_proto.validate = function ( rules ){
+		if ( rules ) {
+			this.rules( rules );
 		}
-		var parsedRules = _v_( rules ).parseValidateOptions( rule_separator );
-		var errors = [];
-
-		for ( var i = 0, rulesLength = parsedRules.length; i < rulesLength; i++ ) {
-			// request goes in the end
-			if ( parsedRules[i][0] == 'request' || !parsedRules[i][0] ) {
-				continue;
+		var parsed = this.parsedRules;
+		for ( var rule in parsed ) {
+			try {
+			if ( !this.keys[rule].call( this, parsed[rule] ) ) {
+				return false;
 			}
-
-			var method = parsedRules[i][0],
-				param = parsedRules[i][1];
-
-			// get param options as array
-			var paramArray = regex.ruleArray.exec( param );
-			if ( paramArray ) param = paramArray[1].split( ',' );
-
-			if ( !_v_( (this.value).toString() )[method]( param || value_separator ) ) {
-				errors.push( [method, param] );
-			}
+		} catch (e) {
+			return false;
 		}
-
-		if ( result == 'array' ) {
-			return errors;
 		}
-		return (errors.length > 0) ? false : true;
+		return true;
 	};
+
+
+	/**
+	 * method for extending _v_ with new rules and validate functions
+	 * @param rule
+	 * @param func
+	 */
+	_v_proto.extend = function ( rule, func ){
+		_v_proto.keys[rule] = func
+		_v_proto.keys_order.push( rule );
+
+		_v_proto.keys_order = this.keys_order.sort( function ( a, b ){
+			return b.length - a.length;
+		} );
+		return this;
+	};
+
+	_v_proto.keys = {}; // object with rules
+	_v_proto.keys_order = []; // array with ordered rules
 
 	window._v_ = _v_;
 
 
-	// private stuff and helper functions
+	/**
+	 * Rules extends
+	 * ---------- ---------- ---------- ---------- ----------
+	 */
+	var rules = {
 
+		// required
+		'*'   : function (){
+			return this.value.length !== 0;
+		},
+
+		// alpha
+		'a'   : function (){
+			return (/^[a-z]+$/i).test( this.value );
+		},
+
+		// alpha numeric
+		'a1'  : function (){
+			return (/^[a-z0-9]+$/i).test( this.value );
+		},
+
+		// alpha dash
+		'a_'  : function (){
+			return (/^[a-z_-]+$/i).test( this.value );
+		},
+
+		// alpha numeric dash
+		'a1_' : function (){
+			return (/^[a-z0-9_-]+$/i).test( this.value );
+		},
+
+		// email
+		'@'   : function (){
+			var mail_regexp = /^((([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+(\.([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+)*)|((\x22)((((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(([\x01-\x08\x0b\x0c\x0e-\x1f\x7f]|\x21|[\x23-\x5b]|[\x5d-\x7e]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(\\([\x01-\x09\x0b\x0c\x0d-\x7f]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))))*(((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(\x22)))@((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))$/i;
+			return mail_regexp.test( this.value );
+		},
+
+		// emails
+		'@s'  : function (){
+			var emails = this.value.split( ',' );
+			for ( var i = 0; i < emails.length; i++ ) {
+				if ( !_v_( emails[i] ).validate( '@' ) ) {
+					return false;
+				}
+			}
+			return true;
+		},
+
+		// ip address
+		'ip'  : function (){
+			return (/^((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\.){3}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})$/i).test( this.value );
+		},
+
+		// base65 string
+		'b64' : function (){
+			return (/^(?:[A-Za-z0-9+\/]{4})*(?:[A-Za-z0-9+\/]{2}==|[A-Za-z0-9+\/]{3}=|[A-Za-z0-9+\/]{4})$/).test( this.value );
+		},
+
+		// URL
+		'url' : function (){
+			return (/^(https?|s?ftp):\/\/(((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:)*@)?(((\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5]))|((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.?)(:\d*)?)(\/((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)+(\/(([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)*)*)?)?(\?((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)|[\uE000-\uF8FF]|\/|\?)*)?(#((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)|\/|\?)*)?$/i).test( this.value );
+		},
+
+		// integer
+		'int' : function (){
+			return (/^\-?[0-9]+$/).test( this.value );
+		},
+
+		// Numeric
+		'num' : function (){
+			return (/^[0-9]+$/).test( this.value );
+		},
+
+		// Decimal
+		'dec' : function (){
+			return (/^\-?[0-9]*\.?[0-9]+$/).test( this.value );
+		},
+
+		// Natural
+		'nat' : function (){
+			return (/^[0-9]+$/i).test( this.value );
+		},
+
+		// length equals to
+		'l='  : function ( length ){
+			if ( typeof(length) == 'number' || typeof(length) == 'string' ) {
+				return this.value.length == length;
+			} else {
+				for ( var key in length ) {
+					if ( this.value.length == length[key] ) return true;
+				}
+			}
+			return false;
+		},
+
+		// length more than
+		'l>'  : function ( length ){
+			return this.value.length > length;
+		},
+
+		// length more or equals to
+		'l>=' : function ( length ){
+			return this.value.length >= length;
+		},
+
+		// length less than
+		'l<'  : function ( length ){
+			return this.value.length < length;
+		},
+
+		// length less or equals to
+		'l<=' : function ( length ){
+			return this.value.length <= length;
+		},
+
+		// length is in range
+		'lr=' : function ( range ){
+			return (this.value.length >= range[0] && this.value.length <= range[1]);
+		},
+
+		// is greater than
+		'>'   : function ( value ){
+			var test = this.value;
+			return (_v_( test ).validate( 'dec' ) && parseFloat( test ) > parseFloat( value ));
+		},
+
+		// is greater or equals to
+		'>='  : function ( value ){
+			var test = this.value;
+			return (_v_( test ).validate( 'dec' ) && parseFloat( test ) >= parseFloat( value ));
+		},
+
+		// is less than
+		'<'   : function ( value ){
+			var test = this.value;
+			return (_v_( test ).validate( 'dec' ) && parseFloat( test ) < parseFloat( value ));
+		},
+
+		// is less or equals to
+		'<='  : function ( value ){
+			var test = this.value;
+			return (_v_( test ).validate( 'dec' ) && parseFloat( test ) <= parseFloat( value ));
+		},
+
+		// is in range
+		'r='  : function ( value ){
+			var test = this.value;
+			return (_v_( test ).validate( 'dec' ) && parseFloat( test ) >= parseFloat( value[0] ) && parseFloat( test ) <= parseFloat( value[1] ));
+		},
+
+		// regular expression validation
+		'reg=': function ( regExpression ){
+			var reg = new RegExp( regExpression, 'i' );
+			return reg.test( this.value );
+		},
+
+		// matches to
+		'='   : function ( value ){
+			var test = this.value;
+			if ( typeof value == 'string' || typeof value == 'number' ) {
+				return test == value;
+			} else {
+				for ( var i = 0, valueLength = value.length; i < valueLength; i++ ) {
+					if ( value[i].indexOf( '#' ) === 0 ) {
+						var el = __getElById( value[i].replace( '#', '' ) );
+						if ( !el ) {
+							return false;
+						}
+						if ( test == el.value ) return true;
+					} else {
+						if ( test == value[i] ) return true;
+					}
+				}
+			}
+			return false;
+		},
+
+		// matches to id
+		'=#'  : function ( value ){
+			var test = this.value;
+			if ( typeof value == 'string' || typeof value == 'number' ) {
+				value = value.split( ' ' );
+				var el = __getElById( value );
+				if ( !el ) {
+					return false;
+				}
+				return test == el.value;
+			} else {
+				for ( var i = 0; i < value.length; i++ ) {
+					var el = __getElById( value[i] );
+					if ( el && test == el.value ) {
+						return true;
+					}
+				}
+			}
+			return false;
+		},
+
+		// not matches to
+		'!='  : function ( value ){
+			value = (__isArray( value )) ? '[' + value.join( ',' ) + ']' : value; // TODO: value separator
+			return !(_v_( this.value ).validate( '=' + value ));
+		},
+
+		// not contain
+		'!'   : function ( value ){
+			if ( typeof value == 'string' || typeof value == 'number' ) {
+				return (this.value).toString().indexOf( value.toString() ) === -1;
+			} else {
+				for ( var key in value ) {
+					if ( ~(this.value).toString().indexOf( value[key].toString() ) ) {
+						return false;
+					}
+				}
+			}
+			return true;
+		},
+
+		// credit card (all cards type)
+		'c'   : function ( value ){
+			return (/^(?:4[0-9]{12}(?:[0-9]{3})?|5[1-5][0-9]{14}|6(?:011|5[0-9][0-9])[0-9]{12}|3[47][0-9]{13}|3(?:0[0-5]|[68][0-9])[0-9]{11}|(?:2131|1800|35\d{3})\d{11})$/).test( this.value );
+		},
+
+		// visa card
+		'cv'  : function ( value ){
+			return (/^4[0-9]{12}(?:[0-9]{3})?$/).test( this.value );
+		},
+
+		// master card
+		'cm'  : function ( value ){
+			return (/^5[1-5][0-9]{14}$/).test( this.value );
+		},
+
+		// american express card
+		'ca'  : function ( value ){
+			return (/^3[47][0-9]{13}$/).test( this.value );
+		},
+
+		// discover card
+		'cd'  : function ( value ){
+			return (/^6(?:011|5[0-9]{2})[0-9]{12}$/).test( this.value );
+		},
+
+		// date format validation
+		'D='  : function ( format ){
+			return !!(__toDate( this.value, format ));
+		}
+	};
+
+	// add extends
+	for ( var key in rules ) {
+		_v_().extend( key, rules[key] );
+	}
+
+
+	/**
+	 * Helpers
+	 * ---------- ---------- ---------- ---------- ----------
+	 */
 
 	// Date functions
 	var __dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -1290,7 +1831,7 @@
 	var __shortMonthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 	var __monthChars = ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'];
 
-	var __daysInMonth = function ( month, year ) {
+	var __daysInMonth = function ( month, year ){
 		// If February, check for leap year
 		if ( (month == 1) && (((year % 4 === 0) && (year % 100 !== 0)) || (year % 400 === 0)) ) {
 			return 29;
@@ -1326,7 +1867,7 @@
 	 * @param {string} format The basic format of the string.
 	 * @return {Date} The string as a date object.
 	 */
-	var __toDate = function ( date, format ) {
+	var __toDate = function ( date, format ){
 		// Default values set to midnight Jan 1 of the current year.
 		var year = new Date().getFullYear(),
 			month = 0,
@@ -1499,226 +2040,25 @@
 	};
 
 
-	// AJAX Request functionality
-	var HTTP = {};
-
-	HTTP._factories = [
-		function () {
-			return new XMLHttpRequest();
-		},
-		function () {
-			return new ActiveXObject( "Msxml2.XMLHTTP" );
-		},
-		function () {
-			return new ActiveXObject( "Microsoft.XMLHTTP" );
-		}
-	];
-
-	HTTP._factory = null;
-
-	HTTP.newRequest = function () {
-		if ( HTTP._factory !== null ) {
-			return HTTP._factory();
-		}
-
-		for ( var i = 0; i < HTTP._factories.length; i++ ) {
-			try {
-				var factory = HTTP._factories[i];
-				var request = factory();
-				if ( request !== null ) {
-					HTTP._factory = factory;
-					return request;
-				}
-			} catch ( e ) {
-				continue;
-			}
-		}
-
-		HTTP._factory = function () {
-			throw new Error( 'Object XMLHttpRequest not supported' );
-		};
-		HTTP._factory();
-	};
-
-
 	/**
-	 * Add event to element
-	 *
-	 * @param {object} element
-	 * @param {string} evnt - event key
-	 * @param {function} func - function that will be executed on event
-	 * @param {!object} that - tFormer object for registering event
+	 * Simple getElementByID function
+	 * @param {string} id - id of HTML element
+	 * @returns {HTMLElement}
+	 * @private
 	 */
-	var __on = function ( element, evnt, func, that ) {
-
-		var events = evnt.split( ' ' );
-		for ( var i = 0, events_length = events.length; i < events_length; i++ ) {
-			if ( element.addEventListener ) { // W3C DOM
-				element.addEventListener( events[i], func, false );
-			} else if ( element.attachEvent ) { // IE DOM
-				element.attachEvent( "on" + events[i], func );
-			} else { // No much to do
-				element[events[i]] = func;
-			}
-			// register event to tFormer object
-			if ( that ) {
-				__regOn( element, events[i], func, that );
-			}
-		}
-	};
-
+	var __getElById = function ( id ){
+		return document.getElementById( id );
+	}
 
 	/**
-	 * Register event in tFormer object
-	 *
-	 * @param {object} element
-	 * @param {string} evnt - event key
-	 * @param {function} func - function that will be executed on event
-	 * @param {!object} that - tFormer object for registering event
-	 */
-	var __regOn = function ( element, evnt, func, that ) {
-		switch ( element.type ) {
-			case 'button':
-			case 'submit':
-			case undefined:
-				that.btn_events.push( [element, evnt, func] )
-				break;
-			default:
-				var name = element.name;
-				if ( !that.events[name] ) {
-					that.events[name] = {};
-				}
-				if ( !that.events[name][evnt] ) {
-					that.events[name][evnt] = []
-				}
-				that.events[name][evnt].push( func );
-				break;
-		}
-	};
-
-
-	/**
-	 * Remove event from element
-	 *
-	 * @param {object} element
-	 * @param {string} evnt - event key
-	 * @param {function} func - function that will be executed on event
-	 */
-	var __off = function ( element, evnt, func ) {
-		if ( element.removeEventListener ) { // W3C DOM
-			element.removeEventListener( evnt, func, false );
-		} else if ( element.detachEvent ) { // IE DOM
-			element.detachEvent( "on" + evnt, func );
-		} else { // No much to do
-			element[evnt] = null;
-		}
-	};
-
-
-	/**
-	 * Fire event from element
-	 *
-	 * @param {object} element - element
-	 * @param {string} evnt - event key
-	 */
-	var __fire = function ( element, evnt ) {
-		var evt;
-		if ( document.createEventObject ) {
-			// dispatch for IE
-			evt = document.createEventObject();
-			return element.fireEvent( 'on' + evnt, evt );
-		} else {
-			// dispatch for firefox + others
-			evt = document.createEvent( "HTMLEvents" );
-			evt.initEvent( evnt, true, true ); // event type,bubbling,cancelable
-			return !element.dispatchEvent( evt );
-		}
-	};
-
-
-	/**
-	 * Method for adding custom class to element
-	 *
-	 * @param element
-	 * @param new_class
-	 * @returns {object}
-	 */
-	var __addClass = function ( element, new_class ) {
-		var class_name = element.className;
-		if ( class_name.indexOf( new_class ) === -1 ) {
-			class_name += " " + new_class;
-			element.className = class_name.replace( /\s{2,}/g, ' ' );
-		}
-		return this;
-	};
-
-
-	/**
-	 * Method for removing custom class from element
-	 * @param element
-	 * @param old_class
-	 * @returns {*}
-	 */
-	var __removeClass = function ( element, old_class ) {
-		if ( __isArray( element ) ) {
-			for ( var i = 0; i < element.length; i++ ) {
-				__removeClass( element[i], old_class );
-			}
-		} else {
-			var class_name = element.className;
-			if ( !class_name ) return this;
-			if ( ~class_name.indexOf( old_class ) ) {
-				var re = new RegExp( '(\\s|^)' + old_class + '(\\s|$)' );
-				element.className = class_name.replace( re, ' ' );
-			}
-		}
-		return this;
-	};
-
-
-	/**
-	 * Method for checking custom class in element
-	 * @param element
-	 * @param class_name
+	 * Check is obj is array or not
+	 * @param obj - element we should check
 	 * @returns {boolean}
+	 * @private
 	 */
-	var __hasClass = function ( element, class_name ) {
-		return !!(( ~(' ' + element.className + ' ').indexOf( ' ' + class_name + ' ' ) ));
-	};
-
-
-	/**
-	 * Object extend
-	 * @param object
-	 * @param new_obj
-	 * @returns {object}
-	 */
-	var __extend = function ( object, new_obj ) {
-		for ( var key in new_obj ) {
-			if ( new_obj.hasOwnProperty( key ) )
-				object[key] = new_obj[key];
-		}
-		return object;
-	};
-
-
-	/**
-	 * Object clone
-	 * @returns {*|array|string}
-	 */
-	var __clone = function ( obj ) {
-		return __isArray( obj ) ? obj.slice() : __extend( {}, obj );
-	};
-
-
-	/**
-	 * is array function
-	 * @returns {boolean}
-	 */
-	var __isArray = function ( obj ) {
+	var __isArray = function ( obj ){
 		return Object.prototype.toString.call( obj ) == '[object Array]';
 	};
-
 
 	/**
 	 * detects is defined array has some value
@@ -1727,7 +2067,7 @@
 	 * @returns {number}
 	 * @private
 	 */
-	var __inArray = function ( array, value ) {
+	var __inArray = function ( array, value ){
 		var index = -1,
 			length = array ? array.length : 0;
 		while ( ++index < length ) {
@@ -1737,88 +2077,54 @@
 		}
 		return -1;
 	};
-
-	/**
-	 * is array function
-	 * @returns {boolean}
-	 */
-	var __isObject = function ( obj ) {
-		return toString.call( obj ) == '[object Object]';
-	};
+	window.__inArray = __inArray;
 
 
 	/**
-	 * Serrialize data for request
-	 * @param {object} data - object to serialize
-	 * @returns {string}
-	 */
-	var __serialize = function ( data ) {
-		var pairs = [];
-		var regexp = /%20/g;
-		for ( var name in data ) {
-			var pair = encodeURIComponent( name ).replace( regexp, '+' ) + '=';
-			pair += encodeURIComponent( data[ name ].toString() ).replace( regexp, '+' );
-			pairs.push( pair );
-		}
-		return pairs.join( '&' );
-	};
-
-	/**
-	 * Work with data-attributes
-	 *
-	 * @param {object} element - element
-	 * @param {string} attr - data-attribute
-	 * @param {!string|number} value - new attribute value. [null - delete attr, undefined - return attr value, defined - set new value]
-	 * @returns {*}
-	 */
-	var __data = function ( element, attr, value ) {
-		switch ( value ) {
-			case null:
-				__delAttr( element, 'data-' + attr );
-				break;
-			case undefined:
-				return __getAttr( element, 'data-' + attr );
-				break;
-			default:
-				__setAttr( element, 'data-' + attr, value );
-				break;
-		}
-	};
-
-	var __getAttr = function ( el, attr ) {
-		return el.getAttribute( attr );
-	};
-
-	var __setAttr = function ( el, attr, value ) {
-		el.setAttribute( attr, value );
-	};
-
-	var __delAttr = function ( el, attr ) {
-		el.removeAttribute( attr );
-	};
-
-	/**
-	 *
-	 * @param {object} element - current element for marking
-	 * @param {string} marker = 'h' || 'e' - 'holded' || 'error'
-	 * @param {boolean|number} add
-	 * @param {object} tf - tFormer object
-	 * @returns {*}
+	 * convert item to Array.
+	 * @param el
+	 * @returns {Array}
 	 * @private
 	 */
-	var __mark_field = function ( element, marker, add, tf ) {
-		var counter = (marker == 'h') ? 'holded' : 'errors';
-		marker = (marker == 'h') ? 'holded' : 'error';
-		var option = counter + 'Count';
-		if ( add && !__data( element, marker ) ) {
-			__data( element, marker, add ? 1 : null );
-			tf[option] += 1;
+	var __toArray = function ( el ){
+		return (!__isArray( el )) ? [el] : el;
+	}
+
+	/**
+	 * convert rules object to string
+	 * @param obj
+	 * @param separator
+	 * @returns {string}
+	 * @private
+	 */
+	var __rulesStr = function ( obj, separator ){
+		separator = separator || ' ';
+		var str = separator;
+		for ( var key in obj ) {
+			var rules = obj[key];
+			if ( __isArray( rules )){
+				rules = __clearArray(rules);
+			}
+			if ( !rules ) {
+				str += key + separator;
+			} else if ( __isArray( rules ) ) {
+				str += key + '[' + rules.join( ',' ) + ']' + separator; // TODO: rule values separator
+			} else {
+				str += key + rules + separator;
+			}
 		}
-		if ( !add && __data( element, marker ) ) {
-			__data( element, marker, add ? 1 : null );
-			tf[option] = ( tf[option] === 1 ) ? 0 : tf[option] - 1;
+		str = str.substr( separator.length, str.length - separator.length * 2 );
+		return str;
+	};
+
+	var __clearArray = function(arr){
+		var new_arr = [];
+		for (var i = 0, a_l = arr.length; i < a_l; i++) {
+			if (arr[i]) {
+				new_arr.push(arr[i]);
+			}
 		}
-		return tf;
+		return (new_arr && new_arr.length > 1) ? new_arr : new_arr[0];
 	}
 
 })( window, document );

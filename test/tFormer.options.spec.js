@@ -40,30 +40,30 @@ describe( "tFormer options: ", function () {
 		} );
 
 		it( 'fields: rules = undefined', function () {
-			expect( f.get( 'rules', 't_text' ) ).not.toBeDefined();
+			expect( !!f.field( 't_text' ).get( 'rules' ) ).toBe( false );
 		} );
 		it( 'fields: url = undefined', function () {
-			expect( f.get( 'url', 't_text' ) ).not.toBeDefined();
+			expect( (f.field( 't_text' ).get( 'request' ) || {}).url ).not.toBeDefined();
 		} );
 		it( 'fields: method = undefined', function () {
-			expect( f.get( 'method', 't_text' ) ).not.toBeDefined();
+			expect( (f.field( 't_text' ).get( 'request' ) || {}).method ).not.toBeDefined();
 		} );
 		it( 'fields: data = undefined', function () {
-			expect( f.get( 'data', 't_text' ) ).not.toBeDefined();
+			expect( (f.field( 't_text' ).get( 'request' ) || {}).data ).not.toBeDefined();
 		} );
 		it( 'fields: start() = undefined', function () {
-			expect( f.get( 'start', 't_text' ) ).not.toBeDefined();
+			expect( (f.field( 't_text' ).get( 'request' ) || {}).start ).not.toBeDefined();
 		} );
 		it( 'fields: end() = undefined', function () {
-			expect( f.get( 'end', 't_text' ) ).not.toBeDefined();
+			expect( (f.field( 't_text' ).get( 'request' ) || {}).end ).not.toBeDefined();
 		} );
 		it( 'fields: own() = undefined', function () {
-			expect( f.get( 'own', 't_text' ) ).not.toBeDefined();
+			expect( f.field( 't_text' ).get( 'own' ) ).not.toBeDefined();
 		} );
 	} );
 
 	describe( 'Changed', function () {
-		var f = tFormer( 'f_sb_not_button', {
+		var f = tFormer( 'f', {
 			timeout            : 123,
 			requestTimeout     : 123,
 			errorClass         : '_error',
@@ -104,21 +104,22 @@ describe( "tFormer options: ", function () {
 						return 'own_changed';
 					},
 					rules          : '*',
-					url            : 'ajax.html',
-					data           : {
-						some: 'value'
-					},
-					method         : 'post',
-					start          : function () {
-						return 'start_changed';
-					},
-					end            : function () {
-						return 'end_changed';
+					request        : {
+						url   : 'ajax.html',
+						data  : {
+							some: 'value'
+						},
+						method: 'post',
+						start : function () {
+							return 'start_changed';
+						},
+						end   : function () {
+							return 'end_changed';
+						}
 					}
 				}
 			}
 		} );
-
 		describe( 'through options while defining new tFormer object', function () {
 			it( 'timeout changed', function () {
 				expect( f.get( 'timeout' ) ).not.toBe( 0 );
@@ -158,28 +159,26 @@ describe( "tFormer options: ", function () {
 			} );
 
 			it( 'fields: rules changed', function () {
-				expect( f.get( 'rules', 't_text' ) ).toBe( '*' );
+				expect( f.field( 't_text' ).get( 'rules' ) ).toBe( '*' );
 			} );
 			it( 'fields: url changed', function () {
-				expect( f.get( 'url', 't_text' ) ).toBe( 'ajax.html' );
+				expect( f.field( 't_text' ).get( 'request' ).url ).toBe( 'ajax.html' );
 			} );
 			it( 'fields: method changed', function () {
-				expect( f.get( 'method', 't_text' ) ).toBe( 'post' );
+				expect( f.field( 't_text' ).get( 'request' ).method ).toBe( 'post' );
 			} );
 			it( 'fields: data changed', function () {
-				expect( f.get( 'data', 't_text' ).some ).toBe( 'value' );
+				expect( f.field( 't_text' ).get( 'request' ).data.some ).toBe( 'value' );
 			} );
 			it( 'fields: start() changed', function () {
-				expect( f.get( 'start', 't_text' )() ).toBe( 'start_changed' );
+				expect( f.field( 't_text' ).get( 'request' ).start() ).toBe( 'start_changed' );
 			} );
 			it( 'fields: end() changed', function () {
-				expect( f.get( 'end', 't_text' )() ).toBe( 'end_changed' );
+				expect( f.field( 't_text' ).get( 'request' ).end() ).toBe( 'end_changed' );
 			} );
 			it( 'fields: own() changed', function () {
-				expect( f.get( 'own', 't_text' )() ).toBe( 'own_changed' );
+				expect( f.field( 't_text' ).get( 'own' )() ).toBe( 'own_changed' );
 			} );
 		} );
-
 	} );
-
 } );

@@ -153,11 +153,8 @@ pre {
 	overflow    : hidden;
 	box-shadow  : 0 0 0 1px #e8e8e8;
 	display     : block;
-	font-size   : 13px;
 	line-height : 20px;
-	color       : #444;
-	overflow    : hidden;
 	background  : #f5f5f5;
-	margin      : 0 -30px;
+	/*margin      : 0 -30px;*/
 	padding     : 0 0 0 30px !important;
 }
