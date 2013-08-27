@@ -1,6 +1,6 @@
 {
   "name": "tFormer",
-  "version": "0.4.1",
+  "version": "0.5.0",
   "description": "Empower your HTML forms",
   "main": "tFormer.js",
   "directories": {
@@ -25,6 +25,8 @@
     "grunt": "~0.4.1",
     "grunt-gcc": "~0.2.0",
     "grunt-contrib-concat": "~0.2.0",
-    "grunt-contrib-copy": "~0.4.1"
+    "grunt-contrib-copy": "~0.4.1",
+    "grunt-download": "~0.2.0",
+    "grunt-curl": "~1.1.1"
   }
 }

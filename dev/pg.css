@@ -1,0 +1,341 @@
+html, body {
+	overflow    : hidden;
+	overflow-x  : auto;
+	margin      : 0 !important;
+	padding     : 0;
+	width       : 100%;
+	height      : 100%;
+	font-size   : 13px;
+	font-family : 'Helvetica Neue', Helvetica, Arial, sans-serif;
+	line-height : 20px;
+	min-width   : 1024px;
+}
+
+* {
+	-webkit-box-sizing : border-box;
+	-moz-box-sizing    : border-box;
+	box-sizing         : border-box;
+}
+
+body {
+	padding-top : 50px;
+}
+
+.header {
+	position           : relative;
+	margin-top         : -50px;
+	height             : 50px;
+	border-right       : 0;
+	border-left        : 0;
+	background         : #353b47;
+	overflow           : visible;
+	-webkit-box-shadow : rgba(0, 0, 0, .5) 0 1px 1px;
+	-moz-box-shadow    : rgba(0, 0, 0, .5) 0 1px 1px;
+	box-shadow         : rgba(0, 0, 0, .5) 0 1px 1px;
+}
+
+.header .name {
+	float       : left;
+	padding     : 0 20px;
+	height      : 50px;
+	color       : #2c323d;
+	text-shadow : 0 -1px 0 rgba(0, 0, 0, .7), 0 1px 0 rgba(255, 255, 255, .1);
+	font-weight : 600;
+	font-size   : 30px;
+	line-height : 48px;
+}
+
+.header .annotation {
+	padding-top : 0;
+	height      : 50px;
+	color       : #000;
+	text-shadow : 0 1px 0 rgba(255, 255, 255, .3);
+	font-weight : 400;
+	font-size   : 12px;
+	line-height : 30px;
+	opacity     : .5;
+	float       : left;
+}
+
+.content {
+	width               : 100%;
+	height              : 100%;
+	padding-left        : 300px;
+	background-color    : #4e9ad5;
+	background-size     : 100px 100px, 100px 100px, 20px 20px, 20px 20px;
+	background-position : -11px -1px;
+	background-image    : linear-gradient(rgba(255, 255, 255, .3) 1px, transparent 1px), linear-gradient(0, rgba(255, 255, 255, .3) 1px, transparent 1px), linear-gradient(rgba(255, 255, 255, .1) 1px, transparent 1px), linear-gradient(0, rgba(255, 255, 255, .1) 1px, transparent 1px);
+	background-image    : -webkit-linear-gradient(rgba(255, 255, 255, .3) 1px, transparent 1px), -webkit-linear-gradient(0, rgba(255, 255, 255, .3) 1px, transparent 1px), -webkit-linear-gradient(rgba(255, 255, 255, .1) 1px, transparent 1px), -webkit-linear-gradient(0, rgba(255, 255, 255, .1) 1px, transparent 1px);
+	background-image    : -moz-linear-gradient(rgba(255, 255, 255, .3) 1px, transparent 1px), -moz-linear-gradient(0, rgba(255, 255, 255, .3) 1px, transparent 1px), -moz-linear-gradient(rgba(255, 255, 255, .1) 1px, transparent 1px), -moz-linear-gradient(0, rgba(255, 255, 255, .1) 1px, transparent 1px);
+	background-image    : -ms-linear-gradient(rgba(255, 255, 255, .3) 1px, transparent 1px), -ms-linear-gradient(0, rgba(255, 255, 255, .3) 1px, transparent 1px), -ms-linear-gradient(rgba(255, 255, 255, .1) 1px, transparent 1px), -ms-linear-gradient(0, rgba(255, 255, 255, .1) 1px, transparent 1px);
+	background-image    : -o-linear-gradient(rgba(255, 255, 255, .3) 1px, transparent 1px), -o-linear-gradient(0, rgba(255, 255, 255, .3) 1px, transparent 1px), -o-linear-gradient(rgba(255, 255, 255, .1) 1px, transparent 1px), -o-linear-gradient(0, rgba(255, 255, 255, .1) 1px, transparent 1px);
+}
+
+.sidebar {
+	float       : left;
+	overflow    : auto;
+	margin-left : -300px;
+	width       : 300px;
+	height      : 100%;
+	background  : #fff;
+	box-shadow  : 1px 0 3px rgba(0, 0, 0, .2);
+	position    : relative;
+	z-index     : 10;
+}
+
+.info {
+	padding : 10px;
+}
+
+.info .btn {
+	background    : rgba(0, 0, 0, .05);
+	margin        : 1px 0;
+	padding       : 2px 5px;
+	cursor        : pointer;
+	border-radius : 2px;
+}
+
+.info .btn [contenteditable] {
+	background : #fff;
+	padding    : 0 5px;
+	box-shadow : 0 0 1px rgba(0, 0, 0, .1);
+	display    : inline-block;
+}
+
+.info .btn:hover {
+	background : rgba(0, 0, 0, .1);
+}
+
+.info .btn:active {
+	background : rgba(0, 0, 0, .2);
+}
+
+.main {
+	overflow : auto;
+	width    : 100%;
+	height   : 100%;
+}
+
+.pg {
+	margin           : 20px;
+	padding          : 10px;
+	background-color : #fff;
+	box-shadow       : 0 1px 5px rgba(0, 0, 0, .5);
+}
+
+.pg .item {
+	box-shadow : 0 0 0 1px #ccc;
+	padding    : 10px 10px 10px 30px;
+	position   : relative;
+	margin-top : 1px;
+}
+
+.pg .item.on {
+	margin-left  : -5px;
+	margin-right : -5px;
+	box-shadow   : 0 0 0 1px #ccc, 0 1px 1px rgba(0, 0, 0, 1);
+}
+
+.item-select {
+	width      : 18px;
+	height     : 100%;
+	position   : absolute;
+	background : rgba(0, 0, 0, .07);
+	top        : 0;
+	left       : 0;
+	padding    : 10px 0;
+}
+
+.item-select:after {
+	content     : '';
+	display     : block;
+	width       : 1px;
+	height      : 80%;
+	top         : 10%;
+	left        : 10px;
+	position    : absolute;
+	margin-left : -2px;
+	background  : #ccc;
+	box-shadow  : -3px 0 0 #ccc, 3px 0 0 #ccc;
+}
+
+.item.on .item-select::after,
+.item-select:hover::after {
+	background : darkgreen;
+	box-shadow : -3px 0 0 darkgreen, 3px 0 0 darkgreen;
+}
+
+hr {
+	border     : 0;
+	padding    : 0;
+	margin     : 0 -15px;
+	background : #ccc;
+	height     : 1px;
+}
+
+/* Form Elements */
+/* ------------------------------------------------- */
+
+textarea,
+input[type="text"],
+input[type="password"] {
+	margin             : 0;
+	padding            : 0 5px;
+	width              : 150px;
+	height             : 25px;
+	border             : 1px #ccc solid;
+	-webkit-box-shadow : 0 1px 1px rgba(0, 0, 0, .08);
+	-moz-box-shadow    : 0 1px 1px rgba(0, 0, 0, .08);
+	box-shadow         : 0 1px 1px rgba(0, 0, 0, .08);
+	font-size          : 14px;
+	line-height        : 14px;
+}
+
+input[type="submit"],
+input[type="button"] {
+	padding            : 6px 10px;
+	height             : 26px;
+	border             : none;
+	border             : 1px rgba(0, 0, 0, .4) solid;
+	background         : #4dbde1;
+	background         : -webkit-linear-gradient(top, #4dbde1, #298adc);
+	background         : -moz-linear-gradient(top, #4dbde1, #298adc);
+	background         : -ms-linear-gradient(top, #4dbde1, #298adc);
+	background         : -o-linear-gradient(top, #4dbde1, #298adc);
+	background         : linear-gradient(top, #4dbde1, #298adc);
+	-webkit-box-shadow : inset 0 1px 0 rgba(255, 255, 255, .4), 0 1px 1px #fff;
+	-moz-box-shadow    : inset 0 1px 0 rgba(255, 255, 255, .4), 0 1px 1px #fff;
+	box-shadow         : inset 0 1px 0 rgba(255, 255, 255, .4), 0 1px 1px #fff;
+	color              : #fff;
+	text-shadow        : 0 1px 0 rgba(0, 0, 0, .1);
+	font-size          : 12px;
+	line-height        : 12px;
+	cursor             : pointer;
+}
+
+textarea:focus,
+input:focus {
+	outline            : none;
+	-webkit-box-shadow : inset 0 0 1px yellow;
+	-moz-box-shadow    : inset 0 0 1px yellow;
+	box-shadow         : inset 0 0 1px yellow;
+}
+
+textarea.error,
+input.error {
+	border : 1px red solid;
+}
+
+input.disabled {
+	opacity : 0.6
+}
+
+.processing,
+.processing:hover
+.processing:active {
+	-webkit-box-shadow : inset 0 1px 0 rgba(255, 255, 255, .4);
+	-moz-box-shadow    : inset 0 1px 0 rgba(255, 255, 255, .4);
+	box-shadow         : inset 0 1px 0 rgba(255, 255, 255, .4);
+	cursor             : default;
+}
+
+.processing {
+	-webkit-background-size : 40px 40px;
+	-moz-background-size    : 40px 40px;
+	background-color        : #eee;
+	background-image        : -webkit-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+	background-image        : -moz-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+	background-image        : -ms-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+	background-image        : -o-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+	background-image        : linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+	background-size         : 40px 40px;
+	opacity                 : 0.6;
+}
+
+input[type="text"].processing {
+	-webkit-background-size : 50px 50px;
+	-moz-background-size    : 50px 50px;
+	background-color        : #f1f1f1;
+	background-image        : -webkit-linear-gradient(45deg, rgba(255, 255, 255, 1) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.5) 50%, rgba(255, 255, 255, 0.5) 75%, transparent 75%, transparent);
+	background-image        : -moz-linear-gradient(45deg, rgba(255, 255, 255, 1) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.5) 50%, rgba(255, 255, 255, 0.5) 75%, transparent 75%, transparent);
+	background-image        : -ms-linear-gradient(45deg, rgba(255, 255, 255, 1) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.5) 50%, rgba(255, 255, 255, 0.5) 75%, transparent 75%, transparent);
+	background-image        : -o-linear-gradient(45deg, rgba(255, 255, 255, 1) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.5) 50%, rgba(255, 255, 255, 0.5) 75%, transparent 75%, transparent);
+	background-image        : linear-gradient(45deg, rgba(255, 255, 255, 1) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.5) 50%, rgba(255, 255, 255, 0.5) 75%, transparent 75%, transparent);
+	background-size         : 50px 50px;
+	opacity                 : 0.6;
+}
+
+.processing,
+input[type="text"].processing {
+	-webkit-animation : processing 2s linear infinite;
+	-moz-animation    : processing 2s linear infinite;
+	-ms-animation     : processing 2s linear infinite;
+	-o-animation      : processing 2s linear infinite;
+	animation         : processing 2s linear infinite;
+}
+
+@-webkit-keyframes processing {
+	0% {
+		background-position : 50px 0;
+	}
+	100% {
+		background-position : 0 0;
+	}
+}
+
+@-moz-keyframes processing {
+	0% {
+		background-position : 50px 0;
+	}
+	100% {
+		background-position : 0 0;
+	}
+}
+
+@-ms-keyframes processing {
+	0% {
+		background-position : 50px 0;
+	}
+	100% {
+		background-position : 0 0;
+	}
+}
+
+@-o-keyframes processing {
+	0% {
+		background-position : 50px 0;
+	}
+	100% {
+		background-position : 0 0;
+	}
+}
+
+@keyframes processing {
+	0% {
+		background-position : 50px 0;
+	}
+	100% {
+		background-position : 0 0;
+	}
+}
+
+.f_right {
+	float : right;
+}
+
+.f_left {
+	float : left;
+}
+
+/**
+ * Transitions
+ */
+.pg .item,
+.pg .item.on,
+.info .btn,
+.info .btn:hover
+.info .btn:active {
+	-webkit-transition : all .2s;
+	-moz-transition    : all .2s;
+	transition         : all .2s;
+}

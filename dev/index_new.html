@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>tFormer</title>
+	<script src="../jquery.2.0.min.js"></script>
+	<script src="http://master.v.js/_v_.js"></script>
+	<script src="../tFormer_new.js"></script>
+
+	<style>
+
+		body {
+			padding : 20px;
+		}
+
+		.log {
+			font-size   : 12px;
+			background  : #fff;
+			padding     : 2px 5px;
+			position    : absolute;
+			right       : 10px;
+			top         : 0;
+			line-height : 16px;
+		}
+
+		table {
+			border-collapse : collapse;
+			border          : 1px #ccc solid;
+		}
+
+		table td {
+			border-collapse : collapse;
+			border          : 1px #ccc solid;
+			padding         : 2px 10px;
+		}
+
+		tr.error {
+			background : #ffb6a5;
+		}
+
+		input {
+			outline : none;
+		}
+
+		.error {
+			border-color : red;
+		}
+
+		[data-hold],
+		.processing {
+			border-type : dashed;
+		}
+
+		.disabled {
+			opacity : 0.4;
+		}
+	</style>
+
+	<script>
+		var log = function ( id, value, descr ){
+			var $el = $( '#log_' + id );
+			if ( !$el.length ) {
+				$( 'body' ).append( '<div class="log" id="log_' + id + '" style="top: ' + 30 * id + 'px"></div>' );
+			}
+			var $el = $( '#log_' + id );
+			$el.html( ((descr) ? descr + ': ' : '') + value );
+		};
+	</script>
+
+</head>
+
+<body>
+
+<form id="fff">
+	email: <input type="email" name="email" data-rules="*"/>
+	<!--<input type="button" data-check="test" value="Check"/>-->
+	<br/>
+	<br/>
+
+	test #1: <input type="text" name="test" data-rules="*" id="some_id"/>
+	<!--<input type="button" data-check="test" value="Check"/>-->
+	<br/>
+	<br/>
+
+	test #2: <input type="text" name="test2" data-rules="* =#some_id"/>
+	<!--<input type="button" data-check="test" value="Check"/>-->
+	<br/>
+	<br/>
+
+	<!--<div class="submit">Submit</div>-->
+	<input type="submit" value="Submit"/>
+</form>
+
+<script>
+	$( document ).ready( function (){
+
+		fff = tFormer( 'fff', {
+			fields: {
+				test: {
+					//					rules  : '* l>10',
+					//					request: {
+					//						url    : '/test_new/ajax.html',
+					//						data   : {
+					//							custom: 'param',
+					//							tjrus : true
+					//						},
+					//						method : 'get', // GET || POST
+					//						start  : function ( xhr ) {
+					//							//							console.log( 'start' );
+					//						},
+					//						end    : function ( xhr ) {
+					//							//							console.log( 'end' );
+					//						},
+					//						success: function ( result ) {
+					//							return this.value == 'false' ? false : true; // or false, you should validate the result
+					//						}
+					//					},
+					before : function (){
+						//						console.log( 'before' );
+					},
+					onerror: function (){
+						//						console.log( 'onerror' );
+					},
+					onvalid: function (){
+						//						console.log( 'onvalid' );
+					}
+				}
+			}
+		} ).submit( function ( e ){
+					console.log( this, e );
+					console.log( fff.toObject() );
+				} );
+	} );
+
+	$( 'input' ).on( 'tFormer:before', function (){
+		//		console.log( this.name, 'before' );
+	} );
+	$( 'input' ).on( 'tFormer:valid', function (){
+		//		console.log( this.name, 'valid' );
+	} );
+	$( 'input' ).on( 'tFormer:error', function (){
+		//		console.log( this.name, 'error' );
+	} );
+
+	setInterval( function (){
+		log( 1, fff.invalid, 'invalid' );
+		log( 3, fff.holded, 'holded' );
+		log( 4, fff.locked, 'locked' );
+		log( 5, $( fff.button( 'submit' ).el ).hasClass( 'processing' ), 'processing' );
+	}, 50 );
+</script>
+
+
+</body>
+</html>

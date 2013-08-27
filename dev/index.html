@@ -32,6 +32,8 @@
 		input.error { border-color : red; }
 
 		input.processing { border-type : dashed; }
+
+		.disabled { opacity: 0.5;}
 	</style>
 
 </head>
@@ -56,31 +58,31 @@
 
 		var f_table = [
 			// dates
-			{ show: true, name: 'html5_date', type: 'date', rules: '*', value: '123', check: false },
-			{ show: true, name: 'html5_datetime', type: 'datetime', rules: '*', check: false },
-			{ show: true, name: 'html5_datetime-local', type: 'datetime-local', rules: '*', check: false },
-			{ show: true, name: 'html5_month', type: 'month', rules: '*', check: false },
-			{ show: true, name: 'html5_week', type: 'week', rules: '*', check: false },
+			// { show: true, name: 'html5_date', type: 'date', rules: '*', value: '123', check: false },
+			// { show: true, name: 'html5_datetime', type: 'datetime', rules: '*', check: false },
+			// { show: true, name: 'html5_datetime-local', type: 'datetime-local', rules: '*', check: false },
+			// { show: true, name: 'html5_month', type: 'month', rules: '*', check: false },
+			// { show: true, name: 'html5_week', type: 'week', rules: '*', check: false },
 
-			{ show: true, name: 'html5_search', type: 'search', rules: '*', check: false },
-			{ show: true, name: 'html5_tel', type: 'tel', rules: '*', value: '123', check: false },
-			{ show: true, name: 'html5_time', type: 'time', rules: '*', check: false },
-			{ show: true, name: 'html5_url', type: 'url', rules: '*', check: false },
+			// { show: true, name: 'html5_search', type: 'search', rules: '*', check: false },
+			// { show: true, name: 'html5_tel', type: 'tel', rules: '*', value: '123', check: false },
+			// { show: true, name: 'html5_time', type: 'time', rules: '*', check: false },
+			// { show: true, name: 'html5_url', type: 'url', rules: '*', check: false },
 
-			{ show: true, name: 'fi__le', type: 'file', rules: '*', check: false },
-			{ show: true, name: 'checkbox', type: 'checkbox', rules: '*', value: '123', check: false },
-			{ show: true, name: 'hid__den', type: 'hidden', rules: '*', check: false },
-			{ show: true, name: 'pass__word', type: 'password', rules: '*', check: false },
+			// { show: true, name: 'fi__le', type: 'file', rules: '*', check: false },
+			// { show: true, name: 'checkbox', type: 'checkbox', rules: '*', value: '123', check: false },
+			// { show: true, name: 'hid__den', type: 'hidden', rules: '*', check: false },
+			// { show: true, name: 'pass__word', type: 'password', rules: '*', check: false },
+			// { show: true, name: 'required', type: 'text', rules: '*', check: false },
+
 			{ show: true, name: 'required', type: 'text', rules: '*', check: false },
-
-			{ show: true, name: 'required', type: 'text', rules: '*', check: false },
-			{ show: true, name: 'range', type: 'number', rules: '* >10', value: 5, check: false },
-			{ show: true, name: 'required_email', type: 'email', rules: '* @', check: false, value: 'tjrus.com' },
-			{ show: true, name: 'required_alpha', type: 'text', rules: '* a', check: false, value: 'tjruscom' },
-			{ show: true, name: 'reg', type: 'text', rules: 'reg=^([a-z]{2,4})(((\\.)([A-Za-z0-9-]+))+)$', check: false, value: 'tjrus.com' },
-			{ show: true, name: 'password', id: 'password', type: 'text', rules: '*', check: false, value: '' },
-			{ show: true, name: 'password_repeat', type: 'text', rules: '* =#password', check: false, value: '' },
-			{ show: true, name: 'password_rep2', type: 'text', rules: '* =[#password,123]', check: false, value: '' }
+			// { show: true, name: 'range', type: 'number', rules: '* >10', value: 5, check: false },
+			// { show: true, name: 'required_email', type: 'email', rules: '* @', check: false, value: 'tjrus.com' },
+			// { show: true, name: 'required_alpha', type: 'text', rules: '* a', check: false, value: 'tjruscom' },
+			// { show: true, name: 'reg', type: 'text', rules: 'reg=^([a-z]{2,4})(((\\.)([A-Za-z0-9-]+))+)$', check: false, value: 'tjrus.com' },
+			// { show: true, name: 'password', id: 'password', type: 'text', rules: '*', check: false, value: '' },
+			// { show: true, name: 'password_repeat', type: 'text', rules: '* =#password', check: false, value: '' },
+			// { show: true, name: 'password_rep2', type: 'text', rules: '* =[#password,123]', check: false, value: '' }
 		];
 
 		var get_tpl = function ( obj ) {
@@ -169,6 +171,11 @@
 		form_1 = tFormer( 'form_1' );
 
 		form_2 = tFormer( document.getElementById( 'form_2' ), {
+			fields: {
+				required: {
+					timeout: 2000
+				}
+			},
 			onvalid: function () {
 				$( this ).parents( 'tr' ).removeClass( 'error' );
 			},

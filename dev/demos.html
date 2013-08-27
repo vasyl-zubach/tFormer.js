@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>tFormer</title>
+	<link rel="stylesheet" type="text/css" href="demos.css"/>
+	<script src="../jquery.2.0.min.js"></script>
+	<script src="http://master.v.js/_v_.js"></script>
+	<script src="../tFormer_new.js"></script>
+	<script src="demos.js"></script>
+
+	<style>
+
+		.log {
+			font-size   : 12px;
+			background  : #fff;
+			padding     : 2px 5px;
+			position    : absolute;
+			right       : 10px;
+			top         : 0;
+			line-height : 16px;
+		}
+
+		table {
+			border-collapse : collapse;
+			border          : 1px #ccc solid;
+		}
+
+		table td {
+			border-collapse : collapse;
+			border          : 1px #ccc solid;
+			padding         : 2px 10px;
+		}
+
+		tr.error {
+			background : #ffb6a5;
+		}
+
+		input {
+			outline : none;
+		}
+
+		.error {
+			border-color : red;
+		}
+
+		[data-hold],
+		.processing {
+			border-type : dashed;
+		}
+
+		.disabled {
+			opacity : 0.4;
+		}
+	</style>
+
+</head>
+
+<body>
+
+<div class="header">
+	<div class="name">tFormer</div>
+	<div class="annotation">
+		(&beta; - 0.5.1)
+	</div>
+</div>
+
+</div>
+
+<div class="content">
+
+	<div class="sidebar">
+		<a href="#options">Options</a>
+		<ul>
+			<li><a href="#options/errorClass">errorClass</a></li>
+			<li><a href="#options/disabledClass">disabledClass</a></li>
+			<li><a href="#options/processingClass">processingClass</a></li>
+			<li><a href="#options/timeout">timeout</a></li>
+
+			<li><a href="#options/requestTimeout">requestTimeout</a></li>
+			<li><a href="#options/validateEvent">validateEvent</a></li>
+			<li><a href="#options/submitButtonControl">submitButtonControl</a></li>
+			<li><a href="#options/submitButton">submitButton</a></li>
+
+
+			<li><a href="#options/buttons">buttons</a></li>
+			<li><a href="#options/fields">fields</a></li>
+
+			<li><a href="#options/onerror">onerror</a></li>
+			<li><a href="#options/onvalid">onvalid</a></li>
+			<li><a href="#options/own">own</a></li>
+
+			<li><a href="#options/request">request</a></li>
+			<li><a href="#options/request.data">request.data</a></li>
+			<li><a href="#options/request.url">request.url</a></li>
+			<li><a href="#options/request.method">request.method</a></li>
+			<li><a href="#options/request.start">request.start</a></li>
+			<li><a href="#options/request.success">request.success</a></li>
+		</ul>
+		<br/>
+		<a href="#methods">Methods</a>
+		<ul>
+			<li><a href="#methods/init">init</a></li>
+			<li><a href="#methods/destroy">destroy</a></li>
+			<li><a href="#methods/drop">drop</a></li>
+			<li><a href="#methods/validate">validate</a></li>
+			<li><a href="#methods/get">get</a></li>
+			<li><a href="#methods/set">set</a></li>
+			<li><a href="#methods/setRules">setRules</a></li>
+			<li><a href="#methods/field">field</a></li>
+			<li><a href="#methods/button">button</a></li>
+			<li><a href="#methods/submit">submit</a></li>
+			<li><a href="#methods/submitControl">submitControl</a></li>
+			<li><a href="#methods/submitDisable">submitDisable</a></li>
+			<li><a href="#methods/submitEnable">submitEnable</a></li>
+			<li><a href="#methods/lock">lock</a></li>
+			<li><a href="#methods/unlock">unlock</a></li>
+			<li><a href="#methods/execute">execute</a></li>
+		</ul>
+		<br/>
+		<a href="#fild_methods">Field Methods</a>
+		<ul>
+			<li><a href="#fild_methods/init">init</a></li>
+			<li><a href="#fild_methods/destroy">destroy</a></li>
+			<li><a href="#fild_methods/drop">drop</a></li>
+			<li><a href="#fild_methods/validate">validate</a></li>
+			<li><a href="#fild_methods/get">get</a></li>
+			<li><a href="#fild_methods/set">set</a></li>
+			<li><a href="#fild_methods/setRules">setRules</a></li>
+			<li><a href="#fild_methods/addRules">addRules</a></li>
+			<li><a href="#fild_methods/hasRules">hasRules</a></li>
+			<li><a href="#fild_methods/delRule">delRule</a></li>
+			<li><a href="#fild_methods/error">error</a></li>
+			<li><a href="#fild_methods/errorOn">errorOn</a></li>
+			<li><a href="#fild_methods/errorOff">errorOff</a></li>
+			<li><a href="#fild_methods/hold">hold</a></li>
+			<li><a href="#fild_methods/holdOn">holdOn</a></li>
+			<li><a href="#fild_methods/holdOff">holdOff</a></li>
+			<li><a href="#fild_methods/on">on</a></li>
+			<li><a href="#fild_methods/off">off</a></li>
+			<li><a href="#fild_methods/fire">fire</a></li>
+			<li><a href="#fild_methods/processing">processing</a></li>
+			<li><a href="#fild_methods/processingOn">processingOn</a></li>
+			<li><a href="#fild_methods/processingOff">processingOff</a></li>
+			<li><a href="#fild_methods/execute">execute</a></li>
+		</ul>
+		<br/>
+		<a href="#btn_methods">Button Methods</a>
+		<ul>
+			<li><a href="#btn_methods/init">init</a></li>
+			<li><a href="#btn_methods/destroy">destroy</a></li>
+			<li><a href="#btn_methods/drop">drop</a></li>
+			<li><a href="#btn_methods/disable">disable</a></li>
+			<li><a href="#btn_methods/enable">enable</a></li>
+			<li><a href="#btn_methods/get">get</a></li>
+			<li><a href="#btn_methods/set">set</a></li>
+			<li><a href="#btn_methods/processing">processing</a></li>
+			<li><a href="#btn_methods/processingOn">processingOn</a></li>
+			<li><a href="#btn_methods/processingOff">processingOff</a></li>
+			<li><a href="#btn_methods/on">on</a></li>
+			<li><a href="#btn_methods/off">off</a></li>
+			<li><a href="#btn_methods/fire">fire</a></li>
+		</ul>
+	</div>
+
+	<div class="main">
+
+		<div class="section" data-url="options">
+			<h3>Options</h3>
+			<hr/>
+
+			<div class="item" data-url="options/errorClass">
+				errorClass
+			</div>
+			<div class="details">errorClass detaild</div>
+
+			<div class="item" data-url="options/disabledClass">
+				disabledClass
+			</div>
+
+			<div class="item" data-url="options/processingClass">
+				processingClass
+			</div>
+			<div class="item" data-url="options/timeout">
+				timeout
+			</div>
+			<div class="item" data-url="options/requestTimeout">
+				requestTimeout
+			</div>
+			<div class="item" data-url="options/validateEvent">
+				validateEvent
+			</div>
+			<div class="item" data-url="options/submitButtonControl">
+				submitButtonControl
+			</div>
+			<div class="item" data-url="options/submitButton">
+				submitButton
+			</div>
+			<div class="item" data-url="options/buttons">
+				buttons
+			</div>
+			<div class="item" data-url="options/fields">
+				fields
+			</div>
+			<div class="item" data-url="options/onerror">
+				onerror
+			</div>
+			<div class="item" data-url="options/onvalid">
+				onvalid
+			</div>
+			<div class="item" data-url="options/own">
+				own
+			</div>
+			<div class="item" data-url="options/request">
+				request
+			</div>
+			<div class="item" data-url="options/request.data">
+				request.data
+			</div>
+			<div class="item" data-url="options/request.url">
+				request.url
+			</div>
+			<div class="item" data-url="options/request.method">
+				request.method
+			</div>
+			<div class="item" data-url="options/request.start">
+				request.start
+			</div>
+			<div class="item" data-url="options/request.success">
+				request.success
+			</div>
+		</div>
+
+		<div class="section" data-url="methods">
+			<h3>Methods</h3>
+			<hr/>
+			<div class="item" data-url="methods/init">init</div>
+			<div class="item" data-url="methods/destroy">destroy</div>
+			<div class="item" data-url="methods/drop">drop</div>
+
+
+			<!-- TODO: validate() -->
+			<div class="item" data-url="methods/validate">validate</div>
+			<div class="details">
+				<form id="form_methods_validate" class="f_left">
+					<input type="text" name="text" value="" data-rules="*"/>
+					<input type="submit" value="Submit"/>
+				</form>
+				<div class="f_right">
+					<button id="form_methods_validate_init">init()</button>
+					<button id="form_methods_validate_validate">validate()</button>
+				</div>
+				<script>
+					$( '#form_methods_validate_init' ).on( 'click', function () {
+						var form_methods_validate = tFormer( 'form_methods_validate' ).submit( function () {
+							console.log( form_methods_validate.toObject() );
+						} );
+					} );
+					$( '#form_methods_validate_validate' ).on( 'click', function () {
+						var form_methods_validate = tFormer( 'form_methods_validate' ).validate();
+					} );
+				</script>
+			</div>
+
+			<!-- TODO: get() -->
+			<div class="item" data-url="methods/get">get</div>
+			<div class="details">
+				<form id="form_methods_get" class="f_left">
+					<input type="text" name="text" value="" data-rules="*"/>
+					<input type="submit" value="Submit"/>
+				</form>
+				<div class="f_right">
+					<button id="form_methods_get_get">get('timeout')</button>
+					<button id="form_methods_get_set">set({timeout: random})</button>
+				</div>
+				<script>
+					$( '#form_methods_get_get' ).on( 'click', function () {
+						var form_methods_get = tFormer( 'form_methods_get' );
+						console.log(form_methods_get.get('timeout'));
+					} );
+					$( '#form_methods_get_set' ).on( 'click', function () {
+						var form_methods_get = tFormer( 'form_methods_get' ).set({'timeout': Math.floor(Math.random()*1000 + 500)});
+					} );
+				</script>
+			</div>
+
+
+			<div class="item" data-url="methods/set">set</div>
+			<div class="item" data-url="methods/setRules">setRules</div>
+			<div class="item" data-url="methods/field">field</div>
+			<div class="item" data-url="methods/button">button</div>
+			<div class="item" data-url="methods/submit">submit</div>
+			<div class="item" data-url="methods/submitControl">submitControl</div>
+			<div class="item" data-url="methods/submitDisable">submitDisable</div>
+			<div class="item" data-url="methods/submitEnable">submitEnable</div>
+			<div class="item" data-url="methods/lock">lock</div>
+			<div class="item" data-url="methods/unlock">unlock</div>
+			<div class="item" data-url="methods/execute">execute</div>
+
+		</div>
+
+		<div class="section" data-url="field_methods">
+			<h3>Field Methods</h3>
+			<hr/>
+			<div class="item" data-url="fild_methods/init">init</div>
+			<div class="item" data-url="fild_methods/destroy">destroy</div>
+			<div class="item" data-url="fild_methods/drop">drop</div>
+			<div class="item" data-url="fild_methods/validate">validate</div>
+			<div class="item" data-url="fild_methods/get">get</div>
+			<div class="item" data-url="fild_methods/set">set</div>
+			<div class="item" data-url="fild_methods/setRules">setRules</div>
+			<div class="item" data-url="fild_methods/addRules">addRules</div>
+			<div class="item" data-url="fild_methods/hasRules">hasRules</div>
+			<div class="item" data-url="fild_methods/delRule">delRule</div>
+			<div class="item" data-url="fild_methods/error">error</div>
+			<div class="item" data-url="fild_methods/errorOn">errorOn</div>
+			<div class="item" data-url="fild_methods/errorOff">errorOff</div>
+			<div class="item" data-url="fild_methods/hold">hold</div>
+			<div class="item" data-url="fild_methods/holdOn">holdOn</div>
+			<div class="item" data-url="fild_methods/holdOff">holdOff</div>
+			<div class="item" data-url="fild_methods/on">on</div>
+			<div class="item" data-url="fild_methods/off">off</div>
+			<div class="item" data-url="fild_methods/fire">fire</div>
+			<div class="item" data-url="fild_methods/processing">processing</div>
+			<div class="item" data-url="fild_methods/processingOn">processingOn</div>
+			<div class="item" data-url="fild_methods/processingOff">processingOff</div>
+			<div class="item" data-url="fild_methods/execute">execute</div>
+		</div>
+
+		<div class="section" data-url="btn_methods">
+			<h3>Button Methods</h3>
+			<hr/>
+			<div class="item" data-url="btn_methods/init">init</div>
+			<div class="item" data-url="btn_methods/destroy">destroy</div>
+			<div class="item" data-url="btn_methods/drop">drop</div>
+			<div class="item" data-url="btn_methods/disable">disable</div>
+			<div class="item" data-url="btn_methods/enable">enable</div>
+			<div class="item" data-url="btn_methods/get">get</div>
+			<div class="item" data-url="btn_methods/set">set</div>
+			<div class="item" data-url="btn_methods/processing">processing</div>
+			<div class="item" data-url="btn_methods/processingOn">processingOn</div>
+			<div class="item" data-url="btn_methods/processingOff">processingOff</div>
+			<div class="item" data-url="btn_methods/on">on</div>
+			<div class="item" data-url="btn_methods/off">off</div>
+			<div class="item" data-url="btn_methods/fire">fire</div>
+		</div>
+	</div>
+</div>
+
+
+
+<script>
+	//setInterval( function () {
+	//log( 1, form_1.invalid, 'invalid' );
+	//log( 3, form_1.holded, 'holded' );
+	//log( 4, form_1.locked, 'locked' );
+	//log( 4, $( form_1.button( 'submit' ).button ).hasClass( 'processing' ), 'processing' );
+	//}, 50 );
+</script>
+
+</body>
+</html>

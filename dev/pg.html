@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>tFormer</title>
+	<link rel="stylesheet" type="text/css" href="pg.css"/>
+</head>
+
+<body>
+
+<div class="header">
+	<div class="name">tFormer.js</div>
+	<div class="annotation">
+		(v 0.5&beta;)
+	</div>
+	<div class="name"> - Playground</div>
+</div>
+
+
+</div>
+
+<div class="content">
+
+	<div class="sidebar">
+
+	</div>
+
+	<div class="main">
+
+		<div class="pg">
+
+
+			<form id="form_pg">
+			</form>
+			<div class="item" data-name="form" data-type="form">
+				<div class="item-select"></div>
+				<input type="submit" id="form_pg_submit" value="Submit">
+				valid: <span id="form_pg_valid"></span> |
+				invalid: <span id="form_pg_invalid"></span>
+			</div>
+
+			<br/>
+			<br/>
+
+			<div class="item item-add">
+				<form id="form_add">
+					<select name="field_type">
+						<option value="text">text</option>
+						<option value="textarea">textarea</option>
+						<option value="select">select</option>
+						<option value="checkbox">checkbox</option>
+						<option value="email">email</option>
+						<option value="button">button</option>
+					</select>
+					<label>
+						<input type="checkbox" name="field_required"/>
+						required
+					</label>
+					<input type="text" value="" placeholder="name" name="field_name" data-rules="*">
+					<input type="submit" value="Add item">
+				</form>
+			</div>
+		</div>
+
+	</div>
+</div>
+
+
+<script type="text/tpl" id="_tpl_item">
+	<div class="item" data-name="{{name}}" data-type="{{type}}">
+		<div class="item-select"></div>
+		{{el}}
+		name: {{name}},
+		type: {{type}}
+	</div>
+</script>
+
+
+<script type="text/tpl" id="_tpl_info">
+	<div class="info">
+		<span class="btn" data-action="field_object">tFormer field: {{name}}</span><br/><br/>
+
+		<b>Options</b>:
+		<div class="btn" data-option="errorClass">errorClass: <span contenteditable>{{errorClass}}</span></div>
+		<div class="btn" data-option="disabledClass">disabledClass: <span contenteditable>{{disabledClass}}</span></div>
+		<div class="btn" data-option="processingClass">processingClass: <span contenteditable>{{processingClass}}</span>
+		</div>
+		<div class="btn" data-option="timeout">timeout: <span contenteditable>{{timeout}}</span></div>
+		<div class="btn" data-option="requestTimeout">requestTimeout: <span contenteditable>{{requestTimeout}}</span>
+		</div>
+		<div class="btn" data-option="validateEvent">validateEvent: <span contenteditable>{{validateEvent}}</span></div>
+		<div class="btn" data-option="rules">rules: <span contenteditable>{{rules}}</span></div>
+
+
+		<br/>
+		<b>Methods</b>:
+		<div class="btn" data-method="init">init()</div>
+		<div class="btn" data-method="destroy">destroy()</div>
+		<div class="btn" data-method="drop">drop()</div>
+		<div class="btn" data-method="validate">validate()</div>
+		<div class="btn" data-method="get">get(<span contenteditable></span>)</div>
+		<div class="btn" data-method="set">set(<span contenteditable></span>)</div>
+		<div class="btn" data-method="setRules">setRules(<span contenteditable></span>)</div>
+		<div class="btn" data-method="addRules">addRules(<span contenteditable></span>)</div>
+		<div class="btn" data-method="hasRules">hasRules(<span contenteditable></span>)</div>
+		<div class="btn" data-method="delRule">delRule(<span contenteditable></span>)</div>
+		<div class="btn" data-method="error">error(<span contenteditable></span>)</div>
+		<div class="btn" data-method="errorOn">errorOn()</div>
+		<div class="btn" data-method="errorOff">errorOff()</div>
+		<div class="btn" data-method="hold">hold(<span contenteditable></span>)</div>
+		<div class="btn" data-method="holdOn">holdOn()</div>
+		<div class="btn" data-method="holdOff">holdOff()</div>
+		<div class="btn" data-method="processing">processing(<span contenteditable></span>)</div>
+		<div class="btn" data-method="processingOn">processingOn()</div>
+		<div class="btn" data-method="processingOff">processingOff()</div>
+		<!--<div class="btn" data-method="execute">execute(<span contenteditable></span>)</div>-->
+
+
+	</div>
+</script>
+
+
+<script type="text/tpl" id="_tpl_info_button">
+	<div class="info">
+		<span class="btn" data-action="field_object">tFormer button: {{name}}</span><br/><br/>
+
+		<b>Options</b>:
+		<div class="btn" data-option="disabledClass">disabledClass: <span contenteditable>{{disabledClass}}</span></div>
+		<div class="btn" data-option="processingClass">processingClass: <span contenteditable>{{processingClass}}</span>
+		</div>
+
+		<br/>
+		<b>Methods</b>:
+		<div class="btn" data-method="init">init()</div>
+		<div class="btn" data-method="destroy">destroy()</div>
+		<div class="btn" data-method="drop">drop()</div>
+		<div class="btn" data-method="get">get(<span contenteditable></span>)</div>
+		<div class="btn" data-method="set">set(<span contenteditable></span>)</div>
+		<div class="btn" data-method="processing">processing(<span contenteditable></span>)</div>
+		<div class="btn" data-method="processingOn">processingOn()</div>
+		<div class="btn" data-method="processingOff">processingOff()</div>
+	</div>
+</script>
+
+
+<script type="text/tpl" id="_tpl_info_form">
+	<div class="info">
+		<span class="btn" data-action="field_object">tFormer main Object</span><br/><br/>
+
+		<b>Options</b>:
+		<div class="btn" data-option="errorClass">errorClass: <span contenteditable>{{errorClass}}</span></div>
+		<div class="btn" data-option="disabledClass">disabledClass: <span contenteditable>{{disabledClass}}</span></div>
+		<div class="btn" data-option="processingClass">processingClass: <span contenteditable>{{processingClass}}</span>
+		</div>
+		<div class="btn" data-option="timeout">timeout: <span contenteditable>{{timeout}}</span></div>
+		<div class="btn" data-option="requestTimeout">requestTimeout: <span contenteditable>{{requestTimeout}}</span>
+		</div>
+		<div class="btn" data-option="validateEvent">validateEvent: <span contenteditable>{{validateEvent}}</span></div>
+
+
+		<br/>
+		<b>Methods</b>:
+		<div class="btn" data-method="init">init()</div>
+		<div class="btn" data-method="destroy">destroy()</div>
+		<div class="btn" data-method="drop">drop()</div>
+		<div class="btn" data-method="validate">validate()</div>
+		<div class="btn" data-method="get">get(<span contenteditable></span>)</div>
+		<div class="btn" data-method="set">set(<span contenteditable></span>)</div>
+
+		<div class="btn" data-method="field">field(<span contenteditable></span>)</div>
+		<div class="btn" data-method="button">button(<span contenteditable></span>)</div>
+
+		<div class="btn" data-method="processing">processing(<span contenteditable></span>)</div>
+		<div class="btn" data-method="processingOn">processingOn()</div>
+		<div class="btn" data-method="processingOff">processingOff()</div>
+
+		<div class="btn" data-method="lock">lock</div>
+		<div class="btn" data-method="unlock">unlock</div>
+
+		<div class="btn" data-method="submitControl">submitControl(<span contenteditable></span>)</div>
+		<div class="btn" data-method="submitDisable">submitDisable()</div>
+		<div class="btn" data-method="submitEnable">submitEnable()</div>
+
+	</div>
+</script>
+
+
+<script src="../jquery.2.0.min.js"></script>
+<script src="http://master.v.js/_v_.js"></script>
+<script src="../tFormer_new.js"></script>
+<script src="pg.js"></script>
+
+
+</body>
+</html>

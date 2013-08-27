@@ -1,127 +1,217 @@
 /**
  * Test Validation Process stuff
  */
-describe( 'Validation process stuff', function () {
+describe( 'UI, UX', function (){
 
-	it( 'fields with errors in validation receives errorClass in their className', function () {
-		form__process.setRules( '* @', 'test', true );
-		expect( $( form__process.form.test ).hasClass( form__process.get( 'errorClass', 'test' ) ) ).toBe( true );
+
+	it( 'timeout works fine', function (){
+		var f = tFormer( 'f', {
+			timeout: 2000
+		} );
+		// console.log(f.get('timeout'));
 	} );
 
-	it( 'before function executed every time before validation', function () {
-		expect( form__process_results.before[0] ).not.toBe( 0 );
+	// TODO: blur validation without timeout
+
+	// TODO: validation with timeout still disable the submit button
+
+	// TODO: request validation
+
+	describe( 'Events:', function (){
+		var f = tFormer( 'f' );
+		it( f.get( 'eventBefore' ), function (){
+			var eventBefore_count = 0;
+			$( f.field( 't_text' ).el ).on( f.field( 't_text' ).get( 'eventBefore' ), function (){
+				eventBefore_count++;
+			} );
+			f.field( 't_text' ).setRules( '*' );
+			expect( eventBefore_count ).not.toBe( 0 );
+			$( f.field( 't_text' ).el ).off( f.field( 't_text' ).get( 'eventBefore' ) )
+		} );
+
+		it( f.get( 'eventValid' ), function (){
+			var eventValid_count = 0;
+			$( f.field( 't_text' ).el ).on( f.field( 't_text' ).get( 'eventValid' ), function (){
+				eventValid_count++;
+			} );
+			f.field( 't_text' ).setRules( '*' );
+			expect( eventValid_count ).not.toBe( 0 );
+			$( f.field( 't_text' ).el ).off( f.field( 't_text' ).get( 'eventValid' ) )
+		} );
+
+		it( f.get( 'eventError' ), function (){
+			var eventError_count = 0;
+			$( f.field( 't_text' ).el ).on( f.field( 't_text' ).get( 'eventError' ), function (){
+				eventError_count++;
+			} );
+			var test = f.field( 't_text' ).el.value;
+			f.field( 't_text' ).el.value = '';
+			f.field( 't_text' ).setRules( '*' );
+			expect( eventError_count ).not.toBe( 0 );
+			f.field( 't_text' ).el.value = test;
+			$( f.field( 't_text' ).el ).off( f.field( 't_text' ).get( 'eventError' ) )
+		} );
 	} );
 
-	it( '`this` in before function is current validating field', function () {
-		form__process.validateField( 'test', true, true );
-		expect( form__process.form.test ).toBe( form__process_results.before[1] );
-	} );
+	describe( 'Event functions:', function (){
 
-	it( 'onerror function executed every time when field fails validation', function () {
-		expect( form__process_results.onerror[0] ).not.toBe( 0 );
-	} );
+		describe( 'before', function (){
+			var f = tFormer( 'f' ),
+				order = [],
+				before_this;
 
-	it( '`this` in onerror function is current validating field', function () {
-		form__process.validateField( 'test', true, true );
-		expect( form__process.form.test ).toBe( form__process_results.onerror[1] );
-	} );
+			f.field( 't_text' ).set( {
+				before: function (){
+					order.push( 'before' );
+					before_this = this;
+				},
+				own   : function (){
+					order.push( 'validate' );
+					return 'own_changed';
+				}
+			} );
+			order = [];
+			f.validate();
 
+			it( ' - executed just before field validation function', function (){
+				expect( order[0] ).toBe( 'before' );
+			} );
 
-	it( 'onvalid function executed every time when field passes validation', function () {
-		$( form__process.form.test ).val( 'some@value.com' );
-		form__process.setRules( '*', 'test', true );
-		form__process.validateField( form__process.form.test, true, true );
-		expect( form__process_results.onvalid[0] ).not.toBe( 0 );
-	} );
-
-	it( '`this` in onvalid function is current validating field', function () {
-		expect( form__process.form.test ).toBe( form__process_results.onvalid[1] );
-	} );
-
-	it( 'on `blur` event field will be validated immediately without `timeout` and `requestTimeout`', function () {
-		form__process.set( {'timeout': 2000, requestTimeout: 8000 } );
-		$( form__process.form.test ).focus().val( '12' ).trigger( 'keyup' ).blur();
-		expect( $( form__process.form.test ).hasClass( form__process.get( 'errorClass' ) ) ).toBe( false );
-		$( form__process.form.test ).focus().val( '' ).trigger( 'keyup' ).blur();
-		expect( $( form__process.form.test ).hasClass( form__process.get( 'errorClass' ) ) ).toBe( true );
-		form__process.set( {'timeout': 0} );
-	} );
-
-
-	describe( 'Request validation: ', function () {
-
-		it( 'fields with request validation is holded for validation (data-holded="1")', function () {
-			var flag = false;
-			runs( function () {
-				setTimeout( function () {
-					flag = true;
-				}, 250 );
-			} )
-			waitsFor( function () {
-				return flag;
-			} )
-			runs( function () {
-				expect( $( form__process.form.request ).data( 'holded' ) ).not.toBeDefined();
-				form__process.form.request.value = 'request_value';
-				form__process.setRules( '* request', 'request', true );
-				expect( $( form__process.form.request ).data( 'holded' ) ).toBe( 1 );
+			it( ' - context is [object HTMLInputElement] ', function (){
+				f.validate();
+				expect( before_this ).toBe( f.field( 't_text' ).el );
 			} );
 		} );
 
-		it( 'request start function called', function () {
-			expect( form__process_results.fields.request.start[0] ).not.toBe( 0 );
-		} );
+		describe( 'onerror', function (){
+			var onerror_counter = 0,
+				onerror_this,
+				f = tFormer( 'f' );
 
-		it( 'request end function called', function () {
-			var test = null;
-			waitsFor( function () {
-				test = (form__process_results.fields.request.end[0]) ? true : false;
-				return test;
-			}, "The result should be returned", 750 );
-			runs( function () {
-				expect( test ).toBe( true );
+			beforeEach( function (){
+				onerror_counter = 0;
 			} );
-		} );
 
-		it( '`this` in request end function is current field', function () {
-			expect( form__process.form.request ).toBe( form__process_results.fields.request.end[1] );
-		} );
+			it( ' - executed when field validation fails ', function (){
+				expect( onerror_counter ).toBe( 0 );
 
-		it( 'validation result depends on what request function returns', function () {
-			var end_executed = false;
-			runs( function () {
-				form__process.set( {
-					end: function ( result ) {
-						end_executed = true;
-						return true;
+				f.field( 't_text' ).set( {
+					rules  : '* @',
+					onerror: function (){
+						onerror_this = this;
+						return onerror_counter++;
 					}
-				}, 'request' );
-				form__process.validateField( 'request', true, true );
-			} );
-			waitsFor( function () {
-				return end_executed;
-			}, "end should be executed", 500 );
-			runs( function () {
-				expect( $( form__process.form.request ).hasClass( form__process.get( 'errorClass' ) ) ).toBe( false );
+				} );
+
+				f.validate();
+				expect( onerror_counter ).toBe( 1 );
+				f.validate();
+				expect( onerror_counter ).toBe( 2 );
 			} );
 
-			var end_executed2 = false;
-			runs( function () {
-				form__process.set( {
-					end: function ( result ) {
-						end_executed2 = true;
-						return false;
+			it( ' - if field is valid - function would not be executed', function (){
+				expect( onerror_counter ).toBe( 0 );
+				f.field( 't_text' ).el.value = 'asdf';
+				f.field( 't_text' ).set( {
+					rules  : '*',
+					onerror: function (){
+						onerror_this = this;
+						return onerror_counter++;
 					}
-				}, 'request' );
-				form__process.validateField( 'request', true, true );
-			} );
-			waitsFor( function () {
-				return end_executed2;
-			}, "end should be executed", 500 );
-			runs( function () {
-				expect( $( form__process.form.request ).hasClass( form__process.get( 'errorClass' ) ) ).toBe( true );
+				} );
+				expect( onerror_counter ).toBe( 0 );
 			} );
 
+			it( ' - context is [object HTMLInputElement] ', function (){
+				expect( onerror_this ).toBe( f.field( 't_text' ).el );
+			} );
+		} );
+
+		describe( 'onvalid', function (){
+			var onvalid_counter = 0,
+				onvalid_this,
+				f = tFormer( 'f' );
+
+			beforeEach( function (){
+				f.drop();
+				onvalid_counter = 0;
+			} );
+
+			it( ' - executed when validation passed', function (){
+				expect( onvalid_counter ).toBe( 0 );
+
+				f.field( 't_text' ).el.value = 'asdf';
+				f.field( 't_text' ).set( {
+					rules  : '*',
+					onvalid: function (){
+						onvalid_this = this;
+						onvalid_counter++;
+					}
+				} );
+				f.validate();
+				expect( onvalid_counter ).toBe( 1 );
+				f.validate();
+				expect( onvalid_counter ).toBe( 2 );
+			} );
+
+			it( ' - if field is not valid - function would not be executed', function (){
+				expect( onvalid_counter ).toBe( 0 );
+				f.field( 't_text' ).set( {
+					rules  : '* @',
+					onvalid: function (){
+						onvalid_this = this;
+						return onvalid_counter++;
+					}
+				} );
+				f.validate();
+				expect( onvalid_counter ).toBe( 0 );
+			} );
+
+			it( ' - context is [object HTMLInputElement] ', function (){
+				expect( onvalid_this ).toBe( f.field( 't_text' ).el );
+			} );
+		} );
+	} );
+
+
+	describe( 'submit button', function (){
+		it( ' - find submit button if not defined in options', function (){
+			var f = tFormer( 'f' );
+			expect( f.button( 'submit' ) ).toBeDefined();
+		} );
+
+		it( ' - if submit button defined in options or later by set() method', function (){
+			var f_sb_not_button = tFormer( 'f_sb_not_button', {
+				submitButton: $( '#f_sb_not_button .submit' )[0]
+			} );
+			expect( f_sb_not_button.button( 'submit' ).el ).toBe( $( '#f_sb_not_button .submit' )[0] );
+		} );
+
+		it( ' - if form has no submit button by default, it still works fine', function (){
+			var f_no_sb = tFormer( 'f_no_sb' );
+			expect( f_no_sb.button( 'submit' ) ).not.toBeDefined();
+		} );
+	} );
+
+	describe( 'check buttons', function (){
+		var f = tFormer( 'f' ),
+			check = f.button( 't_checkbox' );
+
+		it( ' - find automatically by data-check attribute', function (){
+			expect( check ).toBeDefined();
+		} );
+
+		it( ' - validate depended field by click', function (){
+			var test = 0;
+			f.field( 't_checkbox' ).set( {
+				rules : '*',
+				before: function (){
+					test++;
+				}
+			} );
+			test = 0;
+			check.trigger( 'click' );
+			expect( test ).toBe( 1 );
 		} );
 	} );
 } );

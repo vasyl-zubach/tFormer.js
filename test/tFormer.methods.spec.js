@@ -2,120 +2,90 @@
  * Test tFormer Methods
  */
 
-describe( 'tFormer.methods()', function () {
+describe( 'Methods : ', function () {
 
 
-	describe( 'validateForm(event || show_errors)', function () {
-		var f = tFormer( 'f' );
-		it( 'validateForm() - validating without displaying errors', function () {
-			f.setRules( '* @', 't_text', false );
-			f.validateForm();
-			expect( $( f.form.t_text ).hasClass( f.get( 'errorClass' ) ) ).toBe( false );
+	describe( 'define `new tFormer(formID, options)`', function () {
+		it( 'can be defined without new', function () {
+			var f1 = new tFormer( 'f' );
+			expect( f1 instanceof tFormer ).toBeTruthy();
+
+			var f2 = tFormer( 'f' );
+			expect( f2 instanceof tFormer ).toBeTruthy();
 		} );
 
-		it( 'validateForm( true ) - validate form with displaying errors', function () {
-			f.setRules( '* @', 'test_input', false );
-			f.validateForm( true );
-			expect( $( f.form.t_text ).hasClass( f.get( 'errorClass' ) ) ).toBe( true );
+		it( 'caching all inited forms in tFormer.cache', function () {
+			var f = tFormer( 'f' );
+			expect( f.cache.length > 0 ).toBeTruthy();
+		} );
+	} );
+
+	describe( 'init()', function () {
+		var f = tFormer( 'f' );
+
+		beforeEach( function () {
+			f.drop();
+		} );
+
+		it( ' - initializing tFormer', function () {
+			expect( f.inited ).toBeTruthy();
 		} );
 	} );
 
 
-	describe( 'validateField(that, showError, no_timeout)', function () {
-		var f;
+	describe( 'destroy()', function () {
+		var f = tFormer( 'f' );
+		var f_test = f.field( 't_text' );
 		beforeEach( function () {
-			f = tFormer( 'f', {
-				fields: {
-					t_text: '*'
-				}
-			} );
+			f.drop();
+			f_test = f.field( 't_text' );
 		} );
 
-		it( '`that` can be field name string', function () {
-			f.form.t_text.value = 'tjrus.com';
-			expect( f.validateField( 't_text', false, true ) ).toBeTruthy();
-			f.setRules( '* @', 't_text', false );
-			expect( f.validateField( 't_text', false, true ) ).toBeFalsy();
-			f.form.t_text.value = 'tjrus.com';
-			expect( f.validateField( f.form.t_text, false, true ) ).toBe( f.validateField( 't_text', false, true ) );
+		it( ' - remove errorClass (and data-error) from fields', function () {
+			f_test.el.value = '';
+			f_test.setRules( '*' );
+			expect( f_test.hasClass( f_test.get( 'errorClass' ) ) ).toBeTruthy();
+			expect( f_test.hasClass( f_test.get( 'errorClass' ) ) ).toBeTruthy();
+			f.destroy();
+			expect( f_test.hasClass( f_test.get( 'errorClass' ) ) ).not.toBeTruthy();
 		} );
 
-		it( '`that` can be HTML form field element', function () {
-			f.form.t_text.value = 'i@tjrus.com';
-			expect( f.validateField( f.form.t_text, false, true ) ).toBe( f.validateField( 't_text', false, true ) );
-			f.setRules( '* @', 't_text', false );
-			expect( f.validateField( f.form.t_text, false, true ) ).toBe( f.validateField( 't_text', false, true ) );
-			f.form.t_text.value = 'tjrus.com';
-			expect( f.validateField( f.form.t_text, false, true ) ).toBe( f.validateField( 't_text', false, true ) );
+		it( ' - remove disabledClass from submit button', function () {
+			f_test.el.value = '';
+			f_test.setRules( '*' );
+			expect( f_test.hasClass( f_test.get( 'errorClass' ) ) ).toBeTruthy();
+			f.destroy();
+			expect( f_test.hasClass( f_test.get( 'errorClass' ) ) ).not.toBeTruthy();
+		} );
+	} );
+
+
+	describe( 'validate()', function () {
+		var f = tFormer( 'f' );
+
+		beforeEach( function () {
+			f.destroy().init();
+		} );
+
+		it( 'validate() - whole form and returns is form valid or not', function () {
+			expect( f.field( 't_text' ).setRules( '* @' ).validate() ).toBe( false );
 		} );
 
 
-		it( '`showError == false` - validate without showing the error', function () {
-			f.form.t_text.value = 'i@tjrus.com';
-			f.setRules( '* @', 't_text', false );
-			f.form.t_text.value = 'tjrus.com';
-			expect( f.validateField( f.form.t_text, false, true ) ).toBe( false );
-			expect( $( f.form.t_text ).hasClass( f.get( 'errorClass', 't_text' ) ) ).toBe( false );
+		it( 'validate( field_name ) - whole defined field and returns is form valid or not', function () {
+			expect( f.field( 't_text' ).setRules( '* @' ).validate() ).toBe( false );
 		} );
 
-		it( '`showError == true` - validate with displaying errors', function () {
-			f.form.t_text.value = 'i@tjrus.com';
-			f.setRules( '* @', 't_text', false );
-			f.form.t_text.value = 'tjrus.com';
-			expect( f.validateField( f.form.t_text, true, true ) ).toBe( false );
-			expect( $( f.form.t_text ).hasClass( f.get( 'errorClass', 't_text' ) ) ).toBe( true );
+		it( 'validate( { highlight: false } ) - validating whole form without displaying errors', function () {
+			expect( $( f.field( 't_text' ).setRules( '* @', {highlight: false} ).field ).hasClass( f.field( 't_text' ).get( 'errorClass' ) ) ).toBe( false );
 		} );
-
-		it( '`no_timeout == true` - disable request validation timeout', function () {
-			var start = 0,
-				end = 0,
-				req = '';
-			f = tFormer( 'f', {
-				fields: {
-					t_text: {
-						requestTimeout: 500,
-						rules         : '* request',
-						start         : function () {
-							start++;
-						},
-						url           : 'ajax.html',
-						method        : 'get',
-						end           : function ( result ) {
-							req = (result) ? result.toString() : '';
-							end++;
-							return result;
-						}
-					}
-				}
-			} );
-			var end_func = end;
-			var requestTimeout = f.get( 'requestTimeout', 't_text' );
-			var flag;
-			runs( function () {
-				f.validateField( f.form.t_text, true, true );
-				flag = false;
-				setTimeout( function () {
-					flag = true;
-				}, requestTimeout / 5 );
-			} );
-			waitsFor( function () {
-				return flag;
-			}, "The Value should be incremented", requestTimeout / 3 );
-			runs( function () {
-				expect( end_func + 1 ).toBe( end );
-			} );
-		} );
-	} )
+	} );
 
 
 	describe( 'toObject()', function () {
-		var f;
+		var f = tFormer( 'f' );
 		beforeEach( function () {
-			f = tFormer( 'f', {
-				fields: {
-					t_text: '*'
-				}
-			} );
+			f.destroy().init();
 		} );
 
 		it( 'toObject()', function () {
@@ -134,240 +104,164 @@ describe( 'tFormer.methods()', function () {
 
 
 	describe( 'get(*option_name, field_name)', function () {
-		var f;
+		var f = tFormer( 'f' );
 		beforeEach( function () {
-			f = tFormer( 'f', {
-				fields: {
-					t_text: {
-						rules         : '*',
-						requestTimeout: 1234
-					}
-				}
-			} );
+			f.destroy().init();
 		} );
 
 		it( '`field_name == undefined` - return global option', function () {
-			expect( f.get( 'requestTimeout' ) ).toBe( f.options.requestTimeout );
+			expect( f.get( 'requestTimeout' ) ).toBe( f.config.requestTimeout );
 		} );
 
 		it( '`field_name` defined - return fieldname option', function () {
-			expect( f.get( 'requestTimeout', 't_text' ) ).toBe( f.fields.t_text.requestTimeout );
-		} );
-
-		it( 'is there is no such options if defined `field_name` - return global option', function () {
-			expect( f.get( 'errorClass', 't_text' ) ).toBe( f.get( 'errorClass' ) );
+			expect( f.get( 'requestTimeout', 't_text' ) ).toBe( f.field( 't_text' ).get( 'requestTimeout' ) );
 		} );
 	} );
 
 
 	describe( 'set(*options, field_name)', function () {
-		var f;
+		var f = tFormer( 'f' );
 		beforeEach( function () {
-			f = tFormer( 'f', {
-				fields: {
-					t_text: '*'
-				}
-			} );
+			f.drop();
 		} );
 
 		it( '`field_name == undefined` - set all options as global', function () {
-			f.set( {'timeout': 1234} );
-			expect( f.get( 'timeout' ) ).toBe( f.options.timeout );
+			f.set( { timeout: 1234, requestTimeout: 4321 } );
+			expect( f.get( 'timeout' ) ).toBe( f.config.timeout );
 			expect( f.get( 'timeout' ) ).toBe( 1234 );
+			expect( f.get( 'requestTimeout' ) ).toBe( f.config.requestTimeout );
+			expect( f.get( 'requestTimeout' ) ).toBe( 4321 );
 		} );
 
 		it( '`field_name` defined - set all options to fieldname', function () {
-			f.set( {'errorClass': 'asdfasdfasd'}, 't_text' );
-			expect( f.get( 'errorClass', 't_text' ) ).toBe( f.fields.t_text.errorClass );
-			expect( f.get( 'errorClass', 't_text' ) ).toBe( 'asdfasdfasd' );
+			f.field( 't_text' ).set( {'errorClass': 'asdfasdfasd'} );
+			expect( f.field( 't_text' ).get( 'errorClass' ) ).toBe( f.field( 't_text' ).get( 'errorClass' ) );
+			expect( f.field( 't_text' ).get( 'errorClass' ) ).toBe( 'asdfasdfasd' );
+			f.field( 't_text' ).set( {'errorClass': 'error'} );
 		} );
 
-		it( 'defined unexisted properties in `*options` also can be set and get', function () {
-			f.set( {'some_undefined_option': 'some_undefined_option_value'}, 't_text' );
-			expect( f.get( 'some_undefined_option', 't_text' ) ).toBe( f.fields.t_text.some_undefined_option );
-			expect( f.get( 'some_undefined_option', 't_text' ) ).toBe( 'some_undefined_option_value' );
-			f.set( {'some_undefined_global_option': 'some_undefined_global_option_value'} );
-			expect( f.get( 'some_undefined_global_option' ) ).toBe( f.options.some_undefined_global_option );
-			expect( f.get( 'some_undefined_global_option' ) ).toBe( 'some_undefined_global_option_value' );
-		} );
 	} );
 
 
-	describe( 'setRules(*rules, *field_name, show_errors)', function () {
-		var f;
+	describe( 'setRules(*rules, *field_name, options)', function () {
+		var f = tFormer( 'f' );
 		beforeEach( function () {
-			f = tFormer( 'f', {
-				fields: {
-					t_text: '*'
-				}
-			} );
+			f.drop();
 		} );
 
 		it( 'setting property `rules` to defined `field_name`', function () {
-			f.setRules( '* @s', 't_text' );
-			expect( f.get( 'rules', 't_text' ) ).toBe( '* @s' );
+			f.field( 't_text' ).setRules( '* @s' );
+			expect( f.field( 't_text' ).get( 'rules' ) ).toBe( '* @s' );
 		} );
 
-		it( '`show_errors == false` - setRules and validate form without displaying errors', function () {
-			f.setRules( '* @s', 'test_input', false );
-			expect( $( f.form.t_text ).hasClass( f.get( 'errorClass', 't_text' ) ) ).toBe( false );
+		it( '`options = {hoghlight: false}` - setRules and validate form without displaying errors', function () {
+			f.field( 't_text' ).setRules( '* @s', {highlight: false} );
+			expect( $( f.fields.t_text.field ).hasClass( f.field( 't_text' ).get( 'errorClass' ) ) ).toBe( false );
 		} );
 
-		it( '`show_errors == true` - setRules, validate form and displaying errors', function () {
-			f.setRules( '* @s', 't_text', true );
-			expect( $( f.form.t_text ).hasClass( f.get( 'errorClass', 't_text' ) ) ).toBe( true );
+		it( '`{highlight: true}` - by default', function () {
+			expect( f.field( 't_text' ).setRules( '* @s' ).hasClass( f.field( 't_text' ).get( 'errorClass' ) ) ).toBe( true );
 		} );
 
 		it( 'set empty `rules` to remove validation rules from `field_name`', function () {
-			$( f.form.t_text ).val( 'test' );
-			f.setRules( '* @', 't_text' );
-			expect( f.validateField( f.form.t_text, true, true ) ).toBe( false );
-			f.setRules( '', 't_text' );
-			expect( f.validateField( f.form.t_text, true, true ) ).toBe( true );
-			expect( f.get( 'rules', 't_text' ) ).toBeUndefined();
+			f.field( 't_text' ).el.value = 'test';
+			expect( f.field( 't_text' ).setRules( '* @' ).valid ).toBe( false );
+			expect( f.field( 't_text' ).setRules( '' ).valid ).toBe( true );
 		} );
 	} );
 
 
-	describe( 'submitButtonControl( false || true )', function () {
-		var f;
+	describe( 'submit button control', function () {
+		var f = tFormer( 'f' );
+		var sb = f.button( 'submit' );
 		beforeEach( function () {
-			f = tFormer( 'f', {
-				fields: {
-					t_text: '*'
-				}
-			} );
+			f.drop();
+			sb = f.button( 'submit' );
 		} );
 
-		it( 'submitButtonControl(true) is equal to submitButtonOn()', function () {
-			f.submitButtonControl( true );
-			expect( $( f.get( 'submitButton' ) ).hasClass( f.get( 'disabledClass' ) ) ).toBe( false );
+		it( 'submitEnable() - turn on submit button', function () {
+			f.submitEnable();
+			expect( sb.hasClass( sb.get( 'disabledClass' ) ) ).toBe( false );
 		} );
-		it( 'submitButtonControl(false) is equal to submitButtonOff()', function () {
-			f.submitButtonControl( false );
-			expect( $( f.get( 'submitButton' ) ).hasClass( f.get( 'disabledClass' ) ) ).toBe( true );
+
+		it( 'submitControl(true) is equal to submitEnable()', function () {
+			f.submitControl( true );
+			expect( sb.hasClass( sb.get( 'disabledClass' ) ) ).toBe( false );
 		} );
-		describe( 'submitButtonOn()', function () {
-			it( 'turn on submit button', function () {
-				f.submitButtonOn();
-				expect( $( f.get( 'submitButton' ) ).hasClass( f.get( 'disabledClass' ) ) ).toBe( false );
-			} );
+
+		it( 'submitDisable() - turn off submit button', function () {
+			f.submitDisable();
+			expect( sb.hasClass( sb.get( 'disabledClass' ) ) ).toBe( true );
 		} );
-		describe( 'submitButtonOff()', function () {
-			it( 'turn off submit button', function () {
-				f.submitButtonOff();
-				expect( $( f.get( 'submitButton' ) ).hasClass( f.get( 'disabledClass' ) ) ).toBe( true );
-			} );
+
+		it( 'submitControl(false) is equal to submitDisable()', function () {
+			f.submitControl( false );
+			expect( sb.hasClass( sb.get( 'disabledClass' ) ) ).toBe( true );
 		} );
 	} );
 
 
-	describe( 'processing(false || true)', function () {
-		var f;
+	describe( 'processing( true / false )', function () {
+		var f = tFormer( 'f' );
+		var sb = f.button( 'submit' );
+		var f_text = f.field( 't_text' );
 		beforeEach( function () {
-			f = tFormer( 'f', {
-				fields: {
-					t_text: '*'
-				}
-			} );
+			f.drop();
+			sb = f.button( 'submit' );
+			f_text = f.field( 't_text' );
 		} );
 
-		it( 'processing(true) is equal to processingOn()', function () {
-			f.processing( true );
-			expect( $( f.get( 'submitButton' ) ).hasClass( f.get( 'processingClass' ) ) ).toBe( true );
+		it( 'processing( true ) - add processing class to button', function () {
+			expect( sb.hasClass( sb.get( 'processingClass' ) ) ).toBe( false );
+			sb.processing( true );
+			expect( sb.hasClass( sb.get( 'processingClass' ) ) ).toBe( true );
 		} );
-		it( 'processing(false) is equal to processingOff()', function () {
-			f.processing( false );
-			expect( $( f.get( 'submitButton' ) ).hasClass( f.get( 'processingClass' ) ) ).toBe( false );
+		it( 'processing( true ) - add processing class to field', function () {
+			expect( $( f_text.field ).hasClass( f_text.get( 'processingClass' ) ) ).toBe( false );
+			f_text.processing( true );
+			expect( f_text.hasClass( f_text.get( 'processingClass' ) ) ).toBe( true );
 		} );
-		describe( 'processingOn()', function () {
-			it( 'turn on processing', function () {
-				f.processingOn();
-				expect( $( f.get( 'submitButton' ) ).hasClass( f.get( 'processingClass' ) ) ).toBe( true );
-			} );
+
+		it( 'processing( false ) - remove processing class from button', function () {
+			sb.processing( true );
+			expect( sb.hasClass( sb.get( 'processingClass' ) ) ).toBe( true );
+			sb.processing( false );
+			expect( sb.hasClass( sb.get( 'processingClass' ) ) ).toBe( false );
 		} );
-		describe( 'processingOff()', function () {
-			it( 'turn off processing', function () {
-				f.processingOff();
-				expect( $( f.get( 'submitButton' ) ).hasClass( f.get( 'processingClass' ) ) ).toBe( false );
-			} );
+		it( 'processing( false ) - remove processing class from field', function () {
+			f_text.processing( true );
+			expect( f_text.hasClass( f_text.get( 'processingClass' ) ) ).toBe( true );
+			f_text.processing( false );
+			expect( f_text.hasClass( f_text.get( 'processingClass' ) ) ).toBe( false );
 		} );
 	} );
 
 
-	describe( 'errorControl( *field, *errors, show_error )', function () {
-		var f;
+	describe( 'error control', function () {
+		var f = tFormer( 'f' );
+		var f_text = f.field( 't_text' );
 		beforeEach( function () {
-			f = tFormer( 'f', {
-				fields: {
-					t_text: '*'
-				}
-			} );
+			f.drop();
+			f_text = f.field( 't_text' );
 		} );
 
-		it( '`errors == []`, no errors in array - field valid', function () {
-			f.errorControl( f.form.t_text, [], false );
-			expect( $( f.form.t_text ).hasClass( f.get( 'errorClass', 't_text' ) ) ).toBe( false );
-			expect( $( f.form.t_text ).data( 'error' ) ).not.toBeDefined();
+		it( 'error( true ) add errorClass to field', function () {
+			expect( f_text.error( true ).hasClass( f_text.get( 'errorClass' ) ) ).toBe( true );
+			expect( f_text.error( false ).el.getAttribute( 'data-error' ) ).toBeDefined();
 		} );
 
-		it( '`errors.length > 0 ` - field invalid', function () {
-			f.errorControl( f.form.t_text, ['some error'], false );
-			expect( $( f.form.t_text ).data( 'error' ) ).toBeDefined();
-		} );
-
-		it( '`show_error == true` - displaying errors while validation', function () {
-			f.errorControl( f.form.t_text, ['someerror'], true );
-			expect( $( f.form.t_text ).hasClass( f.get( 'errorClass', 't_text' ) ) ).toBe( true );
+		it( 'error( false ) remove errorClass from field', function () {
+			expect( f_text.error( false ).hasClass( f_text.get( 'errorClass' ) ) ).toBe( false );
+			expect( f_text.error( false ).el.getAttribute( 'data-error' ) ).toBe( null );
 		} );
 	} );
-
-
-	describe( 'execute(*function_name, *this_element, params)', function () {
-		var start = 0,
-			end = 0,
-			req = '';
-		var f;
-		beforeEach( function () {
-			start = 0;
-			end = 0;
-			req = '';
-			f = tFormer( 'f', {
-				fields: {
-					t_text: {
-						requestTimeout: 500,
-						rules         : '* request',
-						start         : function () {
-							start++;
-						},
-						url           : 'ajax.html',
-						method        : 'get',
-						end           : function ( result ) {
-							req = (result) ? result.toString() : '';
-							end++;
-							return result;
-						}
-					}
-				}
-			} );
-		} );
-
-		it( 'executing defined field (or global) function if exist and return it\'s result', function () {
-			var result = f.execute( 'end', f.form.t_text, ['whatever'] )
-			expect( result ).toBe( 'whatever' );
-			expect( end ).toBe( 1 );
-		} );
-	} );
-
 
 	describe( 'lock()', function () {
-		var f;
+		var f = tFormer( 'f' );
+		var sb = f.button( 'submit' );
 		beforeEach( function () {
-			f = tFormer( 'f', {
-				fields: {
-					t_text: '*'
-				}
-			} );
+			f.drop();
+			sb = f.button( 'submit' );
 		} );
 
 		it( 'increment lock parameter', function () {
@@ -379,21 +273,19 @@ describe( 'tFormer.methods()', function () {
 		} );
 
 		it( 'add disabledClass to submit button', function () {
-			expect( $( f.get( 'submitButton' ) ).hasClass( f.get( 'disabledClass' ) ) ).toBe( false );
+			expect( f.locked ).toBe( 0 );
+			expect( sb.enable().hasClass( sb.get( 'disabledClass' ) ) ).toBe( false );
 			f.lock();
-			expect( $( f.get( 'submitButton' ) ).hasClass( f.get( 'disabledClass' ) ) ).toBe( true );
+			expect( sb.hasClass( sb.get( 'disabledClass' ) ) ).toBe( true );
 		} );
 	} );
 
-
 	describe( 'unlock()', function () {
-		var f;
+		var f = tFormer( 'f' );
+		var sb = f.button( 'submit' );
 		beforeEach( function () {
-			f = tFormer( 'f', {
-				fields: {
-					t_text: '*'
-				}
-			} );
+			f.drop();
+			sb = f.button( 'submit' );
 		} );
 
 		it( 'decrement lock parameter', function () {
@@ -405,15 +297,19 @@ describe( 'tFormer.methods()', function () {
 		} );
 
 		it( 'remove disabledClass from submit button', function () {
-			expect( $( f.get( 'submitButton' ) ).hasClass( f.get( 'disabledClass' ) ) ).toBe( false );
+			expect( f.locked ).toBe( 0 );
+			expect( sb.enable().hasClass( sb.get( 'disabledClass' ) ) ).toBe( false );
 			f.lock();
-			expect( $( f.get( 'submitButton' ) ).hasClass( f.get( 'disabledClass' ) ) ).toBe( true );
+			expect( sb.hasClass( sb.get( 'disabledClass' ) ) ).toBe( true );
+
 			f.unlock();
-			expect( $( f.get( 'submitButton' ) ).hasClass( f.get( 'disabledClass' ) ) ).toBe( false );
+			// TODO: valid form check
+			//			expect( $( sb.button ).hasClass( sb.get( 'disabledClass' ) ) ).toBe( false );
 		} );
 	} );
 
-	describe( 'init()', function () {
+
+	xdescribe( 'init()', function () {
 		var f,
 			before = 0,
 			onerror = 0,
@@ -462,12 +358,12 @@ describe( 'tFormer.methods()', function () {
 			expect( f.events.parent_depender.keyup.length ).toBe( 3 );
 		} );
 
-		if ( 'validate form after init, without displaying errors', function () {
+		it( 'validate form after init, without displaying errors', function () {
 			expect( $( f.form.test ).hasClass( f.get( 'errorClass' ) ) ).toBe( false )
 			expect( $( f.form.test ).data( 'error' ) ).toBeDefined();
 		} );
 
-		if ( 'add new onsubmit function', function () {
+		it( 'add new onsubmit function', function () {
 			expect( $( f.form.test ).hasClass( f.get( 'errorClass' ) ) ).toBe( false )
 			expect( $( f.form.test ).data( 'error' ) ).toBeDefined();
 			$( f.get( 'submitButton' ) ).trigger( 'click' );
@@ -476,7 +372,7 @@ describe( 'tFormer.methods()', function () {
 		} );
 	} );
 
-	describe( 'destroy()', function () {
+	xdescribe( 'destroy()', function () {
 		var f,
 			before = 0,
 			onerror = 0,
