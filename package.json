@@ -1,6 +1,6 @@
 {
   "name": "tFormer",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "Empower your HTML forms",
   "main": "tFormer.js",
   "directories": {
