@@ -321,6 +321,9 @@
 	 */
 	tf_proto.submit = function ( func ){
 		var self = this;
+		if( !self.config) {
+			return self;
+		}
 		if ( typeof func == 'function' ) {
 			self.config.submit = func;
 		}
@@ -920,7 +923,7 @@
 			own = self.get( 'own' ),
 			request = self.get( 'request' ),
 			rules = self.get( 'rules' ),
-			_v_check = _v_( self.value || '' ).rules( rules ),
+			_v_check = _v_( self.el.value || '' ).rules( rules ),
 			is_checkbox = type == 'checkbox',
 			is_required = _v_check.hasRule( '*' );
 
@@ -1020,7 +1023,7 @@
 			return url;
 		})();
 
-		var timeout = self.get( 'requestTimeout' );
+		var timeout = options.no_timeout ? 0 : (request.timeout || 0);
 
 		var readyStateChange = function (){
 			var xhr = self.xhr;
@@ -1125,7 +1128,7 @@
 			self.on( 'click', function (){
 				var field = parent.field( self.data( 'check' ) );
 				if ( field ) {
-					field.validate();
+					field.validate({no_timeout: true});
 				}
 			} );
 		}
