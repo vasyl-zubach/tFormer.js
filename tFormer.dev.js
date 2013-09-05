@@ -4,7 +4,6 @@
  * (c) 2013 Vasiliy Zubach (aka TjRus) - http://tjrus.com/
  * tFormer may be freely distributed under the MIT license.
  */
-"use strict";
 
 (function ( window, document, undefined ){
 
@@ -183,7 +182,7 @@
 				}
 
 				try {
-					if ( !self.valid && !self.validate() ) {
+					if ( !self.valid && !self.validate( { no_timeout: true } ) ) {
 						e_prevent( event );
 						sb.processing( false );
 						return false;
@@ -258,10 +257,12 @@
 
 	tf_proto.toObject = function (){
 		var self = this,
-			fields = self.fields,
+			fields = self.form,
 			obj = {};
-		for ( var name in fields ) {
-			var el = fields[name].el;
+
+		for ( var i = 0, f_l = fields.length; i < f_l; i++ ) {
+			var el = fields[i],
+				name = __getAttr( el, 'name' );
 			if ( el.type == 'checkbox' ) {
 				obj[name] = el.checked;
 			} else if ( el.type == 'radio' ) {
@@ -321,7 +322,7 @@
 	 */
 	tf_proto.submit = function ( func ){
 		var self = this;
-		if( !self.config) {
+		if ( !self.config ) {
 			return self;
 		}
 		if ( typeof func == 'function' ) {
@@ -664,7 +665,6 @@
 	};
 
 
-
 	var tField = function ( parent, el ){
 		var self = this,
 			type = el.type,
@@ -802,7 +802,6 @@
 		} );
 
 
-
 		if ( self.hasRules( '=#' ) ) {
 			var self_v_ = _v_().rules( self.config.rules ),
 				depended_id = self_v_.parsedRules['=#'],
@@ -826,9 +825,11 @@
 				if ( self.timer ) {
 					clearTimeout( self.timer );
 				}
-				self.validate( {
-					no_timeout: true
-				} );
+				if ( !(self.valid && self.hasRules( 'request' ) ) ) {
+					self.validate( {
+						no_timeout: true
+					} );
+				}
 			} );
 		}
 
@@ -999,65 +1000,75 @@
 	};
 
 
-
 	tField_p.requestValidate = function ( options ){
 
 		var self = this,
 			name = self.attr( 'name' ),
-			value = self.value,
-			request = self.get( 'request' );
-
-		var method = request.method.toLowerCase() == 'post' ? 'POST' : 'GET';
-		var data = request.data || {};
-
-		var success = request.success;
-
-		var url = (function (){
-			var url = request.url || window.location.href;
-			if ( method == 'GET' ) {
-				url += (~url.indexOf( '?' )) ? '&' : '?';
-				url += name + '=' + value;
-			} else {
-				data[name] = value;
-			}
-			return url;
-		})();
-
-		var timeout = options.no_timeout ? 0 : (request.timeout || 0);
-
-		var readyStateChange = function (){
-			var xhr = self.xhr;
-			if ( xhr.readyState == 1 ) {
-				self.execute( request.start, [xhr] );
-			}
-
-			if ( xhr.readyState == 4 ) {
-				// TODO: handle other errors (maybe with switch);
-				if ( xhr.status == 200 ) {
-					var result = (self.execute( request.end, [xhr.response] ) === true) ? true : false;
-					self.processing( false ).hold( false );
-					self['__validation' + (result ? 'Success' : 'Error')]();
+			value = self.el.value,
+			request = self.get( 'request' ),
+			check_btn = self.parent.button( __getAttr( self.el, 'name' ) ),
+			method = request.method.toLowerCase() == 'post' ? 'POST' : 'GET',
+			data = request.data || {},
+			success = request.success,
+			url = (function (){
+				var url = request.url || window.location.href;
+				if ( method == 'GET' ) {
+					url += (~url.indexOf( '?' )) ? '&' : '?';
+					url += name + '=' + value;
+				} else {
+					data[name] = value;
 				}
-			}
-		};
+				return url;
+			})(),
 
-		var makeRequest = function (){
-			var xhr = HTTP.newRequest();
-			self.xhr = xhr;
-			xhr.onreadystatechange = readyStateChange;
-			self.processing( true ).hold( true );
-			xhr.open( method, url, true );
-			xhr.setRequestHeader( "Accept-Language", "en" );
-			if ( method == 'POST' ) {
-				xhr.setRequestHeader( "Content-type", "application/x-www-form-urlencoded; charset=UTF-8" );
-				xhr.send( __serialize( data ) );
-			} else {
-				xhr.send( null );
-			}
-		};
+			timeout = options.no_timeout ? 0 : (request.timeout || 0),
 
-		if ( self.xhr ) {
+			readyStateChange = function (){
+				var xhr = self.xhr;
+
+				if ( xhr.readyState == 1 ) {
+					self.execute( request.start, [xhr] );
+				}
+
+				if ( xhr.readyState == 4 ) {
+					// TODO: handle other errors (maybe with switch);
+					if ( xhr.status == 200 ) {
+						var result = (self.execute( request.end, [xhr.response] ) === true) ? true : false;
+						self['__validation' + (result ? 'Success' : 'Error')]();
+					}
+				}
+				if ( xhr.readyState == 4 || xhr.readystate == 0 ) {
+					self.processing( false ).hold( false );
+					if ( check_btn ) {
+						check_btn.processing( false );
+					}
+				}
+			},
+
+			makeRequest = function (){
+				self.processing( true ).hold( true );
+				if ( check_btn ) {
+					check_btn.processing( true );
+				}
+				var xhr = HTTP.newRequest();
+				self.xhr = xhr;
+				xhr.onreadystatechange = readyStateChange;
+				xhr.open( method, url, true );
+				xhr.setRequestHeader( "Accept-Language", "en" );
+				if ( method == 'POST' ) {
+					xhr.setRequestHeader( "Content-type", "application/x-www-form-urlencoded; charset=UTF-8" );
+					xhr.send( __serialize( data ) );
+				} else {
+					xhr.send( null );
+				}
+			};
+
+		if ( self.xhr && (self.xhr.readyState !== 0 || self.xhr.readyState !== 4) ) {
 			self.xhr.abort();
+			self.processing( false ).hold( false );
+			if ( check_btn ) {
+				check_btn.processing( false );
+			}
 		}
 
 		if ( self.xhrTimeout ) {
@@ -1128,7 +1139,7 @@
 			self.on( 'click', function (){
 				var field = parent.field( self.data( 'check' ) );
 				if ( field ) {
-					field.validate({no_timeout: true});
+					field.validate( {no_timeout: true} );
 				}
 			} );
 		}
@@ -1147,7 +1158,6 @@
 		self.removeClass( self.get( 'disabledClass' ) );
 		return self;
 	};
-
 
 
 	/*
@@ -1271,7 +1281,6 @@
 		}
 		el.removeAttribute( attr );
 	};
-
 
 
 	// AJAX Request functionality
