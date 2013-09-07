@@ -93,6 +93,7 @@
 			<br/>
 
 			<b>Field Methods:</b>
+			<li><a href="#field_methods/validate">validate</a></li>
 			<li><a href="#field_methods/setRules">setRules</a></li>
 			<li><a href="#field_methods/addRules">addRules</a></li>
 			<li><a href="#field_methods/hasRules">hasRules</a></li>
@@ -734,9 +735,20 @@ my_form.drop(); // now errorClass will be default - 'error'
 			<br/>
 
 			<div class="item" data-permalink="methods/validate">
-				<span class="item-name">validate()</span>
+				<span class="item-name">validate( options )</span>
 				<br/>
-				Validate form: check all fields -> mark not valid fields, fire and run appropriate events and functions. If form is valid - it will be submitted.
+				Validate form: check all fields -> mark not valid fields, fire and run appropriate events and functions. If form is valid - it will be submitted.<br />
+				<span>options</span> - object with validations options:
+<pre><code>// available options
+options = {
+	highlight: false, // {boolean}, if false - field will be not highlighted with errorClass in case of failing validation
+	fire_event: false, // {boolean}, if false - before, valid and error validation events won't be fired
+};
+// or
+options = {
+	silence: true // {boolean}, means both, highlight and fire_event to be false
+};
+</code></pre>
 				<br/>
 				Return: {boolean} - true or false, shows does form passes all validations or not.
 				<div class="code_tabs">
@@ -890,6 +902,28 @@ my_form.submit(function(){
 
 			<h3>Field Methods:</h3>
 			<p>tFormer field object called tField object</p>
+
+			<div class="item" data-permalink="field_methods/validate">
+				<span class="item-name">validate( options )</span>
+				<br/>
+				Validate field.<br />
+				<span>options</span> - validate options (the same as in global validate method).
+				<br/>
+				Return: tField object
+				<div class="code_tabs">
+					<div class="name">Code:</div>
+					<div class="tab" data-tab="example">example</div>
+					<div class="name">(click to see the code)</div>
+				</div>
+<pre data-tab="example" class="nodisplay"><code>var my_form = tFormer('myForm_ID');
+var email_field = my_form.field('email');
+email_field.validate(); // will validate the field
+
+// or simply
+my_form.field('email').validate();
+</code></pre>
+			</div>
+			<br/>
 
 			<div class="item" data-permalink="field_methods/setRules">
 				<span class="item-name">setRules( rules )</span>
