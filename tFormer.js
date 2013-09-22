@@ -322,10 +322,8 @@
 	 */
 	tf_proto.submit = function ( func ){
 		var self = this;
-		if ( self.config ) {
-			if ( typeof func == 'function' ) {
+		if ( self.config && typeof func == 'function') {
 				self.config.submit = func;
-			}
 		}
 		return self;
 	};
