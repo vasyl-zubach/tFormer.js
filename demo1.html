@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>tFormer.js - demo</title>
+	<style>
+		.error {
+			background : red;
+		}
+
+		.disabled {
+			background : gray;
+		}
+
+	</style>
+</head>
+
+<body>
+
+<form id="login_example" style="width: 400px">
+	<table>
+		<tr>
+			<td>Login ( >4 symbols):</td>
+			<td>
+				<div>
+					<input type="text" name="login" data-rules="* l>4"/>
+					<div class="result_block"></div>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td>Password:</td>
+			<td>
+				<div>
+					<input type="password" name="password" data-rules="*"/>
+					<div class="result_block"></div>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="2" align="right">
+				<input type="submit" value="Login"/>
+			</td>
+		</tr>
+	</table>
+</form>
+
+
+
+
+
+<!-- source files here... -->
+<script src="tFormer.js"></script>
+<script>
+	var login_example = tFormer( 'login_example', {
+		onerror: function (){
+//			console.log( 'onerror' );
+		},
+		onvalid: function (){
+//			console.log( 'onvalid' );
+		}
+	} ).submit( function (){
+				alert( 'Your form passed all validations and submit core executed.' );
+//				console.log( login_example.processing( false ).toObject() );
+			} );
+</script>
+<!--<script src="tFormer.min.js"></script>-->
+<!--<script src="http://master.tformer.js/tFormer.gcc.js"></script>-->
+<!--<script src="http://master.v.js/_v_.min.js"></script>-->
+<!--<script src="http://master.tformer.js/tFormer_new.js"></script>-->
+
+</body>
+</html>
