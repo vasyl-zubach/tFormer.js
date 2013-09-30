@@ -151,23 +151,16 @@
 					sb_control = self.get( 'submitButtonControl' ),
 					s_func = typeof self.get( 'submit' ) == 'function',
 					processing = sb.get( 'processingClass' ),
-					prevent = self.valid && s_func,
-					e_prevent = function ( event ){
-						if ( event.preventDefault ) {
-							event.preventDefault();
-						} else {
-							event.returnValue = false;
-						}
-					};
+					prevent = self.valid && s_func;
 
 				// disable double submit
 				if ( (processing && sb.hasClass( processing )) || self.locked ) {
-					e_prevent( event );
+					__prevent( event );
 					return false;
 				}
 
 				if ( prevent ) {
-					e_prevent( event );
+					__prevent( event );
 				}
 				if ( self.valid ) {
 					if ( sb_control ) {
@@ -183,13 +176,13 @@
 
 				try {
 					if ( !self.valid && !self.validate( { no_timeout: true } ) ) {
-						e_prevent( event );
+						__prevent( event );
 						sb.processing( false );
 						return false;
 					}
 
 					if ( s_func ) {
-						e_prevent( event );
+						__prevent( event );
 						self.execute( self.form, 'submit', [event, self] );
 						return false;
 					}
@@ -272,7 +265,7 @@
 				if ( el.checked ) {
 					obj[name] = el.value;
 				}
-			} else {
+			} else if (el.type !== 'submit' && el.type !== 'button'){
 				obj[name] = el.value;
 			}
 		}
@@ -510,7 +503,7 @@
 		for ( var i = 0, e_l = events.length; i < e_l; i++ ) {
 			if ( el.addEventListener ) { // W3C DOM
 				el.addEventListener( events[i], func, false );
-			} else if ( element.attachEvent ) { // IE DOM
+			} else if ( el.attachEvent ) { // IE DOM
 				el.attachEvent( "on" + events[i], func );
 			} else { // No much to do
 				el[events[i]] = func;
@@ -564,21 +557,25 @@
 	 * @returns {*}
 	 */
 	El_p.trigger = function ( evnt ){
-		var el = this.el,
+		var self = this,
+			el = self.el,
 			evt;
 
-		if ( this.silence ) {
+		if ( self.silence ) {
 			return;
 		}
 
-		if ( document.createEventObject ) { // dispatch for IE
-			evt = document.createEventObject();
-			return el.fireEvent( 'on' + evnt, evt );
-		} else { // dispatch for firefox + others
+		try {// every browser except IE8 and below works here
 			evt = document.createEvent( "HTMLEvents" );
-			evt.initEvent( evnt, true, true ); // event type,bubbling,cancelable
+			evt.initEvent( evnt, true, true );
 			return !el.dispatchEvent( evt );
+		} catch ( err ) {
+			try {
+				return el.fireEvent( 'on' + evnt );
+			} catch ( error ) {
+			}
 		}
+		return self;
 	};
 
 
@@ -1128,7 +1125,7 @@
 		}
 		if ( el.type == 'submit' || el == parent.get( 'submitButton' ) ) {
 			self.on( 'click', function ( e ){
-				e.preventDefault();
+				__prevent( e );
 				parent.form.onsubmit( e );
 				return false;
 			} );
@@ -1177,6 +1174,19 @@
 	};
 
 	/**
+	 * Method for preventing default events
+	 * @param e
+	 * @private
+	 */
+	var __prevent = function ( e ){
+		if ( e.preventDefault ) {
+			e.preventDefault();
+		} else {
+			event.returnValue = false;
+		}
+	};
+
+	/**
 	 * Object clone
 	 * @returns {*|array|string}
 	 */
@@ -1195,7 +1205,7 @@
 
 
 	var __isForm = function ( obj ){
-		return toString.call( obj ) == '[object HTMLFormElement]';
+		return obj && obj.nodeName === 'FORM';
 	};
 
 	/**
